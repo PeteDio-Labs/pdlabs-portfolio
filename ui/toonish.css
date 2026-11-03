@@ -114,6 +114,9 @@
     .toon-nav a:hover, .toon-nav button:hover { @apply bg-toon-yellow; }
   }
   .toon-nav a[aria-current], .toon-nav button[aria-pressed="true"] { @apply bg-toon-ink text-toon-yellow; }
+  /* A nav that wraps: any number of pills flow onto more rows, for a filter whose tag count isn't fixed. The capsule
+     becomes a rounded panel so a second row doesn't leave a stretched pill, and it never outgrows its container. */
+  .toon-nav-wrap { @apply w-full flex-wrap rounded-group sm:w-fit; }
   /* The script adds this to a newly pressed pill. */
   .toon-boing { animation: toon-boing .55s cubic-bezier(.34,1.8,.5,1); }
 
