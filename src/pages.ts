@@ -1,4 +1,3 @@
-import { toonWord } from '../ui/lettering/toonletter.ts';
 import { esc, md } from './html.ts';
 import { site, studies, type Accent, type CaseStudy } from './content.ts';
 
@@ -22,17 +21,22 @@ const burst = (accent: Accent, cls = '') => {
 const speedLines = (cls = '') =>
   `<svg class="toon-speed ${cls}" viewBox="0 0 200 120" aria-hidden="true" focusable="false" preserveAspectRatio="none"><g stroke="#0a0a1f" stroke-width="4" stroke-linecap="round" vector-effect="non-scaling-stroke">${[8, 26, 44, 62, 80, 98, 116].map((y, i) => `<line x1="4" y1="${y}" x2="${120 + (i % 3) * 30}" y2="${y}" vector-effect="non-scaling-stroke"/>`).join('')}</g></svg>`;
 
-/** Decorative lettering beside a real heading, sized by its wrapper. */
-const letters = (text: string, accent: Accent = 'blue', bounce = 1, animate = false) =>
-  toonWord(text, { core: HEX[accent], shadow: HEX[PAIR[accent]], bounce, label: false, animate });
+/**
+ * Display type: the comic font with an ink outline and a hard shadow in the paired colour.
+ * Each letter is its own span, so the kit's CSS can tilt them in turn and, with `live`, bob them.
+ * The text stays real text, so readers and search see it as written.
+ */
+const letters = (text: string, accent: Accent = 'blue', opts: { live?: boolean; flat?: boolean; cls?: string } = {}) =>
+  `<span class="toon-type${opts.live ? ' toon-type-live' : ''}${opts.flat ? ' toon-type-flat' : ''} ${opts.cls ?? ''}" style="--toon-fill:${HEX[accent]}; --toon-shade:${HEX[PAIR[accent]]}">${[...text]
+    .map((c, i) => (c === ' ' ? ' ' : `<span style="--i:${i}">${esc(c)}</span>`))
+    .join('')}</span>`;
 
-/** A figure on a paper card: the same lettering, heavier and flat, with the real text for readers. */
-const figure = (value: string, accent: Accent, cls: string) =>
-  `<span class="sr-only">${esc(value)}</span><span aria-hidden="true" class="block max-w-full ${cls} [&>svg]:w-auto [&>svg]:max-w-full">${toonWord(value, { core: HEX[accent], shadow: HEX[PAIR[accent]], bounce: 0, weight: 16, label: false })}</span>`;
+/** A figure on a paper card: the display type, flat and heavy. */
+const figure = (value: string, accent: Accent, cls: string) => letters(value, accent, { flat: true, cls: `block leading-none ${cls}` });
 
-/** A section heading drawn in the lettering, with the real text for readers and search. */
+/** A section heading in the display type. */
 const lettered = (id: string, text: string, accent: Accent, cls: string) =>
-  `<h2 id="${id}" class="m-0 ${cls}"><span class="sr-only">${esc(text)}</span><span aria-hidden="true" class="block [&>svg]:h-auto [&>svg]:w-full">${letters(text, accent, 0.7)}</span></h2>`;
+  `<h2 id="${id}" class="m-0 ${cls}">${letters(text, accent, { cls: 'text-display2' })}</h2>`;
 
 const nav = (current: string) => {
   const items = [
@@ -62,21 +66,21 @@ export function layout(opts: { title: string; description: string; path: string;
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=DM+Sans:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=DM+Sans:wght@400;700&display=swap">
 <link rel="stylesheet" href="/toonish.css">
 </head>
 <body class="toon-dots">
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 toon-btn toon-btn-paper">Skip to content</a>
 <div class="mx-auto max-w-5xl px-s4 pb-16">
   <header class="flex flex-wrap items-center justify-between gap-s4 py-s5">
-    <a href="/" class="block h-14 [&>svg]:h-full [&>svg]:w-auto" aria-label="pdlab home">${letters('pdlab', 'blue', 0.6)}</a>
+    <a href="/" class="block no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { cls: 'text-[40px]' })}</a>
     ${nav(opts.current ?? '')}
   </header>
   <main id="main">
 ${opts.body}
   </main>
   <footer class="toon-footer">
-    <span class="block h-9 [&>svg]:h-full [&>svg]:w-auto">${letters('pdlab', 'red', 0.4)}</span>
+    <span class="block">${letters('pdlab', 'red', { cls: 'text-title1' })}</span>
     <p class="m-0 text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link" href="/ui.html">toonish-ui</a>, an original kit. <a class="toon-link" href="${site.github}">GitHub</a></p>
   </footer>
 </div>
@@ -91,7 +95,7 @@ const studyCard = (s: CaseStudy, i: number) => `
         <span class="toon-badge ${BADGE[s.accent]} self-start">${esc(s.tag)}</span>
         <h3 class="mb-s2 mt-s3 text-title2 font-bold leading-snug">${esc(s.title)}</h3>
         <p class="my-0">${md(s.summary)}</p>
-        <p class="mt-s4 mb-s4">${figure(s.stat.value, s.accent, '[&>svg]:h-14')}<span class="mt-s1 block text-footnote">${esc(s.stat.label)}</span></p>
+        <p class="mt-s4 mb-s4">${figure(s.stat.value, s.accent, 'text-[52px]')}<span class="mt-s1 block text-footnote">${esc(s.stat.label)}</span></p>
         <a class="toon-link mt-auto self-start" href="/work/${s.slug}.html">Read the case study<span class="sr-only">: ${esc(s.title)}</span></a>
       </article>`;
 
@@ -100,10 +104,12 @@ export function home(): string {
     <section class="grid items-center gap-s8 py-s8 md:grid-cols-[1.5fr_1fr]">
       <div class="relative z-0 min-w-0">
         <h1 class="sr-only">${esc(site.name)}. ${esc(site.role)}</h1>
-        <div class="w-full [&>svg]:h-auto [&>svg]:w-full">${letters('I build', 'blue', 1, true)}</div>
-        <div class="w-full [&>svg]:h-auto [&>svg]:w-full">${letters('systems', 'yellow', 1, true)}</div>
-        <div class="relative w-3/4 [&>svg:last-child]:relative [&>svg:last-child]:h-auto [&>svg:last-child]:w-full">${burst('red', 'toon-burst-hero')}${letters('with AI!', 'yellow', 1, true)}</div>
-        <p class="mt-s6 flex flex-wrap items-baseline gap-x-s3 gap-y-s1"><span class="font-display text-title1 text-toon-yellow">${esc(site.name)}</span><span class="text-subhead text-toon-paper/80">${esc(site.tagline)}</span></p>
+        <div class="grid gap-s2 text-hero leading-[.9]">
+          <div>${letters('I build', 'blue', { live: true })}</div>
+          <div>${letters('systems', 'yellow', { live: true })}</div>
+          <div class="relative w-fit">${burst('red', 'toon-burst-hero')}${letters('with AI!', 'yellow', { live: true, cls: 'relative' })}</div>
+        </div>
+        <p class="mt-s6 flex flex-wrap items-baseline gap-x-s3 gap-y-s1"><span class="font-display text-title1 tracking-wide text-toon-yellow">${esc(site.name)}</span><span class="text-subhead text-toon-paper/80">${esc(site.tagline)}</span></p>
         <p class="mt-s4 max-w-[38ch] text-title3">${esc(site.intro)}</p>
         <div class="mt-s6 flex flex-wrap gap-s4">
           <a class="toon-btn" href="#work">See the work</a>
@@ -174,11 +180,11 @@ export function study(s: CaseStudy): string {
       <header class="mb-s8 mt-s6 grid items-end gap-s6 md:grid-cols-[1fr_auto]">
         <div class="min-w-0">
           <span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span>
-          <h1 class="toon-heading mt-s4 text-display2" style="color:${HEX[s.accent]}; --toon-shade:${HEX[PAIR[s.accent]]}">${esc(s.title)}</h1>
+          <h1 class="mt-s4 leading-none">${letters(s.title, s.accent, { flat: true, cls: 'text-display2 leading-[1.05]' })}</h1>
           <p class="mt-s4 max-w-[60ch] text-title3">${md(s.summary)}</p>
         </div>
         <div class="toon-card m-0 w-full max-w-[18rem] text-center md:w-[16rem]" style="--toon-shadow:${HEX[PAIR[s.accent]]}">
-          ${figure(s.stat.value, s.accent, 'flex justify-center [&>svg]:h-20')}
+          ${figure(s.stat.value, s.accent, 'text-[72px]')}
           <span class="mt-s2 block text-footnote">${esc(s.stat.label)}</span>
         </div>
       </header>
@@ -210,7 +216,7 @@ export function kit(): string {
   const body = `
     <section class="py-s8">
       <h1 class="sr-only">toonish-ui</h1>
-      <div class="w-full max-w-2xl [&>svg]:h-auto [&>svg]:w-full">${letters('toonish-ui', 'yellow', 1, true)}</div>
+      <div class="text-hero leading-[.9]">${letters('toonish-ui', 'yellow', { live: true })}</div>
       <p class="mt-s4 max-w-[60ch] text-title3">The component kit this site is built on. Comic-book panels: ink outlines, hard offset shadows, halftone and a bounce, in electric blue, red, yellow and violet on deep navy. Every animation stops when you ask your system for reduced motion.</p>
     </section>
 
@@ -247,18 +253,18 @@ export function kit(): string {
       <div class="toon-callout mt-s8"><strong>Callout:</strong> violet by default, yellow with <code>toon-callout-yellow</code>.</div>
     </section>
 
-    <section class="py-s6" aria-labelledby="k-let"><h2 id="k-let" class="toon-heading mb-s6 text-display2">Lettering</h2>
-      <p class="max-w-[60ch]">Every display letter is an original centerline path, drawn as a shadow, an ink outline and a neon core. Each letter gets its own fixed tilt and lift. The pages render it at build time, so the lettering needs no font file and no script.</p>
-      <p class="max-w-[60ch]">With <code>animate</code>, each letter bobs in turn, as the hero does.</p>
-      <div class="[&>svg]:h-auto [&>svg]:w-full">${letters('ABCDEFGHIJKLM', 'blue', 1, true)}</div>
-      <div class="[&>svg]:h-auto [&>svg]:w-full">${letters('NOPQRSTUVWXYZ', 'yellow')}</div>
-      <div class="w-4/5 [&>svg]:h-auto [&>svg]:w-full">${letters("0123456789 &?!", 'violet')}</div>
-      <div class="w-3/5 [&>svg]:h-auto [&>svg]:w-full">${letters("+ ~ % / : , . ' -", 'red')}</div>
-      <p class="max-w-[60ch]">A figure on a card uses the same paths, heavier and flat, so a number reads as part of the drawing instead of a font.</p>
+    <section class="py-s6" aria-labelledby="k-let"><h2 id="k-let" class="toon-heading mb-s6 text-display2">Display type</h2>
+      <p class="max-w-[60ch]">Display text is set in Bangers, a comic lettering face, with an ink outline and a hard shadow in the paired colour. <code>toon-type</code> wraps each letter in a span, so every other letter tilts a little. <code>toon-type-live</code> bobs them in turn, as the hero does, and <code>toon-type-flat</code> sets them straight for a figure.</p>
+      <div class="grid gap-s3 text-display2 leading-none">
+        <div>${letters('ABCDEFGHIJKLM', 'blue', { live: true })}</div>
+        <div>${letters('NOPQRSTUVWXYZ', 'yellow')}</div>
+        <div>${letters('0123456789 &?! +~%/', 'violet')}</div>
+      </div>
+      <p class="max-w-[60ch]">A figure on a card is the same type, flat, so a number reads as part of the drawing.</p>
       <div class="grid gap-s8 sm:grid-cols-3">
-        <div class="toon-card" style="--toon-shadow:#ffd60a">${figure('214', 'blue', '[&>svg]:h-14')}<span class="mt-s1 block text-footnote">a count</span></div>
-        <div class="toon-card" style="--toon-shadow:#3d7bff">${figure('60 min', 'yellow', '[&>svg]:h-14')}<span class="mt-s1 block text-footnote">a duration</span></div>
-        <div class="toon-card" style="--toon-shadow:#ff3d3d">${figure('~70%', 'violet', '[&>svg]:h-14')}<span class="mt-s1 block text-footnote">an estimate</span></div>
+        <div class="toon-card" style="--toon-shadow:#ffd60a">${figure('214', 'blue', 'text-[52px]')}<span class="mt-s1 block text-footnote">a count</span></div>
+        <div class="toon-card" style="--toon-shadow:#3d7bff">${figure('60 min', 'yellow', 'text-[52px]')}<span class="mt-s1 block text-footnote">a duration</span></div>
+        <div class="toon-card" style="--toon-shadow:#ff3d3d">${figure('~70%', 'violet', 'text-[52px]')}<span class="mt-s1 block text-footnote">an estimate</span></div>
       </div>
     </section>
 
@@ -275,7 +281,7 @@ export function notFound(): string {
   const body = `
     <section class="py-16">
       <h1 class="sr-only">Page not found</h1>
-      <div class="max-w-md [&>svg]:h-auto [&>svg]:w-full">${letters('404!', 'red', 1, true)}</div>
+      <div class="text-hero leading-none">${letters('404!', 'red', { live: true })}</div>
       <p class="text-title3">That page doesn't exist. It may have moved when the site was rebuilt.</p>
       <a class="toon-btn" href="/">Go to the home page</a>
     </section>`;

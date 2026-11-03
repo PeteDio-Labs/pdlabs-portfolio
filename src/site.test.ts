@@ -12,10 +12,6 @@ test('every page has one h1, a title, and a description', () => {
   }
 });
 
-test('lettering never hits a missing glyph', () => {
-  for (const html of all()) expect(html).not.toContain('data-missing=');
-});
-
 test('case studies carry no draft markers or private details', () => {
   const text = all().join('\n');
   expect(text).not.toContain('[TODO');

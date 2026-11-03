@@ -3,7 +3,6 @@
 import { mkdir, rm } from 'node:fs/promises';
 import { home, kit, notFound, study } from './src/pages.ts';
 import { studies } from './src/content.ts';
-import { toonWord } from './ui/lettering/toonletter.ts';
 
 const out = 'dist';
 await rm(out, { recursive: true, force: true });
@@ -17,12 +16,19 @@ const pages: Record<string, string> = {
 };
 
 for (const [path, html] of Object.entries(pages)) {
-  if (html.includes('data-missing=')) throw new Error(`${path}: lettering has a character with no glyph`);
   await Bun.write(`${out}/${path}`, html);
 }
 
-// Favicon: a single lettered P.
-await Bun.write(`${out}/favicon.svg`, toonWord('P', { bounce: 0 }));
+// Favicon: a blue panel with an ink border and a yellow burst, drawn in code.
+const burst = Array.from({ length: 16 }, (_, i) => {
+  const r = i % 2 ? 16 : 24;
+  const a = (i / 16) * Math.PI * 2;
+  return `${(32 + r * Math.cos(a)).toFixed(1)},${(32 + r * Math.sin(a)).toFixed(1)}`;
+}).join(' ');
+await Bun.write(
+  `${out}/favicon.svg`,
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="3" y="3" width="58" height="58" rx="12" fill="#3d7bff" stroke="#0a0a1f" stroke-width="5"/><polygon points="${burst}" fill="#ffd60a" stroke="#0a0a1f" stroke-width="4" stroke-linejoin="round"/></svg>`,
+);
 
 const tw = Bun.spawnSync(['bunx', 'tailwindcss', '-i', 'ui/toonish.css', '-o', `${out}/toonish.css`, '--minify'], {
   stderr: 'pipe',

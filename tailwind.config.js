@@ -23,14 +23,14 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Bowlby One"', '"Arial Black"', 'sans-serif'],
+        display: ['Bangers', '"Arial Black"', 'Impact', 'sans-serif'],
         body: ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       // House type scale: 11 / 12 / 13 / 15 / 17 / 20 / 22 / 28, plus display sizes.
       fontSize: {
         caption2: '11px', caption1: '12px', footnote: '13px', subhead: '15px',
         body: '17px', title3: '20px', title2: '22px', title1: '28px',
-        display2: 'clamp(28px,5vw,44px)', display1: 'clamp(44px,10vw,104px)',
+        display2: 'clamp(32px,5.5vw,52px)', display1: 'clamp(44px,10vw,104px)', hero: 'clamp(64px,12vw,150px)',
       },
       // House 8pt grid.
       spacing: { s1: '4px', s2: '8px', s3: '12px', s4: '16px', s5: '20px', s6: '24px', s8: '32px' },

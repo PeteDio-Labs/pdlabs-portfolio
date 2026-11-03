@@ -8,7 +8,7 @@ It uses HTML and Tailwind CSS, compiled with the Tailwind CLI under Bun (`PET-80
 ## Commands
 
 The kit builds with the site from the repository root: `bun run build` compiles
-`ui/toonish.css` with the tokens in `tailwind.config.js`, and `bun test` covers the lettering.
+`ui/toonish.css` with the tokens in `tailwind.config.js`.
 The kit page, `/ui.html`, shows every component.
 
 ## Tokens
@@ -42,24 +42,18 @@ because Tailwind writes a theme keyframe only for an `animate-*` utility.
 Add `toon-dots` to `<body>` for the halftone ground. Every animation and transition stops
 under `prefers-reduced-motion`.
 
-## Lettering
+## Display type
 
-`lettering/toonletter.ts` draws the display type. Each glyph is an original centerline path:
-A to Z, 0 to 9 and `! ? . , ' - & + ~ % / :`. A word renders as three strokes of the same paths: an
-offset shadow, a thick ink outline and a colored core. Each letter gets a small, fixed tilt and
-lift, so a word renders the same on every build. No font file and no traced art is involved.
+Display text is set in Bangers with an ink outline and a hard shadow in the paired colour.
+`toon-type` wraps each letter in a span (the templates do this in `src/pages.ts`), so every
+other letter tilts a little. `toon-type-live` bobs the letters in turn, with
+`animation-delay` from each span's `--i`, and `toon-type-flat` sets them straight for a
+figure. `--toon-fill` and `--toon-shade` set the colours. The text stays real text.
 
-A `weight` of 16 with `bounce: 0` sets a figure such as `214` or `60 min` on a card.
-
-Call `toonWord(text, options)` from TypeScript at build time. It returns an SVG string. Set
-`core` and `shadow` for the colors, `bounce: 0` to flatten the baseline, and `animate: true` to
-wrap each letter in a `toon-letter` group that bobs in turn. The build fails
-when the text has a character with no glyph.
-
-The SVG carries the text as its `aria-label`. For a page heading, keep a real `<h1>` (it can be
-`sr-only`) and pass `label: false`, which marks the lettering `aria-hidden`.
+The hand-drawn lettering engine that came before it was removed on 2026-11-03, when Pedro
+said he hated the lettering. It is in the history before that date.
 
 ## Fonts
 
-Body text uses DM Sans and section headings use Bowlby One. Both come from Google Fonts under
-the SIL Open Font License 1.1. No Cuphead art, fonts or traced shapes are used.
+Body text uses DM Sans and display text uses Bangers. Both come from Google Fonts under the
+SIL Open Font License 1.1. No Cuphead art, fonts or traced shapes are used.
