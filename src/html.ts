@@ -4,8 +4,9 @@ const ENT: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"
 
 export const esc = (s: string): string => s.replace(/[&<>"']/g, (c) => ENT[c]);
 
-/** Inline Markdown subset for content: `code` and **bold**. Input is escaped first. */
+/** Inline Markdown subset for content: `code`, **bold** and [text](https://link). Input is escaped first. */
 export const md = (s: string): string =>
   esc(s)
     .replace(/`([^`]+)`/g, '<code class="rounded bg-toon-ink/10 px-1 font-mono text-[0.9em]">$1</code>')
+    .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g, '<a class="toon-link" href="$2">$1</a>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
