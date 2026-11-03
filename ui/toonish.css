@@ -160,7 +160,6 @@
     @apply relative overflow-hidden rounded-toon border-toon border-toon-ink bg-toon-paper shadow-toon-blue;
   }
   .toon-frame > img, .toon-frame > svg { @apply block h-auto w-full; }
-  .toon-panel-tilt { }
 
   /* 10. Speech bubble */
   .toon-bubble {
