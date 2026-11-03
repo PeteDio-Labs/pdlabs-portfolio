@@ -20,7 +20,7 @@ const burst = (accent: Accent, cls = '') => {
 
 /** Speed lines: a fan of ink strokes behind a panel. */
 const speedLines = (cls = '') =>
-  `<svg class="toon-speed ${cls}" viewBox="0 0 200 120" aria-hidden="true" focusable="false" preserveAspectRatio="none"><g stroke="#0a0a1f" stroke-width="4" stroke-linecap="round">${[8, 26, 44, 62, 80, 98, 116].map((y, i) => `<line x1="0" y1="${y}" x2="${120 + (i % 3) * 30}" y2="${y}"/>`).join('')}</g></svg>`;
+  `<svg class="toon-speed ${cls}" viewBox="0 0 200 120" aria-hidden="true" focusable="false" preserveAspectRatio="none"><g stroke="#0a0a1f" stroke-width="4" stroke-linecap="round" vector-effect="non-scaling-stroke">${[8, 26, 44, 62, 80, 98, 116].map((y, i) => `<line x1="4" y1="${y}" x2="${120 + (i % 3) * 30}" y2="${y}" vector-effect="non-scaling-stroke"/>`).join('')}</g></svg>`;
 
 /** Decorative lettering beside a real heading, sized by its wrapper. */
 const letters = (text: string, accent: Accent = 'blue', bounce = 1, animate = false) =>
@@ -98,7 +98,7 @@ const studyCard = (s: CaseStudy, i: number) => `
 export function home(): string {
   const body = `
     <section class="grid items-center gap-s8 py-s8 md:grid-cols-[1.5fr_1fr]">
-      <div class="min-w-0">
+      <div class="relative z-0 min-w-0">
         <h1 class="sr-only">${esc(site.name)}. ${esc(site.role)}</h1>
         <div class="w-full [&>svg]:h-auto [&>svg]:w-full">${letters('I build', 'blue', 1, true)}</div>
         <div class="w-full [&>svg]:h-auto [&>svg]:w-full">${letters('systems', 'yellow', 1, true)}</div>
@@ -113,7 +113,7 @@ export function home(): string {
       <div class="relative">
         ${speedLines('toon-speed-hero')}
         <figure class="toon-frame toon-panel-tilt m-0">
-          <span class="toon-caption absolute left-s3 top-s3">The lab</span>
+          <span class="toon-caption absolute right-s3 top-s3">The lab</span>
           <svg viewBox="0 0 320 236" role="img" aria-label="A terminal: terraform plan reports no changes, and the merge lands after CI and review">
             <rect width="320" height="236" fill="#0c1240"/>
             <rect width="320" height="34" fill="#9b7bff"/>

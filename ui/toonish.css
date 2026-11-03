@@ -25,7 +25,7 @@
   .toon-btn-yellow { --toon-shadow: theme(colors.toon.blue); @apply bg-toon-yellow; }
   .toon-btn-paper  { --toon-shadow: theme(colors.toon.blue); @apply bg-toon-paper; }
   /* Squash and stretch on hover, the cartoon take on a press. */
-  .toon-wiggle:hover { animation: toon-squash .6s cubic-bezier(.34,1.8,.5,1); }
+  .toon-wiggle:hover { transform: none; animation: toon-squash .6s cubic-bezier(.34,1.8,.5,1); }
 
   /* 2. Card: a comic panel. Cream with a faint halftone, tilted, lifts and straightens on hover. */
   .toon-card {
@@ -120,7 +120,8 @@
   /* 12. Burst: a starburst behind a word or a figure. `-spin` turns it slowly, `-hero` sits behind the hero's last line. */
   .toon-burst { @apply absolute inset-0 h-full w-full; }
   .toon-burst-spin { animation: toon-spin 24s linear infinite; }
-  .toon-burst-hero { @apply -right-[4%] -top-[55%] left-auto h-[180%] w-auto; animation: toon-spin 40s linear infinite; }
+  /* -z-10 inside the hero column's own stacking context (`relative z-0`), so the burst sits behind every line. */
+  .toon-burst-hero { @apply -right-[4%] -top-[55%] left-auto -z-10 h-[180%] w-auto; animation: toon-spin 40s linear infinite; }
 
   /* 13. Speed lines: a fan of ink strokes behind a panel. */
   .toon-speed { @apply pointer-events-none absolute; }
@@ -134,7 +135,8 @@
   .toon-dots { background-image: radial-gradient(rgb(255 214 10 / .13) 1.2px, transparent 1.6px); background-size: 10px 10px; }
 
   /* Keyframes. Tailwind only writes a theme keyframe for an animate-* utility, so the kit owns them here. */
-  @keyframes toon-pop { 0% { transform: scale(.6); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+  /* The pop keeps the element's tilt in every frame, so a card never snaps when the animation ends. */
+  @keyframes toon-pop { 0% { transform: rotate(var(--toon-tilt, 0deg)) scale(.6); opacity: 0; } 70% { transform: rotate(var(--toon-tilt, 0deg)) scale(1.08); } 100% { transform: rotate(var(--toon-tilt, 0deg)) scale(1); opacity: 1; } }
   @keyframes toon-bob { 0%, 55%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-7%) rotate(-3deg); } 40% { transform: translateY(2%) rotate(1deg); } }
   @keyframes toon-squash { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(1.12, .88); } 60% { transform: translateY(-6px) scale(.96, 1.08); } }
   @keyframes toon-spin { to { transform: rotate(360deg); } }
