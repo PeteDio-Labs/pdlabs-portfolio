@@ -21,7 +21,7 @@
      ink, so nothing visible changes except the sliver. */
   .toon-btn, .toon-card, .toon-badge, .toon-nav, .toon-callout, .toon-frame, .toon-bubble, .toon-caption,
   .toon-corner, .toon-modal-box, .toon-modal-head { background-clip: padding-box; }
-  :focus-visible { @apply outline outline-4 outline-offset-4 outline-toon-yellow; }
+  :focus-visible { @apply outline outline-2 outline-offset-2 outline-toon-yellow; }
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 }
 
@@ -151,7 +151,12 @@
   .toon-modal-head { @apply flex items-center justify-between gap-s3 border-b-toon border-toon-ink bg-toon-blue px-s5 py-s3; }
   .toon-modal-body { @apply overflow-y-auto px-s6 py-s5; overscroll-behavior: contain; }
   /* A compact close button: the kit's button, smaller, with a short shadow. */
-  .toon-modal-x { @apply shrink-0 px-s4 py-s1 text-subhead; box-shadow: 4px 4px 0 var(--toon-shadow); }
+  /* Quiet close button: an off-white pill with a thin ink border, no shadow and no lift. The dialog focuses it on open,
+     so its focus ring is a thin ink line, which reads on both the blue header and the off-white body. */
+  .toon-modal-x { @apply shrink-0 bg-toon-paper px-s4 py-s1 text-subhead; box-shadow: none; }
+  @media (hover: hover) { .toon-modal-x:hover { @apply translate-y-0 bg-toon-yellow; box-shadow: none; } }
+  .toon-modal-x:active { @apply translate-x-0 translate-y-0 bg-toon-yellow; box-shadow: none; }
+  .toon-modal :focus-visible { outline-color: theme(colors.toon.ink); }
   /* Stops the page behind from scrolling while a modal is open. */
   html.toon-modal-open { overflow: hidden; }
 
