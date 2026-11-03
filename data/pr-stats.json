@@ -1,0 +1,370 @@
+{
+  "generated_at": "2026-11-03T07:11:46.948Z",
+  "source": "GitHub search API, is:pr is:merged, 8 in-scope repos under PeteDio-Labs",
+  "week_rule": "Monday 00:00 UTC to Sunday, keyed on merged_at",
+  "author_rule": "Author is the PR's login. A PR under the petedillo login counts as Claude when its body contains 'Claude Code'.",
+  "totals": {
+    "merged": 970
+  },
+  "repos": [
+    {
+      "repo": "petedio-iac",
+      "merged": 567,
+      "search_total": 567,
+      "read": true
+    },
+    {
+      "repo": "petedio-workspace",
+      "merged": 178,
+      "search_total": 178,
+      "read": true
+    },
+    {
+      "repo": "petedio-vault",
+      "merged": 129,
+      "search_total": 129,
+      "read": true
+    },
+    {
+      "repo": "petedio-pm",
+      "merged": 13,
+      "search_total": 13,
+      "read": true
+    },
+    {
+      "repo": "pete-bot",
+      "merged": 69,
+      "search_total": 69,
+      "read": true
+    },
+    {
+      "repo": "petedio-usaa",
+      "merged": 9,
+      "search_total": 9,
+      "read": true
+    },
+    {
+      "repo": "petedio-search",
+      "merged": 5,
+      "search_total": 5,
+      "read": true
+    },
+    {
+      "repo": "pdlabs-portfolio",
+      "merged": 0,
+      "search_total": 0,
+      "read": true
+    }
+  ],
+  "authors": {
+    "Claude threads (bot)": 132,
+    "Claude under Pedro login": 207,
+    "Pedro": 561,
+    "247 host (bot)": 37,
+    "Other: ghost": 28,
+    "Other: Copilot": 5
+  },
+  "peak_week": {
+    "week": "2026-10-19",
+    "merged": 214
+  },
+  "in_progress_week": "2026-11-02",
+  "weeks": [
+    {
+      "week": "2026-02-02",
+      "merged": 12,
+      "authors": {
+        "Other: Copilot": 5,
+        "Pedro": 7
+      },
+      "repos": {
+        "pete-bot": 12
+      }
+    },
+    {
+      "week": "2026-05-04",
+      "merged": 2,
+      "authors": {
+        "Claude under Pedro login": 2
+      },
+      "repos": {
+        "pete-bot": 2
+      }
+    },
+    {
+      "week": "2026-06-01",
+      "merged": 29,
+      "authors": {
+        "Pedro": 20,
+        "Claude under Pedro login": 9
+      },
+      "repos": {
+        "petedio-iac": 29
+      }
+    },
+    {
+      "week": "2026-06-08",
+      "merged": 31,
+      "authors": {
+        "Claude under Pedro login": 16,
+        "Pedro": 15
+      },
+      "repos": {
+        "petedio-iac": 28,
+        "petedio-workspace": 3
+      }
+    },
+    {
+      "week": "2026-06-22",
+      "merged": 57,
+      "authors": {
+        "Claude under Pedro login": 13,
+        "Pedro": 44
+      },
+      "repos": {
+        "petedio-iac": 56,
+        "petedio-workspace": 1
+      }
+    },
+    {
+      "week": "2026-06-29",
+      "merged": 32,
+      "authors": {
+        "Pedro": 29,
+        "Claude under Pedro login": 3
+      },
+      "repos": {
+        "petedio-iac": 29,
+        "petedio-workspace": 3
+      }
+    },
+    {
+      "week": "2026-07-06",
+      "merged": 8,
+      "authors": {
+        "Pedro": 8
+      },
+      "repos": {
+        "petedio-iac": 8
+      }
+    },
+    {
+      "week": "2026-07-13",
+      "merged": 6,
+      "authors": {
+        "Pedro": 6
+      },
+      "repos": {
+        "petedio-iac": 6
+      }
+    },
+    {
+      "week": "2026-07-20",
+      "merged": 33,
+      "authors": {
+        "Claude under Pedro login": 4,
+        "Pedro": 29
+      },
+      "repos": {
+        "petedio-iac": 31,
+        "petedio-workspace": 2
+      }
+    },
+    {
+      "week": "2026-08-03",
+      "merged": 1,
+      "authors": {
+        "Pedro": 1
+      },
+      "repos": {
+        "petedio-iac": 1
+      }
+    },
+    {
+      "week": "2026-08-10",
+      "merged": 38,
+      "authors": {
+        "Pedro": 32,
+        "Claude under Pedro login": 6
+      },
+      "repos": {
+        "petedio-iac": 23,
+        "petedio-workspace": 14,
+        "petedio-vault": 1
+      }
+    },
+    {
+      "week": "2026-08-17",
+      "merged": 14,
+      "authors": {
+        "Pedro": 14
+      },
+      "repos": {
+        "petedio-iac": 6,
+        "petedio-workspace": 4,
+        "petedio-vault": 4
+      }
+    },
+    {
+      "week": "2026-08-24",
+      "merged": 6,
+      "authors": {
+        "Pedro": 6
+      },
+      "repos": {
+        "petedio-iac": 6
+      }
+    },
+    {
+      "week": "2026-08-31",
+      "merged": 50,
+      "authors": {
+        "Pedro": 50
+      },
+      "repos": {
+        "petedio-iac": 26,
+        "petedio-workspace": 15,
+        "petedio-vault": 9
+      }
+    },
+    {
+      "week": "2026-09-07",
+      "merged": 96,
+      "authors": {
+        "Pedro": 92,
+        "Other: ghost": 2,
+        "Claude under Pedro login": 2
+      },
+      "repos": {
+        "petedio-iac": 60,
+        "petedio-workspace": 13,
+        "petedio-vault": 12,
+        "pete-bot": 11
+      }
+    },
+    {
+      "week": "2026-09-14",
+      "merged": 37,
+      "authors": {
+        "Pedro": 35,
+        "Claude under Pedro login": 2
+      },
+      "repos": {
+        "petedio-iac": 19,
+        "petedio-workspace": 12,
+        "petedio-vault": 6
+      }
+    },
+    {
+      "week": "2026-09-21",
+      "merged": 107,
+      "authors": {
+        "Pedro": 81,
+        "Other: ghost": 20,
+        "Claude under Pedro login": 6
+      },
+      "repos": {
+        "petedio-iac": 45,
+        "petedio-workspace": 33,
+        "petedio-vault": 27,
+        "pete-bot": 1,
+        "petedio-search": 1
+      }
+    },
+    {
+      "week": "2026-09-28",
+      "merged": 79,
+      "authors": {
+        "Pedro": 69,
+        "Claude under Pedro login": 4,
+        "Other: ghost": 6
+      },
+      "repos": {
+        "petedio-iac": 35,
+        "petedio-workspace": 25,
+        "petedio-vault": 15,
+        "pete-bot": 3,
+        "petedio-search": 1
+      }
+    },
+    {
+      "week": "2026-10-05",
+      "merged": 12,
+      "authors": {
+        "Pedro": 7,
+        "247 host (bot)": 5
+      },
+      "repos": {
+        "petedio-iac": 3,
+        "petedio-workspace": 6,
+        "petedio-vault": 2,
+        "petedio-usaa": 1
+      }
+    },
+    {
+      "week": "2026-10-12",
+      "merged": 55,
+      "authors": {
+        "Claude under Pedro login": 15,
+        "247 host (bot)": 28,
+        "Pedro": 12
+      },
+      "repos": {
+        "petedio-iac": 16,
+        "petedio-workspace": 16,
+        "petedio-vault": 8,
+        "petedio-pm": 10,
+        "pete-bot": 3,
+        "petedio-usaa": 2
+      }
+    },
+    {
+      "week": "2026-10-19",
+      "merged": 214,
+      "authors": {
+        "Pedro": 3,
+        "Claude threads (bot)": 103,
+        "Claude under Pedro login": 104,
+        "247 host (bot)": 4
+      },
+      "repos": {
+        "petedio-iac": 103,
+        "petedio-workspace": 29,
+        "petedio-vault": 42,
+        "petedio-pm": 3,
+        "pete-bot": 30,
+        "petedio-usaa": 5,
+        "petedio-search": 2
+      }
+    },
+    {
+      "week": "2026-10-26",
+      "merged": 26,
+      "authors": {
+        "Claude threads (bot)": 10,
+        "Claude under Pedro login": 15,
+        "Pedro": 1
+      },
+      "repos": {
+        "petedio-iac": 15,
+        "petedio-workspace": 2,
+        "petedio-vault": 3,
+        "pete-bot": 6
+      }
+    },
+    {
+      "week": "2026-11-02",
+      "merged": 25,
+      "authors": {
+        "Claude threads (bot)": 19,
+        "Claude under Pedro login": 6
+      },
+      "repos": {
+        "petedio-iac": 22,
+        "pete-bot": 1,
+        "petedio-usaa": 1,
+        "petedio-search": 1
+      }
+    }
+  ]
+}
