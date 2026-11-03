@@ -22,12 +22,16 @@ test('case studies carry no draft markers or private details', () => {
   expect(text).not.toMatch(/192\.168\.|\.internal|petedio-ops|ghp_|hvs\./);
 });
 
-test('every case study links to the next one and back', () => {
-  for (const s of studies) {
+test('every case study links to the previous one, the next one and back', () => {
+  studies.forEach((s, i) => {
     const html = study(s);
+    const next = studies[(i + 1) % studies.length];
+    const prev = studies[(i + studies.length - 1) % studies.length];
     expect(html).toContain('href="/#work"');
-    expect(html).toMatch(/href="\/work\/[a-z-]+\.html"/);
-  }
+    expect(html).toContain(`href="/work/${next.slug}.html"`);
+    expect(html).toContain(`href="/work/${prev.slug}.html"`);
+    expect(html).not.toContain(`href="/work/${s.slug}.html"`);
+  });
 });
 
 test('home links every case study', () => {

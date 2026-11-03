@@ -38,8 +38,10 @@
     @apply absolute -right-s2 -top-s4 grid h-12 w-12 -rotate-12 place-items-center rounded-full border-toon border-toon-ink
            bg-toon-yellow font-display text-title3 leading-none text-toon-ink;
   }
-  /* Pop-in on load; `animation-delay` on the element staggers a grid. Reduced motion cancels it below. */
-  .toon-pop { animation: pop .5s cubic-bezier(.34,1.8,.5,1) both; }
+  /* Pop-in on load; `animation-delay` on the element staggers a grid. Reduced motion cancels it below.
+     `backwards`, not `both`: the end state must release, or it would pin the card's tilt and hover transform. */
+  .toon-pop { animation: toon-pop .5s cubic-bezier(.34,1.8,.5,1) backwards; }
+  @keyframes toon-pop { 0% { transform: scale(.6); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
 
   /* 3. Heading: text fallback for the SVG lettering, same outline and shadow. */
   .toon-heading {

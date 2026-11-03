@@ -50,9 +50,9 @@ export const studies: CaseStudy[] = [
       {
         heading: 'What I built',
         paragraphs: [
-          'An agent workflow where each task gets its own session, every pull request gets a review, and no session merges its own work.',
+          'An agent workflow where each task gets its own session, every pull request gets a review, and no session approves its own work.',
           'A tiered gate decides what merges automatically. A script scores each PR\'s blast radius, and the low tiers merge after CI and a clean review. A PR does not auto-merge when its review has a blocking finding, a check is red or skipped, or it has no checks. It also waits when it carries a hold label, asks to wait, or needs a hand step.',
-          'An unrecognised file path counts as the highest tier, and only tiers 0 and 1 merge without a second reviewer. Infrastructure changes run `validate` on PR, then `plan` and `apply` on merge.',
+          'An unrecognised file path counts as the highest tier, because the rules fail closed. Infrastructure changes run `validate` on PR, then `plan` and `apply` on merge.',
         ],
       },
       {

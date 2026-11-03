@@ -121,7 +121,7 @@ export function home(): string {
     <section id="about" class="scroll-mt-8 grid gap-s8 py-s8 md:grid-cols-[1fr_1fr]" aria-labelledby="about-h">
       <div class="min-w-0">
         ${lettered('about-h', 'How I work', 'cyan', 'mb-s6 max-w-sm')}
-        <p class="mb-s4 mt-0 max-w-[60ch]">I treat AI agents like a team, not a tool. Each task gets its own session and its own branch. Nothing merges without a review, and no session merges its own work.</p>
+        <p class="mb-s4 mt-0 max-w-[60ch]">I treat AI agents like a team, not a tool. Each task gets its own session and its own branch. Nothing merges without a review, and no session approves its own work.</p>
         <p class="m-0 max-w-[60ch]">The infrastructure is declared, not hand-run: Terraform builds it, Ansible configures it, and a repair is a config change before it is ever a script. When a check reports success, it also says what it examined.</p>
       </div>
       <div class="toon-callout toon-callout-yellow self-start">
@@ -221,7 +221,7 @@ export function kit(): string {
     </section>
 
     <section class="py-s6" aria-labelledby="k-let"><h2 id="k-let" class="toon-heading mb-s6 text-display2">Lettering</h2>
-      <p class="max-w-[60ch]">Every display letter is an original centerline path, drawn as a shadow, an ink outline and a neon core. Each letter gets its own fixed tilt and lift. The pages render it at build time, so no font file or script loads.</p>
+      <p class="max-w-[60ch]">Every display letter is an original centerline path, drawn as a shadow, an ink outline and a neon core. Each letter gets its own fixed tilt and lift. The pages render it at build time, so the lettering needs no font file and no script.</p>
       <div class="[&>svg]:h-auto [&>svg]:w-full">${letters('ABCDEFGHIJKLM', 'cyan')}</div>
       <div class="[&>svg]:h-auto [&>svg]:w-full">${letters('NOPQRSTUVWXYZ', 'yellow')}</div>
       <div class="w-4/5 [&>svg]:h-auto [&>svg]:w-full">${letters("0123456789 &?!", 'violet')}</div>
