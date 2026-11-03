@@ -6,7 +6,7 @@ The site is static HTML rendered by TypeScript under Bun and styled with Tailwin
 
 ## Commands
 
-You need Bun 1.2 or later.
+You need Bun 1.4.4 or later, because `bun.lock` uses lockfile version 2. CI pins the same version.
 
 | Command | Does |
 |---|---|
