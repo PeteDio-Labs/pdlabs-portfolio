@@ -4,8 +4,10 @@
 @tailwind utilities;
 
 @layer base {
-  /* overflow-x clip: a tilted panel or a corner disc may reach past the gutter, and must not add a sideways scroll. */
-  body { @apply overflow-x-clip bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
+  /* A tilted panel, a corner disc, a burst or a card mid pop-in may reach past the gutter, and must not add a
+     sideways scroll. The rule sits on html: on body it propagates to the viewport as a value Chromium still scrolls. */
+  html { overflow-x: hidden; }
+  body { @apply bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
   :focus-visible { @apply outline outline-4 outline-offset-4 outline-toon-yellow; }
 }
 
