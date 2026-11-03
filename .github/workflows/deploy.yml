@@ -19,6 +19,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment: production
     env:
       AWS_DEFAULT_REGION: us-east-2
@@ -58,7 +59,13 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: aws sts get-caller-identity --query Arn --output text
+        run: |
+          arn=$(aws sts get-caller-identity --query Arn --output text)
+          echo "$arn"
+          case "$arn" in
+            arn:aws:iam::847547470418:user/petedio-portfolio-deploy) ;;
+            *) echo "::error::the deploy key is not petedio-portfolio-deploy in account 847547470418"; exit 1 ;;
+          esac
 
       - name: Sync to S3
         env:
