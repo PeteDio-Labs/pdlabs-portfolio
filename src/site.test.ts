@@ -12,10 +12,6 @@ test('every page has one h1, a title, and a description', () => {
   }
 });
 
-test('lettering never hits a missing glyph', () => {
-  for (const html of all()) expect(html).not.toContain('data-missing=');
-});
-
 test('case studies carry no draft markers or private details', () => {
   const text = all().join('\n');
   expect(text).not.toContain('[TODO');
@@ -32,6 +28,20 @@ test('every case study links to the previous one, the next one and back', () => 
     expect(html).toContain(`href="/work/${prev.slug}.html"`);
     expect(html).not.toContain(`href="/work/${s.slug}.html"`);
   });
+});
+
+test('home nav points at its own sections and the script can mark them', () => {
+  const html = home();
+  expect(html).toContain('<a href="#work" data-spy="work"');
+  expect(html).toContain('<a href="#about" data-spy="about"');
+  expect(html).toContain('id="work"');
+  expect(html).toContain('id="about"');
+});
+
+test('kit sample nav switches in place instead of reloading', () => {
+  const html = kit();
+  expect(html).toContain('data-toon-toggle');
+  expect(html).not.toMatch(/aria-label="Sample"[^>]*>\s*<a /);
 });
 
 test('home links every case study', () => {

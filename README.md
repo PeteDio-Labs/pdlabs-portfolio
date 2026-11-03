@@ -13,7 +13,7 @@ You need Bun 1.4.4 or later, because `bun.lock` uses lockfile version 2. CI pins
 | `bun install` | Installs Tailwind, TypeScript and the Bun types |
 | `bun run build` | Renders every page and compiles the CSS into `dist/` |
 | `bun run dev` | Builds, then serves `dist/` on `http://localhost:8080` |
-| `bun test` | Tests the pages and the lettering |
+| `bun test` | Tests the pages |
 | `bun run typecheck` | Runs `tsc --noEmit` |
 
 ## Layout
@@ -24,7 +24,7 @@ You need Bun 1.4.4 or later, because `bun.lock` uses lockfile version 2. CI pins
 | `src/pages.ts` | Page templates: home, case study, kit and 404 |
 | `build.ts` | Writes `dist/` and fails when a page or the CSS is missing |
 | `serve.ts` | Local preview server |
-| `ui/` | toonish-ui: the component CSS and the lettering engine. See `ui/README.md` |
+| `ui/` | toonish-ui: the component CSS. See `ui/README.md` |
 | `tailwind.config.js` | The design tokens |
 
 Pages are flat files (`/work/<slug>.html`), so S3 and CloudFront can serve them with no
