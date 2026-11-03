@@ -46,7 +46,12 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
       - run: bun test
-      - run: bun run build
+      # The Web Analytics beacon token ships in the page HTML, so it is a repo variable, not a secret.
+      # When the variable is unset, build.ts warns and builds without analytics.
+      - name: Build
+        env:
+          CF_ANALYTICS_TOKEN: ${{ vars.CF_ANALYTICS_TOKEN }}
+        run: bun run build
       - name: Check the build wrote every page
         run: |
           set -eu
