@@ -4,7 +4,8 @@
 @tailwind utilities;
 
 @layer base {
-  body { @apply bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
+  /* overflow-x clip: a tilted card or a corner disc may reach past the gutter, and must not add a sideways scroll. */
+  body { @apply overflow-x-clip bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
   :focus-visible { @apply outline outline-4 outline-offset-4 outline-toon-yellow; }
 }
 
@@ -32,6 +33,13 @@
   .toon-card:nth-child(even) { --toon-tilt: 1deg; --toon-shadow: theme(colors.toon.violet); }
   .toon-card:nth-child(3n) { --toon-shadow: theme(colors.toon.cyan); }
   .toon-card:hover { transform: rotate(0) translateY(-6px) scale(1.03); }
+  /* Card number: a tilted neon disc pinned past the top right corner. */
+  .toon-corner {
+    @apply absolute -right-s2 -top-s4 grid h-12 w-12 -rotate-12 place-items-center rounded-full border-toon border-toon-ink
+           bg-toon-yellow font-display text-title3 leading-none text-toon-ink;
+  }
+  /* Pop-in on load; `animation-delay` on the element staggers a grid. Reduced motion cancels it below. */
+  .toon-pop { animation: pop .5s cubic-bezier(.34,1.8,.5,1) both; }
 
   /* 3. Heading: text fallback for the SVG lettering, same outline and shadow. */
   .toon-heading {
