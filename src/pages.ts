@@ -54,7 +54,7 @@ const nav = (current: string, path: string) => {
     .join('')}</nav>`;
 };
 
-export function layout(opts: { title: string; description: string; path: string; current?: string; body: string; script?: string }): string {
+export function layout(opts: { title: string; description: string; path: string; current?: string; body: string; scriptSrc?: string }): string {
   const fullTitle = opts.path === '/' ? `${site.name}: systems built with AI` : `${opts.title} | ${site.name}`;
   return `<!doctype html>
 <html lang="en">
@@ -120,7 +120,7 @@ ${opts.body}
     });
   });
 })();
-</script>${opts.script ? `\n<script>\n${opts.script}\n</script>` : ''}
+</script>${opts.scriptSrc ? `\n<script src="${opts.scriptSrc}" defer></script>` : ''}
 </body>
 </html>
 `;
@@ -213,11 +213,12 @@ export function home(): string {
 }
 
 /**
- * The /work page script. The page is complete without it: cards arrive newest first and the controls
+ * The /work page script, written to dist/work.js so a Content-Security-Policy of script-src 'self' allows it.
+ * The page is complete without it: cards arrive newest first and the controls
  * stay hidden. With it, the controls appear and the cards reorder and filter in place, with no fetch
  * and no animation of its own. The choice lives in the query string, so a sorted view can be shared.
  */
-const workScript = `(() => {
+export const workScript = `(() => {
   const list = document.getElementById('study-list');
   const controls = document.getElementById('study-controls');
   const sort = document.getElementById('study-sort');
@@ -286,7 +287,7 @@ export function workIndex(): string {
     current: 'Work',
     description: `${studies.length} case studies on building systems with AI: agents, merge gates, short-lived access, local models and disaster recovery. Sort by date or filter by topic.`,
     body,
-    script: workScript,
+    scriptSrc: '/work.js',
   });
 }
 

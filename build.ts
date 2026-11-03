@@ -1,7 +1,7 @@
 // Builds the static site into dist/: renders every page, then compiles Tailwind over the
 // page sources. Exits non-zero when any step fails or a page is missing from the output.
 import { mkdir, rm } from 'node:fs/promises';
-import { home, kit, notFound, study, workIndex } from './src/pages.ts';
+import { home, kit, notFound, study, workIndex, workScript } from './src/pages.ts';
 import { studies } from './src/content.ts';
 
 const out = 'dist';
@@ -19,6 +19,8 @@ const pages: Record<string, string> = {
 for (const [path, html] of Object.entries(pages)) {
   await Bun.write(`${out}/${path}`, html);
 }
+
+await Bun.write(`${out}/work.js`, workScript + '\n');
 
 // The same data as one file, for anything that wants the list without scraping HTML. Bodies stay out.
 await Bun.write(

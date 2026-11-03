@@ -23,7 +23,7 @@ jobs:
       - name: Check the build wrote every page
         run: |
           set -eu
-          for f in index.html work.html studies.json ui.html 404.html toonish.css favicon.svg; do test -s "dist/$f" || { echo "missing dist/$f"; exit 1; }; done
+          for f in index.html work.html work.js studies.json ui.html 404.html toonish.css favicon.svg; do test -s "dist/$f" || { echo "missing dist/$f"; exit 1; }; done
           n=$(ls dist/work/*.html | wc -l)
           echo "dist/work holds $n case-study pages"
           test "$n" -ge 4

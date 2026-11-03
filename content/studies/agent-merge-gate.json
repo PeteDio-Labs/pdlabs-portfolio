@@ -1,10 +1,11 @@
 {
   "slug": "agent-merge-gate",
-  "date": "2026-10-26",
+  "date": "2026-10-19",
+  "featured": true,
   "title": "A review-gated agent team with a merge gate",
   "tag": "GitOps",
   "accent": "blue",
-  "summary": "Each task gets its own agent session, every pull request gets a review, and a tiered gate decides what merges on its own.",
+  "summary": "Each task gets its own agent session, every pull request gets a review, and a tiered gate decides when it merges.",
   "stat": {
     "value": "214",
     "label": "PRs merged in one week, up from 55 the week before"
@@ -19,29 +20,31 @@
     {
       "heading": "What I built",
       "paragraphs": [
-        "An agent workflow where each task gets its own session, every pull request gets a review, and no session approves its own work.",
-        "A tiered gate decides what merges automatically. A script scores each PR's blast radius, and the low tiers merge after CI and a clean review. A PR does not auto-merge when its review has a blocking finding, a check is red or skipped, or it has no checks. It also waits when it carries a hold label, asks to wait, or needs a hand step.",
-        "An unrecognised file path counts as the highest tier, because the rules fail closed. Infrastructure changes run `validate` on PR, then `plan` and `apply` on merge."
+        "An agent workflow where each task gets its own session, every pull request gets a review, and no session approves its own work. A session may merge its own PR only outside the infrastructure repo, and only after a separate review has cleared it.",
+        "A tiered gate decides who merges. A script scores each PR's blast radius from the files it touches. Tier 0 is prose. Tier 1 is code that runs nothing on merge. Tier 2 is everything else, such as infrastructure code and workflows. A merge bot with deterministic code merges tiers 0 and 1 after CI and a clean review. A separate merger handles tier 2 under the same gate. No model output widens what merges.",
+        "A PR waits when its review has a blocking finding, a check is red or skipped, or it has no checks. It also waits when it carries a hold label, asks to wait, or needs a hand step. A push voids the review of the old head, and the merge is pinned to the commit that was reviewed. After each merge, the bot reads the main branch back and expects the change to be there.",
+        "An unrecognised file path counts as tier 2, because the rules fail closed. Infrastructure changes run `validate` on PR, then `plan` and `apply` on merge. Credentials and destructive flags stay hand steps that no merge runs."
       ]
     },
     {
       "heading": "Result",
       "paragraphs": [
-        "214 PRs merged in the week of 19 October, up from 55 the week before. Of the 214, 211 were opened by agent sessions and 3 by hand. The count covers eight repos by GitHub merge date, Monday to Sunday, UTC.",
+        "214 PRs merged in the week of 19 October, up from 55 the week before. Of the 214, 211 carried an agent author or footer and 3 did not, which is a heuristic because agent PRs can come from my own login. The count covers eight repos by GitHub merge date, Monday to Sunday, UTC.",
         "The week after had 26, so the 19 October week was a peak, not a steady rate. Throughput is the measure here, not quality."
       ]
     },
     {
       "heading": "A failure that taught me",
       "paragraphs": [
-        "One night the secrets store was sealed for about nine and a half hours. The nightly reconcile job reported success on all eleven repos while scanning none of them. A failed token step was set to continue, and the next step treated a missing token as a clean exit.",
-        "The job now names the repo and the reason, writes a summary saying it never reached the scan, and exits non-zero. The recurring bug was a green check over work that never happened. In the status jobs I audited, each now fails non-zero and reports what it examined, not only what it found."
+        "On 9 September the secrets store sat sealed for 9 hours and 34 minutes. The watcher that unsealed it ran on a laptop that had gone to sleep. The tracker reconcile job, which had gained eleven calling repos the day before, reported success in all eleven while reconciling nothing. Its token step was set to continue, and the next step treated a missing token as a clean exit. A warning annotation does not colour a check.",
+        "Two other things stood out. The sibling reconcile job had hit the same error and failed loudly, because an earlier incident had already fixed it there. And the uptime monitor recorded 1,724 consecutive DOWN heartbeats for the sealed store, then told nobody, because none of its 19 monitors had a notification channel attached.",
+        "The reconcile job now fails when it cannot get a token, and says why. The unseal watcher moved to an always-on machine and re-reads the seal status after it submits the key, so it exits non-zero if the store is still sealed. The recurring bug was a green check over work that never happened. In the status jobs I audited, each now fails non-zero and reports what it examined, not only what it found."
       ]
     },
     {
       "heading": "Scale",
       "paragraphs": [
-        "About ten repos and about two dozen containers and VMs on three Proxmox nodes."
+        "About ten repos and about two dozen containers and VMs on three Proxmox nodes. The platform follows the AWS shape: containers stand in for EC2, MinIO for S3, Postgres for RDS and Vault for Secrets Manager, so it can move to AWS by swapping the provider and variables."
       ]
     },
     {
@@ -58,8 +61,8 @@
     "Terraform and Ansible",
     "GitOps"
   ],
-  "featured": true,
   "sources": [
+    "petedio-vault Incidents/2026-09-09-vault-sealed-nine-hours.md (9 h 34 min, 1,724 DOWN heartbeats, 19 monitors, eleven repos)",
     "data/pr-stats.json (scripts/pr-stats.ts)",
     "the rule the repo now carries, written after six items with the same shape"
   ]

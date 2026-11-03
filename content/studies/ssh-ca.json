@@ -19,15 +19,16 @@
     {
       "heading": "What I built",
       "paragraphs": [
-        "Per-role SSH through short-lived certificates signed by Vault, with a time-limited break-glass path for admin work."
+        "Before this, the deploy roles shared one static key. I chose Vault-signed certificates over a directory service, an LDAP proxy and per-role static keys.",
+        "Vault holds the CA private key and it never leaves. A caller sends its public key to a signing role and gets back a certificate that names one principal and expires with the role. A host trusts the CA and lists, per local user, which principals may log in as that user. Hosts verify certificates offline, so no host calls Vault. A time-limited break-glass path covers admin work."
       ]
     },
     {
       "heading": "Result so far",
       "paragraphs": [
-        "Phase 1 shipped as one PR plus six follow-up fixes after review rounds, through the normal PR flow.",
-        "Each signing role names one principal and one lifetime: an hour for admin work, thirty minutes for the service that reads the inventory. Revocation is the clock, not a list.",
-        "The role adds certificate trust beside the keys a host already has and never removes a static key. The rollout goes one canary host at a time, and the canary has not passed its live check yet, so no host has dropped static keys."
+        "Phase 1 shipped as one PR, then six follow-up PRs through the normal flow: two that closed review findings before the first canary run, and four that fixed the role and its checks, such as revoking principals files the role does not own and not reloading sshd on hosts that start it by socket.",
+        "Each signing role names one principal and one lifetime: an hour for admin work, thirty minutes for the service that reads the inventory. Revocation is the clock, not a list. Nothing is signed while Vault is sealed, so a scheduled caller fails loudly.",
+        "The role adds certificate trust beside the keys a host already has and never removes a static key. The rollout goes one canary host at a time, and the canary has not passed its live check yet, so no host has dropped static keys yet."
       ]
     },
     {

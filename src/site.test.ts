@@ -64,6 +64,8 @@ test('/work lists every study without JavaScript, and its controls start hidden'
   expect(html.match(/<article[^>]* data-study/g)?.length).toBe(studies.length);
   expect(html).toMatch(/id="study-controls"[^>]*hidden/);
   expect(html).toContain('id="study-sort"');
+  expect(html).toContain('<script src="/work.js" defer></script>');
+  expect(html).not.toMatch(/id="study-list"[\s\S]*<script>[\s\S]*study-list/);
   expect(html).toContain('data-tag=""');
 });
 
