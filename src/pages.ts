@@ -17,9 +17,9 @@ const burst = (accent: Accent, cls = '') => {
   return `<svg class="toon-burst ${cls}" viewBox="0 0 120 120" aria-hidden="true" focusable="false"><polygon points="${pts.join(' ')}" fill="${HEX[accent]}" stroke="#0a0a1f" stroke-width="5" stroke-linejoin="round"/></svg>`;
 };
 
-/** Speed lines: a fan of ink strokes behind a panel. */
+/** Speed lines: a fan of yellow strokes behind a panel. Ink would vanish on the navy ground. */
 const speedLines = (cls = '') =>
-  `<svg class="toon-speed ${cls}" viewBox="0 0 200 120" aria-hidden="true" focusable="false" preserveAspectRatio="none"><g stroke="#0a0a1f" stroke-width="4" stroke-linecap="round" vector-effect="non-scaling-stroke">${[8, 26, 44, 62, 80, 98, 116].map((y, i) => `<line x1="4" y1="${y}" x2="${120 + (i % 3) * 30}" y2="${y}" vector-effect="non-scaling-stroke"/>`).join('')}</g></svg>`;
+  `<svg class="toon-speed ${cls}" viewBox="0 0 200 120" aria-hidden="true" focusable="false" preserveAspectRatio="none"><g stroke="#ffd60a" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke">${[8, 26, 44, 62, 80, 98, 116].map((y, i) => `<line x1="4" y1="${y}" x2="${120 + (i % 3) * 30}" y2="${y}" vector-effect="non-scaling-stroke"/>`).join('')}</g></svg>`;
 
 /**
  * Display type: the comic font with an ink outline and a hard shadow in the paired colour.

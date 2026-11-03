@@ -139,7 +139,7 @@
   /* -z-10 inside the hero column's own stacking context (`relative z-0`), so the burst sits behind every line. */
   .toon-burst-hero { @apply -right-[10%] -top-[28%] left-auto -z-10 h-[150%] w-auto; animation: toon-spin 40s linear infinite; }
 
-  /* 13. Speed lines: a fan of ink strokes behind a panel. */
+  /* 13. Speed lines: a fan of yellow strokes behind a panel, drawn in src/pages.ts. */
   .toon-speed { @apply pointer-events-none absolute; }
   .toon-speed-hero { @apply -left-[10%] -top-[8%] h-[70%] w-[60%]; }
 
