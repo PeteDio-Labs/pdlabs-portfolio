@@ -35,8 +35,8 @@ Both pass WCAG AA.
 `toon-btn` (plus `-red`, `-yellow`, `-paper`, and `toon-wiggle` for squash and stretch on hover),
 `toon-card` (plus `toon-corner` for a number disc and `toon-pop` for a staggered pop-in),
 `toon-heading` (plus `-xl`), `toon-link`, `toon-badge` (plus `-blue`, `-yellow`, `-violet`),
-`toon-nav`, `toon-callout`, `toon-footer`, `toon-modal`, `toon-frame` (a comic panel for an image or SVG, with
-`toon-panel-tilt`), `toon-bubble`, `toon-caption` (a narrator's box), `toon-burst` (a starburst,
+`toon-nav`, `toon-callout`, `toon-footer`, `toon-modal`, `toon-frame` (a comic panel for an image or SVG, with an
+ink border), `toon-bubble`, `toon-caption` (a narrator's box), `toon-burst` (a starburst,
 `-spin` or `-hero`) and `toon-speed` (speed lines). The kit owns its keyframes in `toonish.css`,
 because Tailwind writes a theme keyframe only for an `animate-*` utility.
 `toon-dots` is kept as an empty class; the halftone ground is gone. Every animation and transition stops
