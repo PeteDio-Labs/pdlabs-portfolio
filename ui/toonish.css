@@ -141,6 +141,8 @@
 
   /* 13. Speed lines: a fan of yellow strokes behind a panel, drawn in src/pages.ts. */
   .toon-speed { @apply pointer-events-none absolute; }
+  /* Each line streaks in from the left, in turn, then holds and fades: pathLength="100" makes the dash math uniform. */
+  .toon-speed-line { stroke-dasharray: 100; stroke-dashoffset: 100; animation: toon-streak 1.8s cubic-bezier(.2,.8,.2,1) infinite; animation-delay: calc(var(--i, 0) * 110ms); }
   .toon-speed-hero { @apply -left-[10%] -top-[8%] h-[70%] w-[60%]; }
 
   /* 14. Blink, for a prompt cursor. */
@@ -155,6 +157,7 @@
   @keyframes toon-bob { 0%, 55%, 100% { transform: translateY(0) rotate(-1.5deg); } 25% { transform: translateY(-.1em) rotate(-4deg); } 40% { transform: translateY(.02em) rotate(1.5deg); } }
   @keyframes toon-squash { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(1.12, .88); } 60% { transform: translateY(-6px) scale(.96, 1.08); } }
   @keyframes toon-spin { to { transform: rotate(360deg); } }
+  @keyframes toon-streak { 0% { stroke-dashoffset: 100; opacity: 0; } 10% { opacity: 1; } 45% { stroke-dashoffset: 0; opacity: 1; } 80% { stroke-dashoffset: 0; opacity: 0; } 100% { stroke-dashoffset: 0; opacity: 0; } }
   @keyframes toon-blink { to { visibility: hidden; } }
 }
 
