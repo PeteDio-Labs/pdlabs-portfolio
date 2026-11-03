@@ -1,4 +1,5 @@
 import { esc, md } from './html.ts';
+import { legalPages, legalUpdated } from './legal.ts';
 import { site, studies, featured, latest, tags, type Accent, type CaseStudy } from './content.ts';
 
 const HEX: Record<Accent, string> = { blue: '#3d7bff', red: '#ff3d3d', yellow: '#ffd60a', violet: '#9b7bff' };
@@ -54,7 +55,9 @@ const nav = (current: string, path: string) => {
     .join('')}</nav>`;
 };
 
-export function layout(opts: { title: string; description: string; path: string; current?: string; body: string; scriptSrc?: string }): string {
+const analyticsToken = process.env.CF_ANALYTICS_TOKEN?.trim() || '';
+
+export function layout(opts: { title: string; description: string; path: string; current?: string; body: string; scriptSrc?: string; noindex?: boolean; jsonLd?: object }): string {
   const fullTitle = opts.path === '/' ? `${site.name}: systems built with AI` : `${opts.title} | ${site.name}`;
   return `<!doctype html>
 <html lang="en">
@@ -66,8 +69,20 @@ export function layout(opts: { title: string; description: string; path: string;
 <title>${esc(fullTitle)}</title>
 <meta name="description" content="${esc(opts.description)}">
 <link rel="canonical" href="https://${site.domain}${opts.path}">
+<meta property="og:type" content="${opts.path.startsWith('/work/') ? 'article' : 'website'}">
+<meta property="og:site_name" content="${esc(site.name)}">
+<meta property="og:url" content="https://${site.domain}${opts.path}">
 <meta property="og:title" content="${esc(fullTitle)}">
 <meta property="og:description" content="${esc(opts.description)}">
+<meta property="og:image" content="https://${site.domain}/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="pdlab: systems built with AI, in comic-book style">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(fullTitle)}">
+<meta name="twitter:description" content="${esc(opts.description)}">
+<meta name="twitter:image" content="https://${site.domain}/og.png">
+${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ? `<script type="application/ld+json">${JSON.stringify(opts.jsonLd).replace(/</g, '\\u003c')}</script>\n` : ''}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -87,41 +102,11 @@ ${opts.body}
   <footer class="toon-footer">
     <span class="block">${letters('pdlab', 'red', { cls: 'text-title1' })}</span>
     <p class="m-0 text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link" href="/ui.html">toonish-ui</a>, an original kit. <a class="toon-link" href="${site.github}">GitHub</a></p>
+    <p class="m-0 text-footnote"><a class="toon-link" href="/privacy.html">Privacy</a> · <a class="toon-link" href="/terms.html">Terms</a></p>
   </footer>
 </div>
-<script>
-// Two behaviours, no framework. Pages stay static HTML, so S3 and CloudFront need no rewrite.
-(() => {
-  // 1. Scroll spy: on the home page, the main nav marks the section in view, not the page.
-  const links = [...document.querySelectorAll('nav[aria-label="Main"] a[data-spy]')];
-  const mark = (id) => links.forEach((a) => (a.dataset.spy === id ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current')));
-  const targets = links.map((a) => document.getElementById(a.dataset.spy)).filter(Boolean);
-  if (targets.length) {
-    const seen = new Map();
-    const pick = () => {
-      // The last section whose top has passed the upper third of the screen wins. Above the first one, Work stays marked.
-      let id = targets[0].id;
-      for (const t of targets) if (t.getBoundingClientRect().top < innerHeight * 0.35) id = t.id;
-      mark(id);
-    };
-    addEventListener('scroll', pick, { passive: true });
-    addEventListener('hashchange', pick);
-    pick();
-  }
-  // 2. Toggle groups: one pressed button at a time, with a bounce on the newly pressed one.
-  document.querySelectorAll('[data-toon-toggle]').forEach((group) => {
-    group.addEventListener('click', (e) => {
-      const b = e.target.closest('button');
-      if (!b || !group.contains(b)) return;
-      group.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-      b.classList.remove('toon-boing');
-      void b.offsetWidth; // restart the animation on a repeat tap
-      b.classList.add('toon-boing');
-    });
-  });
-})();
-</script>${opts.scriptSrc ? `\n<script src="${opts.scriptSrc}" defer></script>` : ''}
-</body>
+<script src="/site.js" defer></script>${opts.scriptSrc ? `\n<script src="${opts.scriptSrc}" defer></script>` : ''}
+${analyticsToken ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${esc(analyticsToken)}"}'></script>\n` : ''}</body>
 </html>
 `;
 }
@@ -189,7 +174,9 @@ export function home(): string {
       <div class="min-w-0">
         ${lettered('about-h', 'How I work', 'blue', 'mb-s6 max-w-sm')}
         <p class="mb-s4 mt-0 max-w-[60ch]">I treat AI agents like a team, not a tool. Each task gets its own session and its own branch. Nothing merges without a review, and no session approves its own work.</p>
-        <p class="m-0 max-w-[60ch]">The infrastructure is declared, not hand-run: Terraform builds it, Ansible configures it, and a repair is a config change before it is ever a script. When a check reports success, it also says what it examined.</p>
+        <p class="mb-s4 m-0 max-w-[60ch]">The infrastructure is declared, not hand-run: Terraform builds it, Ansible configures it, and a repair is a config change before it is ever a script. When a check reports success, it also says what it examined.</p>
+        <h3 class="mb-s3 mt-s6 text-title2 font-bold">Background</h3>
+        <p class="m-0 max-w-[60ch]">${esc(site.background)}</p>
       </div>
       <div class="toon-callout toon-callout-yellow self-start">
         <h3 class="mb-s3 mt-0 text-title2 font-bold">The stack</h3>
@@ -209,7 +196,7 @@ export function home(): string {
         <a class="toon-btn toon-btn-yellow toon-wiggle" href="${site.github}">Find me on GitHub</a>
       </div>
     </section>`;
-  return layout({ title: 'Home', path: '/', current: 'Work', description: `${site.name}. ${site.role} ${site.intro}`, body });
+  return layout({ title: 'Home', path: '/', current: 'Work', description: `${site.name}. ${site.role} ${site.intro}`, body, jsonLd: personJsonLd() });
 }
 
 /**
@@ -403,8 +390,39 @@ export function notFound(): string {
     <section class="py-16">
       <h1 class="sr-only">Page not found</h1>
       <div class="text-hero leading-none">${letters('404!', 'red', { live: true })}</div>
-      <p class="text-title3">That page doesn't exist. It may have moved when the site was rebuilt.</p>
+      <p class="text-title3">There is no page at this address. The link may be mistyped, or the page may have moved when the site was rebuilt.</p>
       <a class="toon-btn" href="/">Go to the home page</a>
     </section>`;
-  return layout({ title: 'Page not found', path: '/404.html', description: 'Page not found.', body });
+  return layout({ title: 'Page not found', path: '/404.html', description: 'Page not found.', noindex: true, body });
+}
+
+/** Structured data for search engines and LLMs: a ProfilePage whose main entity is the person. */
+export const personJsonLd = () => ({
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  url: `https://${site.domain}/`,
+  mainEntity: {
+    '@type': 'Person',
+    name: site.name,
+    url: `https://${site.domain}/`,
+    jobTitle: 'Full-stack and infrastructure engineer',
+    description: `${site.role} ${site.background}`,
+    sameAs: [site.github, site.org],
+    knowsAbout: ['AI agents', 'Terraform', 'Ansible', 'AWS', 'TypeScript', 'Bun', 'GitOps', 'Vault', 'Proxmox', 'Full-stack web development'],
+  },
+});
+
+export function legal(slug: 'privacy' | 'terms'): string {
+  const page = legalPages(Boolean(analyticsToken)).find((l) => l.slug === slug)!;
+  const body = `
+    <article class="py-s8">
+      <h1 class="mt-0 leading-none">${letters(page.title, slug === 'privacy' ? 'blue' : 'yellow', { cls: 'text-display2' })}</h1>
+      <p class="text-footnote">Last updated ${legalUpdated}</p>
+      <div class="grid max-w-[68ch] gap-s6">${page.sections
+        .map((s) => `
+        <section><h2 class="mb-s2 mt-0 text-title2 font-bold">${esc(s.heading)}</h2>${s.paragraphs.map((t) => `<p class="my-s2">${md(t)}</p>`).join('')}</section>`)
+        .join('')}
+      </div>
+    </article>`;
+  return layout({ title: page.title, path: `/${slug}.html`, description: page.description, body });
 }

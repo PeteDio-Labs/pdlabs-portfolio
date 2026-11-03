@@ -39,6 +39,8 @@ export const site = {
   tagline: 'Infrastructure, agents and the gates between them.',
   intro:
     'I run a homelab platform shaped like AWS, on three Proxmox nodes, and I run it with a team of AI agents. Every change goes through a pull request, a review and a gate that decides what merges on its own.',
+  background:
+    'I hold a degree in web development and a master\'s in computer science, and I worked for one year at Apple as a full-stack engineer.',
   github: 'https://github.com/petedillo',
   org: 'https://github.com/PeteDio-Labs',
 };
