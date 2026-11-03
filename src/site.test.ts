@@ -30,6 +30,20 @@ test('every case study links to the previous one, the next one and back', () => 
   });
 });
 
+test('home nav points at its own sections and the script can mark them', () => {
+  const html = home();
+  expect(html).toContain('<a href="#work" data-spy="work"');
+  expect(html).toContain('<a href="#about" data-spy="about"');
+  expect(html).toContain('id="work"');
+  expect(html).toContain('id="about"');
+});
+
+test('kit sample nav switches in place instead of reloading', () => {
+  const html = kit();
+  expect(html).toContain('data-toon-toggle');
+  expect(html).not.toMatch(/aria-label="Sample"[^>]*>\s*<a /);
+});
+
 test('home links every case study', () => {
   const html = home();
   for (const s of studies) expect(html).toContain(`/work/${s.slug}.html`);

@@ -38,14 +38,19 @@ const figure = (value: string, accent: Accent, cls: string) => letters(value, ac
 const lettered = (id: string, text: string, accent: Accent, cls: string) =>
   `<h2 id="${id}" class="m-0 ${cls}">${letters(text, accent, { cls: 'text-display2' })}</h2>`;
 
-const nav = (current: string) => {
-  const items = [
-    ['Work', '/#work'],
-    ['About', '/#about'],
+const nav = (current: string, path: string) => {
+  const items: [string, string, string?][] = [
+    ['Work', '/#work', 'work'],
+    ['About', '/#about', 'about'],
     ['UI kit', '/ui.html'],
   ];
+  // On the home page, Work and About point at sections, and the page script marks the one in view.
+  const home = path === '/';
   return `<nav class="toon-nav" aria-label="Main">${items
-    .map(([label, href]) => `<a href="${href}"${label === current ? ' aria-current="page"' : ''}>${label}</a>`)
+    .map(([label, href, spy]) => {
+      const attrs = [home && spy ? `data-spy="${spy}"` : '', label === current ? 'aria-current="page"' : ''].filter(Boolean).join(' ');
+      return `<a href="${home && spy ? `#${spy}` : href}"${attrs ? ` ${attrs}` : ''}>${label}</a>`;
+    })
     .join('')}</nav>`;
 };
 
@@ -71,10 +76,10 @@ export function layout(opts: { title: string; description: string; path: string;
 </head>
 <body class="toon-dots">
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 toon-btn toon-btn-paper">Skip to content</a>
-<div class="mx-auto max-w-5xl px-s4 pb-16">
-  <header class="flex flex-wrap items-center justify-between gap-s4 py-s5">
-    <a href="/" class="block no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { cls: 'text-[40px]' })}</a>
-    ${nav(opts.current ?? '')}
+<div class="toon-page mx-auto max-w-5xl px-s4 pb-16">
+  <header class="flex items-center justify-between gap-s3 py-s4 sm:py-s5">
+    <a href="/" class="block shrink-0 no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { cls: 'text-[30px] sm:text-[40px]' })}</a>
+    ${nav(opts.current ?? '', opts.path)}
   </header>
   <main id="main">
 ${opts.body}
@@ -84,6 +89,38 @@ ${opts.body}
     <p class="m-0 text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link" href="/ui.html">toonish-ui</a>, an original kit. <a class="toon-link" href="${site.github}">GitHub</a></p>
   </footer>
 </div>
+<script>
+// Two behaviours, no framework. Pages stay static HTML, so S3 and CloudFront need no rewrite.
+(() => {
+  // 1. Scroll spy: on the home page, the main nav marks the section in view, not the page.
+  const links = [...document.querySelectorAll('nav[aria-label="Main"] a[data-spy]')];
+  const mark = (id) => links.forEach((a) => (a.dataset.spy === id ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current')));
+  const targets = links.map((a) => document.getElementById(a.dataset.spy)).filter(Boolean);
+  if (targets.length) {
+    const seen = new Map();
+    const pick = () => {
+      // The last section whose top has passed the upper third of the screen wins. Above the first one, Work stays marked.
+      let id = targets[0].id;
+      for (const t of targets) if (t.getBoundingClientRect().top < innerHeight * 0.35) id = t.id;
+      mark(id);
+    };
+    addEventListener('scroll', pick, { passive: true });
+    addEventListener('hashchange', pick);
+    pick();
+  }
+  // 2. Toggle groups: one pressed button at a time, with a bounce on the newly pressed one.
+  document.querySelectorAll('[data-toon-toggle]').forEach((group) => {
+    group.addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if (!b || !group.contains(b)) return;
+      group.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      b.classList.remove('toon-boing');
+      void b.offsetWidth; // restart the animation on a repeat tap
+      b.classList.add('toon-boing');
+    });
+  });
+})();
+</script>
 </body>
 </html>
 `;
@@ -247,7 +284,7 @@ export function kit(): string {
 
     <section class="py-s6" aria-labelledby="k-misc"><h2 id="k-misc" class="toon-heading mb-s6 text-display2">Nav, bubble, callout</h2>
       <div class="flex flex-wrap items-start gap-s8">
-        <nav class="toon-nav" aria-label="Sample"><a href="/ui.html" aria-current="page">Current</a><a href="/ui.html">Other</a><a href="/ui.html">Third</a></nav>
+        <div class="toon-nav" role="group" aria-label="Sample nav, tap to switch" data-toon-toggle><button type="button" aria-pressed="true">Current</button><button type="button" aria-pressed="false">Other</button><button type="button" aria-pressed="false">Third</button></div>
         <div class="toon-bubble">A speech bubble with a tail.</div>
       </div>
       <div class="toon-callout mt-s8"><strong>Callout:</strong> violet by default, yellow with <code>toon-callout-yellow</code>.</div>

@@ -4,11 +4,15 @@
 @tailwind utilities;
 
 @layer base {
-  /* A tilted panel, a corner disc, a burst or a card mid pop-in may reach past the gutter, and must not add a
-     sideways scroll. The rule sits on html: on body it propagates to the viewport as a value Chromium still scrolls. */
+  /* A tilted panel, a corner disc, a spinning burst or a card mid pop-in may reach past the gutter. A phone browser
+     widens its layout viewport to fit any overflow it sees, even for a frame, and then the page no longer lines up
+     with the screen. So the page wrapper clips sideways overflow at the source, and html clips as a backstop.
+     `hidden` comes first as the fallback for a browser without `clip`. */
   html { overflow-x: hidden; }
+  .toon-page { overflow-x: hidden; overflow-x: clip; }
   body { @apply bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
   :focus-visible { @apply outline outline-4 outline-offset-4 outline-toon-yellow; }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 }
 
 @layer components {
@@ -19,7 +23,9 @@
            font-body text-body font-bold text-toon-ink no-underline transition duration-fast ease-bounce;
     box-shadow: 8px 8px 0 var(--toon-shadow);
   }
-  .toon-btn:hover { @apply -translate-x-0.5 -translate-y-1 -rotate-2 scale-105 shadow-toon-lift; }
+  @media (hover: hover) {
+    .toon-btn:hover { @apply -translate-x-0.5 -translate-y-1 -rotate-2 scale-105 shadow-toon-lift; }
+  }
   .toon-btn:active { @apply translate-x-2 translate-y-2 rotate-0 scale-100 shadow-toon-press; }
   .toon-btn-red    { --toon-shadow: theme(colors.toon.yellow); @apply bg-toon-red; }
   .toon-btn-yellow { --toon-shadow: theme(colors.toon.blue); @apply bg-toon-yellow; }
@@ -90,14 +96,22 @@
   .toon-badge-violet { @apply bg-toon-violet; }
 
   /* 6. Nav: capsule bar of pill links. */
+  /* Compact on a phone, so it sits on one row beside the logo. */
   .toon-nav {
-    @apply flex w-fit max-w-full flex-wrap gap-s2 rounded-full border-toon border-toon-ink bg-toon-paper p-s2 shadow-toon-yellow;
+    @apply flex w-fit max-w-full flex-nowrap gap-s1 rounded-full border-[4px] border-toon-ink bg-toon-paper p-s1 shadow-toon-yellow
+           sm:gap-s2 sm:border-toon sm:p-s2;
   }
-  .toon-nav a {
-    @apply rounded-full px-s4 py-s2 font-bold text-toon-ink no-underline transition duration-fast ease-bounce;
+  .toon-nav a, .toon-nav button {
+    @apply cursor-pointer whitespace-nowrap rounded-full border-0 bg-transparent px-s3 py-s1 font-body text-subhead font-bold text-toon-ink no-underline
+           transition duration-fast ease-bounce sm:px-s4 sm:py-s2 sm:text-body;
   }
-  .toon-nav a:hover { @apply -rotate-2 scale-110 bg-toon-yellow; }
-  .toon-nav a[aria-current] { @apply bg-toon-ink text-toon-yellow; }
+  /* Hover only where a pointer can hover: on a phone a tap would leave the pill stuck yellow. */
+  @media (hover: hover) {
+    .toon-nav a:hover, .toon-nav button:hover { @apply -rotate-2 scale-110 bg-toon-yellow; }
+  }
+  .toon-nav a[aria-current], .toon-nav button[aria-pressed="true"] { @apply bg-toon-ink text-toon-yellow; }
+  /* The script adds this to a newly pressed pill. */
+  .toon-boing { animation: toon-boing .55s cubic-bezier(.34,1.8,.5,1); }
 
   /* 7. Callout */
   .toon-callout {
@@ -157,6 +171,7 @@
   @keyframes toon-bob { 0%, 55%, 100% { transform: translateY(0) rotate(-1.5deg); } 25% { transform: translateY(-.1em) rotate(-4deg); } 40% { transform: translateY(.02em) rotate(1.5deg); } }
   @keyframes toon-squash { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(1.12, .88); } 60% { transform: translateY(-6px) scale(.96, 1.08); } }
   @keyframes toon-spin { to { transform: rotate(360deg); } }
+  @keyframes toon-boing { 0% { transform: scale(1); } 30% { transform: scale(1.25, .8) rotate(-4deg); } 60% { transform: scale(.92, 1.1) rotate(2deg); } 100% { transform: scale(1); } }
   @keyframes toon-streak { 0% { stroke-dashoffset: 100; opacity: 0; } 10% { opacity: 1; } 45% { stroke-dashoffset: 0; opacity: 1; } 80% { stroke-dashoffset: 0; opacity: 0; } 100% { stroke-dashoffset: 0; opacity: 0; } }
   @keyframes toon-blink { to { visibility: hidden; } }
 }
