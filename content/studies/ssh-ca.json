@@ -1,0 +1,48 @@
+{
+  "slug": "ssh-ca",
+  "date": "2026-10-27",
+  "title": "Short-lived access with a Vault-signed SSH CA",
+  "tag": "Security",
+  "accent": "yellow",
+  "summary": "Per-role SSH through short-lived certificates instead of static keys and shared sudo grants.",
+  "stat": {
+    "value": "60 min",
+    "label": "longest a certificate lives; the service role gets 30"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "Static SSH keys and shared sudo grants give every session more access than its task needs."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "Per-role SSH through short-lived certificates signed by Vault, with a time-limited break-glass path for admin work."
+      ]
+    },
+    {
+      "heading": "Result so far",
+      "paragraphs": [
+        "Phase 1 shipped as one PR plus six follow-up fixes after review rounds, through the normal PR flow.",
+        "Each signing role names one principal and one lifetime: an hour for admin work, thirty minutes for the service that reads the inventory. Revocation is the clock, not a list.",
+        "The role adds certificate trust beside the keys a host already has and never removes a static key. The rollout goes one canary host at a time, and the canary has not passed its live check yet, so no host has dropped static keys."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "A sudo grant belongs to the user ID, not the process, so isolation must be designed at the identity level."
+      ]
+    }
+  ],
+  "skills": [
+    "Secrets management",
+    "Least privilege",
+    "Threat modeling"
+  ],
+  "sources": [
+    "the Vault SSH roles"
+  ]
+}

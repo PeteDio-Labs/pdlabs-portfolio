@@ -1,0 +1,66 @@
+{
+  "slug": "agent-merge-gate",
+  "date": "2026-10-26",
+  "title": "A review-gated agent team with a merge gate",
+  "tag": "GitOps",
+  "accent": "blue",
+  "summary": "Each task gets its own agent session, every pull request gets a review, and a tiered gate decides what merges on its own.",
+  "stat": {
+    "value": "214",
+    "label": "PRs merged in one week, up from 55 the week before"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "One person runs a homelab platform across many repos. Reviews and merges became the bottleneck."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "An agent workflow where each task gets its own session, every pull request gets a review, and no session approves its own work.",
+        "A tiered gate decides what merges automatically. A script scores each PR's blast radius, and the low tiers merge after CI and a clean review. A PR does not auto-merge when its review has a blocking finding, a check is red or skipped, or it has no checks. It also waits when it carries a hold label, asks to wait, or needs a hand step.",
+        "An unrecognised file path counts as the highest tier, because the rules fail closed. Infrastructure changes run `validate` on PR, then `plan` and `apply` on merge."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "214 PRs merged in the week of 19 October, up from 55 the week before. Of the 214, 211 were opened by agent sessions and 3 by hand. The count covers eight repos by GitHub merge date, Monday to Sunday, UTC.",
+        "The week after had 26, so the 19 October week was a peak, not a steady rate. Throughput is the measure here, not quality."
+      ]
+    },
+    {
+      "heading": "A failure that taught me",
+      "paragraphs": [
+        "One night the secrets store was sealed for about nine and a half hours. The nightly reconcile job reported success on all eleven repos while scanning none of them. A failed token step was set to continue, and the next step treated a missing token as a clean exit.",
+        "The job now names the repo and the reason, writes a summary saying it never reached the scan, and exits non-zero. The recurring bug was a green check over work that never happened. In the status jobs I audited, each now fails non-zero and reports what it examined, not only what it found."
+      ]
+    },
+    {
+      "heading": "Scale",
+      "paragraphs": [
+        "About ten repos and about two dozen containers and VMs on three Proxmox nodes."
+      ]
+    },
+    {
+      "heading": "What I would do differently",
+      "paragraphs": [
+        "Write the reporting rule before the first automation, not after the sixth bug. Six separate work items had the same shape: a job that could not authenticate, could not reach its target, or checked nothing, and reported success.",
+        "The rule that ended it is short. A failure path exits non-zero, and a check says what it examined, not only what it found. A gate that relaxes a check replaces the signal it removed."
+      ]
+    }
+  ],
+  "skills": [
+    "CI/CD design",
+    "Guardrails for AI agents",
+    "Terraform and Ansible",
+    "GitOps"
+  ],
+  "featured": true,
+  "sources": [
+    "data/pr-stats.json (scripts/pr-stats.ts)",
+    "the rule the repo now carries, written after six items with the same shape"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "slug": "local-llm",
+  "date": "2026-10-23",
+  "title": "A self-hosted LLM on Proxmox",
+  "tag": "AI infra",
+  "accent": "violet",
+  "summary": "A local Qwen model and an embedding model on separate consumer GPUs, with a shared search service over docs and repos.",
+  "stat": {
+    "value": "~70",
+    "label": "tokens per second on consumer GPUs"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "The budget had no API credit, so an internal agent could not keep calling a hosted API."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A local Qwen model and an embedding model on separate GPUs, with a search service over docs and repos that the agents share."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "About 70 tokens per second on consumer hardware.",
+        "The chat model is an 8-billion-parameter Qwen3 (5.2 GB, Q4_K_M) on an 8 GB GPU. The embedding model is a 0.6-billion-parameter Qwen3 (Q8_0) on a 6 GB GPU."
+      ]
+    },
+    {
+      "heading": "Trade-off",
+      "paragraphs": [
+        "The local model is right only with its thinking turned on, so every answer pays for a reasoning block first. The agent loop caps it at eight tool turns and an eighty-second deadline, and marks a cut answer incomplete instead of passing it off as whole.",
+        "Two smaller candidate models never closed their thinking block: they returned an empty answer with a clean status, so the audit deleted them. A model has to be tested on the real question before it earns the default slot.",
+        "What the agent stopped needing: an API gateway, a hosted key and a monthly spend cap. The gateway is retired."
+      ]
+    }
+  ],
+  "skills": [
+    "Cost-driven architecture",
+    "GPU passthrough",
+    "Retrieval"
+  ],
+  "sources": [
+    "the model audit in the lab notes and the agent's README"
+  ]
+}

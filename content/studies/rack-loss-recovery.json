@@ -1,0 +1,68 @@
+{
+  "slug": "rack-loss-recovery",
+  "date": "2026-09-03",
+  "title": "Recovering a burnt server from backups and config in git",
+  "tag": "Resilience",
+  "accent": "red",
+  "summary": "A RAID controller caught fire while I was debugging a power supply. Infrastructure as code and off-cluster backups brought the platform back in about four hours, and I wrote down every mistake.",
+  "stat": {
+    "value": "~4 hrs",
+    "label": "to rebuild the platform from code and backups"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "The server had a power-supply warning light. It had two supplies, so I pulled them one at a time to find the bad one. When I tested the bad one, the RAID controller caught fire.",
+        "At 12:34 on 3 September both nodes of my two-node cluster dropped within the same second, and every guest followed within 35 seconds. The router and a separate GPU machine stayed up, which ruled out a power event on the circuit and a network fault. The fault light and the smell of burning pointed at the controller. The second node was collateral: it lost the media share the first one served."
+      ]
+    },
+    {
+      "heading": "What I built before it happened",
+      "paragraphs": [
+        "Backups that did not live in the cluster they protected. Every guest had a same-day archive on a directory store attached to the GPU machine, which is bare metal and never went down. Backups written to the cluster would have burned with it.",
+        "The nightly backup had finished between 02:30 and 03:01 that morning, so the newest archive was about nine hours old when the fire started."
+      ]
+    },
+    {
+      "heading": "Recovery",
+      "paragraphs": [
+        "The surviving node came up without quorum, so its configuration store was read-only and nothing could start. I set the expected vote count to one, removed the dead member, and cleared its node directory to free the guest IDs. Before the last step I copied the 18 guest configs off the dead node, because they were the only record of how each guest was wired. They now live in git.",
+        "Archives existed for all 18 guests. I restored them from the archives onto the surviving node and flashed a fresh machine as a new third node, and Terraform and Ansible brought the main services back in about four hours. The smaller services came back over the next couple of days, because I used the outage to decide which ones I still needed. I no longer run a container registry, for example. The platform tier moved onto the new node: twelve containers in 36 minutes, with no data loss and no rebuild.",
+        "Terraform could not move a container, because a changed node name forces replacement. The plan gates refused the change and showed red CI, which was the gate working. I reconciled state with a repair script scoped to one environment, and I now reach for declarative state blocks first, wherever the language can express the repair."
+      ]
+    },
+    {
+      "heading": "What I lost",
+      "paragraphs": [
+        "The 2.6 TB media library. The disks sat behind a hardware RAID controller with a controller-specific on-disk format, and the controller was the part that burned. I cannot read those disks in another machine.",
+        "The rebuild uses ZFS on plain disks, so any machine with the disks attached can import the pool. Hardware RAID made the data hostage to one card."
+      ]
+    },
+    {
+      "heading": "What went wrong during recovery",
+      "paragraphs": [
+        "Four mistakes, three of them mine. The rescued configs named a storage pool that only existed on the dead node. The network bridge had a different name on the surviving node. My remap loop checked only the first network interface, so one guest with a second interface came up with no network. And an empty result from a privileged command nearly became the report that no backups existed.",
+        "After the hypervisor was back, the applications were not usable. The downloader reported a space error that was a missing directory. The media managers still held records for files that died with the array, and one request app pointed at a server that no longer existed. Nothing warns you that a downstream service moved; the requests just fail."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "The fire was my mistake. I tested a failing power supply on a live server with a hardware RAID controller in it, and I lost the media because only that controller could read the disks. I own that.",
+        "The better choices are the ones I made afterward: ZFS on plain disks that any machine can import, backups outside the failure domain, and guest config in git. An empty result is not evidence of an empty directory, so I check the exit status before I report absence.",
+        "The old GPU machine later became the first node again, so the cluster is back to three nodes. I wrote the incident up while the detail was fresh, and every mistake became a check in the migration guide."
+      ]
+    }
+  ],
+  "skills": [
+    "Disaster recovery",
+    "Proxmox",
+    "Terraform state",
+    "Incident write-ups"
+  ],
+  "sources": [
+    "petedio-vault Incidents/2026-09-03-rack-loss.md (timeline, backups, recovery mistakes)",
+    "docs/runbooks/pve03-platform-move.md (36-minute move)"
+  ]
+}

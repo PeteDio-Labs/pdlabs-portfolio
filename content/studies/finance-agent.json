@@ -1,0 +1,48 @@
+{
+  "slug": "finance-agent",
+  "date": "2026-10-21",
+  "title": "A household finance agent with read-only access",
+  "tag": "Agents",
+  "accent": "red",
+  "summary": "A personal agent that reads email, calendar and bank data, writes only calendar events and sheet cells, and reads back every change.",
+  "stat": {
+    "value": "100+",
+    "label": "inbox messages triaged in a typical week"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "A household's money lives in many places: inboxes, calendars, bank apps and lender portals. Due dates slip and promotional deadlines pass unnoticed."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A personal agent with read-only access to email, calendar, spreadsheets and bank data. It can write calendar events and spreadsheet cells. It cannot move money, delete records or change account settings.",
+        "It verifies each fact at its source of record before it states a number, and it reads back every change it makes. The user approves sends, changes and anything hard to undo."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "The agent keeps about ten debts and payoffs in one sheet with their deadlines, and checks each payment before and after it happens.",
+        "It sweeps the inbox three times a day and triages more than a hundred messages in a typical week, without sending or deleting anything on its own. About ten automated checks fire before a payment lands: confirm the income posted, pull a fresh balance, report pay or hold. That handed several hours a week of bill and inbox triage off the household."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Limit what the agent can do before you tune how well it does it. Read-only access plus read-back made its mistakes cheap to catch."
+      ]
+    }
+  ],
+  "skills": [
+    "Agent safety design",
+    "Tool permissioning",
+    "Human-in-the-loop approval"
+  ],
+  "sources": [
+    "the agent's own spec, rounded as its publish rules require"
+  ]
+}
