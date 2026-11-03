@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun test
+      - run: bun run build
+      - name: Check the build wrote every page
+        run: |
+          set -eu
+          for f in index.html ui.html 404.html toonish.css favicon.svg; do test -s "dist/$f" || { echo "missing dist/$f"; exit 1; }; done
+          n=$(ls dist/work/*.html | wc -l)
+          echo "dist/work holds $n case-study pages"
+          test "$n" -ge 4
