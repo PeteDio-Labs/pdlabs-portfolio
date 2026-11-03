@@ -40,9 +40,11 @@ under `prefers-reduced-motion`.
 ## Lettering
 
 `lettering/toonletter.ts` draws the display type. Each glyph is an original centerline path:
-A to Z, 0 to 9 and `! ? . , ' - &`. A word renders as three strokes of the same paths: an
+A to Z, 0 to 9 and `! ? . , ' - & + ~ % / :`. A word renders as three strokes of the same paths: an
 offset shadow, a thick ink outline and a neon core. Each letter gets a small, fixed tilt and
 lift, so a word renders the same on every build. No font file and no traced art is involved.
+
+A `weight` of 16 with `bounce: 0` sets a figure such as `214` or `60 min` on a card.
 
 Call `toonWord(text, options)` from TypeScript at build time. It returns an SVG string. Set
 `core` and `shadow` for the colors and `bounce: 0` to flatten the baseline. The build fails

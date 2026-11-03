@@ -11,6 +11,14 @@ const BADGE: Record<Accent, string> = { cyan: 'toon-badge-cyan', orange: '', yel
 const letters = (text: string, accent: Accent = 'cyan', bounce = 1) =>
   toonWord(text, { core: HEX[accent], shadow: HEX[PAIR[accent]], bounce, label: false });
 
+/** A figure on a paper card: the same lettering, heavier and flat, with the real text for readers. */
+const figure = (value: string, accent: Accent, cls: string) =>
+  `<span class="sr-only">${esc(value)}</span><span aria-hidden="true" class="block max-w-full ${cls} [&>svg]:w-auto [&>svg]:max-w-full">${toonWord(value, { core: HEX[accent], shadow: HEX[PAIR[accent]], bounce: 0, weight: 16, label: false })}</span>`;
+
+/** A section heading drawn in the lettering, with the real text for readers and search. */
+const lettered = (id: string, text: string, accent: Accent, cls: string) =>
+  `<h2 id="${id}" class="m-0 ${cls}"><span class="sr-only">${esc(text)}</span><span aria-hidden="true" class="block [&>svg]:h-auto [&>svg]:w-full">${letters(text, accent, 0.7)}</span></h2>`;
+
 const nav = (current: string) => {
   const items = [
     ['Work', '/#work'],
@@ -54,7 +62,7 @@ ${opts.body}
   </main>
   <footer class="toon-footer">
     <span class="block h-9 [&>svg]:h-full [&>svg]:w-auto">${letters('pdlab', 'yellow', 0.4)}</span>
-    <p class="m-0 text-subhead">Built with Bun, TypeScript and Tailwind on toonish-ui, an original kit. <a class="toon-link" href="${site.github}">GitHub</a></p>
+    <p class="m-0 text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link" href="/ui.html">toonish-ui</a>, an original kit. <a class="toon-link" href="${site.github}">GitHub</a></p>
   </footer>
 </div>
 </body>
@@ -63,11 +71,12 @@ ${opts.body}
 }
 
 const studyCard = (s: CaseStudy, i: number) => `
-      <article class="toon-card flex flex-col" style="--toon-shadow:${HEX[s.accent]}; --toon-tilt:${i % 2 ? '1deg' : '-1.5deg'}">
+      <article class="toon-card toon-pop relative flex flex-col" style="--toon-shadow:${HEX[s.accent]}; --toon-tilt:${i % 2 ? '1deg' : '-1.5deg'}; animation-delay:${120 * i}ms">
+        <span class="toon-corner" style="background:${HEX[s.accent]}" aria-hidden="true">0${i + 1}</span>
         <span class="toon-badge ${BADGE[s.accent]} self-start">${esc(s.tag)}</span>
         <h3 class="mb-s2 mt-s3 text-title2 font-bold leading-snug">${esc(s.title)}</h3>
         <p class="my-0">${md(s.summary)}</p>
-        <p class="mt-s4 mb-s4"><span class="block font-display text-title1 leading-none">${esc(s.stat.value)}</span><span class="text-footnote">${esc(s.stat.label)}</span></p>
+        <p class="mt-s4 mb-s4">${figure(s.stat.value, s.accent, '[&>svg]:h-14')}<span class="mt-s1 block text-footnote">${esc(s.stat.label)}</span></p>
         <a class="toon-link mt-auto self-start" href="/work/${s.slug}.html">Read the case study<span class="sr-only">: ${esc(s.title)}</span></a>
       </article>`;
 
@@ -79,13 +88,14 @@ export function home(): string {
         <div class="w-full [&>svg]:h-auto [&>svg]:w-full">${letters('I build', 'cyan')}</div>
         <div class="w-full [&>svg]:h-auto [&>svg]:w-full">${letters('systems', 'yellow')}</div>
         <div class="w-3/4 [&>svg]:h-auto [&>svg]:w-full">${letters('with AI!', 'orange')}</div>
-        <p class="mt-s6 max-w-[38ch] text-title3">${esc(site.intro)}</p>
+        <p class="mt-s6 flex flex-wrap items-baseline gap-x-s3 gap-y-s1"><span class="font-display text-title1 text-toon-yellow">${esc(site.name)}</span><span class="text-subhead text-toon-paper/80">${esc(site.tagline)}</span></p>
+        <p class="mt-s4 max-w-[38ch] text-title3">${esc(site.intro)}</p>
         <div class="mt-s6 flex flex-wrap gap-s4">
           <a class="toon-btn" href="#work">See the work</a>
           <a class="toon-btn toon-btn-orange" href="${site.org}">Browse the repos</a>
         </div>
       </div>
-      <figure class="toon-frame m-0">
+      <figure class="toon-frame m-0 rotate-[1.5deg] transition duration-normal ease-bounce hover:rotate-0">
         <svg viewBox="0 0 320 236" role="img" aria-label="A terminal: terraform plan reports no changes, and the lab check passes">
           <rect width="320" height="236" fill="#12062a"/>
           <rect width="320" height="34" fill="#9b7bff"/>
@@ -103,15 +113,15 @@ export function home(): string {
     </section>
 
     <section id="work" class="scroll-mt-8 py-s8" aria-labelledby="work-h">
-      <h2 id="work-h" class="toon-heading mb-s8 text-display2">Case studies</h2>
+      ${lettered('work-h', 'Case studies', 'yellow', 'mb-s8 max-w-md')}
       <div class="grid gap-s8 sm:grid-cols-2">${studies.map(studyCard).join('')}
       </div>
     </section>
 
     <section id="about" class="scroll-mt-8 grid gap-s8 py-s8 md:grid-cols-[1fr_1fr]" aria-labelledby="about-h">
       <div class="min-w-0">
-        <h2 id="about-h" class="toon-heading mb-s6 text-display2">How I work</h2>
-        <p class="mb-s4 mt-0 max-w-[60ch]">I treat AI agents like a team, not a tool. Each task gets its own session and its own branch. Nothing merges without a review, and no session merges its own work.</p>
+        ${lettered('about-h', 'How I work', 'cyan', 'mb-s6 max-w-sm')}
+        <p class="mb-s4 mt-0 max-w-[60ch]">I treat AI agents like a team, not a tool. Each task gets its own session and its own branch. Nothing merges without a review, and no session approves its own work.</p>
         <p class="m-0 max-w-[60ch]">The infrastructure is declared, not hand-run: Terraform builds it, Ansible configures it, and a repair is a config change before it is ever a script. When a check reports success, it also says what it examined.</p>
       </div>
       <div class="toon-callout toon-callout-yellow self-start">
@@ -138,18 +148,19 @@ export function home(): string {
 export function study(s: CaseStudy): string {
   const i = studies.indexOf(s);
   const next = studies[(i + 1) % studies.length];
+  const prev = studies[(i + studies.length - 1) % studies.length];
   const body = `
     <article class="py-s8">
       <a class="toon-link" href="/#work">All case studies</a>
       <header class="mb-s8 mt-s6 grid items-end gap-s6 md:grid-cols-[1fr_auto]">
         <div class="min-w-0">
           <span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span>
-          <h1 class="toon-heading mt-s4 text-display2" style="color:${HEX[s.accent]}">${esc(s.title)}</h1>
+          <h1 class="toon-heading mt-s4 text-display2" style="color:${HEX[s.accent]}; --toon-shade:${HEX[PAIR[s.accent]]}">${esc(s.title)}</h1>
           <p class="mt-s4 max-w-[60ch] text-title3">${md(s.summary)}</p>
         </div>
-        <div class="toon-card m-0 text-center" style="--toon-shadow:${HEX[PAIR[s.accent]]}">
-          <span class="block font-display text-[56px] leading-none">${esc(s.stat.value)}</span>
-          <span class="mt-s2 block max-w-[18ch] text-footnote">${esc(s.stat.label)}</span>
+        <div class="toon-card m-0 w-full max-w-[18rem] text-center md:w-[16rem]" style="--toon-shadow:${HEX[PAIR[s.accent]]}">
+          ${figure(s.stat.value, s.accent, 'flex justify-center [&>svg]:h-20')}
+          <span class="mt-s2 block text-footnote">${esc(s.stat.label)}</span>
         </div>
       </header>
       <div class="grid max-w-[68ch] gap-s8">${s.sections
@@ -166,10 +177,10 @@ export function study(s: CaseStudy): string {
           <ul class="m-0 flex list-none flex-wrap gap-s2 p-0">${s.skills.map((k) => `<li class="toon-badge toon-badge-violet">${esc(k)}</li>`).join('')}</ul>
         </section>
       </div>
-      <div class="mt-16 flex flex-wrap items-center gap-s4">
-        <span>Next:</span>
-        <a class="toon-btn toon-btn-paper" href="/work/${next.slug}.html">${esc(next.title)}</a>
-      </div>
+      <nav class="mt-16 grid gap-s6 sm:grid-cols-2" aria-label="Case studies">
+        <a class="toon-btn toon-btn-paper justify-self-start" href="/work/${prev.slug}.html"><span class="block text-footnote font-normal">Previous</span>${esc(prev.title)}</a>
+        <a class="toon-btn justify-self-start sm:justify-self-end sm:text-right" href="/work/${next.slug}.html"><span class="block text-footnote font-normal">Next</span>${esc(next.title)}</a>
+      </nav>
     </article>`;
   return layout({ title: s.title, path: `/work/${s.slug}.html`, current: 'Work', description: s.summary.replace(/`/g, ''), body });
 }
@@ -195,7 +206,7 @@ export function kit(): string {
 
     <section class="py-s6" aria-labelledby="k-card"><h2 id="k-card" class="toon-heading mb-s6 text-display2">Cards, badges and links</h2>
       <div class="grid gap-s8 sm:grid-cols-3">
-        <div class="toon-card"><span class="toon-badge">Badge</span><p>A paper card tilts a little and straightens when you point at it.</p><a class="toon-link" href="/ui.html">A link</a></div>
+        <div class="toon-card relative"><span class="toon-corner" aria-hidden="true">01</span><span class="toon-badge">Badge</span><p>A paper card tilts a little and straightens when you point at it. A <code>toon-corner</code> numbers it.</p><a class="toon-link" href="/ui.html">A link</a></div>
         <div class="toon-card"><span class="toon-badge toon-badge-cyan">Cyan</span><p>Its shadow color comes from <code>--toon-shadow</code>.</p></div>
         <div class="toon-card"><span class="toon-badge toon-badge-yellow">Yellow</span> <span class="toon-badge toon-badge-violet">Violet</span><p>Badges sit on any surface.</p></div>
       </div>
@@ -210,10 +221,17 @@ export function kit(): string {
     </section>
 
     <section class="py-s6" aria-labelledby="k-let"><h2 id="k-let" class="toon-heading mb-s6 text-display2">Lettering</h2>
-      <p class="max-w-[60ch]">Every display letter is an original centerline path, drawn as a shadow, an ink outline and a neon core. Each letter gets its own fixed tilt and lift. The pages render it at build time, so no font file or script loads.</p>
+      <p class="max-w-[60ch]">Every display letter is an original centerline path, drawn as a shadow, an ink outline and a neon core. Each letter gets its own fixed tilt and lift. The pages render it at build time, so the lettering needs no font file and no script.</p>
       <div class="[&>svg]:h-auto [&>svg]:w-full">${letters('ABCDEFGHIJKLM', 'cyan')}</div>
       <div class="[&>svg]:h-auto [&>svg]:w-full">${letters('NOPQRSTUVWXYZ', 'yellow')}</div>
       <div class="w-4/5 [&>svg]:h-auto [&>svg]:w-full">${letters("0123456789 &?!", 'violet')}</div>
+      <div class="w-3/5 [&>svg]:h-auto [&>svg]:w-full">${letters("+ ~ % / : , . ' -", 'orange')}</div>
+      <p class="max-w-[60ch]">A figure on a card uses the same paths, heavier and flat, so a number reads as part of the drawing instead of a font.</p>
+      <div class="grid gap-s8 sm:grid-cols-3">
+        <div class="toon-card" style="--toon-shadow:#ff6b1a">${figure('214', 'cyan', '[&>svg]:h-14')}<span class="mt-s1 block text-footnote">a count</span></div>
+        <div class="toon-card" style="--toon-shadow:#19e6ff">${figure('60 min', 'yellow', '[&>svg]:h-14')}<span class="mt-s1 block text-footnote">a duration</span></div>
+        <div class="toon-card" style="--toon-shadow:#19e6ff">${figure('~70%', 'violet', '[&>svg]:h-14')}<span class="mt-s1 block text-footnote">an estimate</span></div>
+      </div>
     </section>
 
     <section class="py-s6" aria-labelledby="k-tok"><h2 id="k-tok" class="toon-heading mb-s6 text-display2">Colors</h2>

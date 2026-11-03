@@ -35,7 +35,9 @@ rewrite function.
 The case studies come from draft 2 in the project files. They hold no secrets, internal IP
 addresses, hostnames, tokens, account details, tool paths or schedule internals. A test fails
 the build when a draft marker or a private-network address appears in a page. Sections the
-draft marks as unfinished stay out until the missing fact is confirmed.
+draft left open are filled only from a named source (the PR statistics in `data/pr-stats.json`,
+the agent's own spec, the Vault SSH roles or the model audit), and `src/content.ts` names that
+source in a comment.
 
 ## Deploy
 

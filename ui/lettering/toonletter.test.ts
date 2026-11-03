@@ -2,7 +2,7 @@ import { test, expect } from 'bun:test';
 import { toonWord, GLYPHS } from './toonletter';
 
 test('every letter and digit has a glyph', () => {
-  for (const c of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') expect(GLYPHS[c]).toBeDefined();
+  for (const c of "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?.,'-&+~%/: ") expect(GLYPHS[c]).toBeDefined();
 });
 
 test('renders three layers per glyph and keeps the text as a label', () => {
