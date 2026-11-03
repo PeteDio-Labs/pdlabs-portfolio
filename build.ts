@@ -1,7 +1,7 @@
 // Builds the static site into dist/: renders every page, then compiles Tailwind over the
 // page sources. Exits non-zero when any step fails or a page is missing from the output.
 import { mkdir, rm } from 'node:fs/promises';
-import { home, kit, notFound, study } from './src/pages.ts';
+import { home, kit, notFound, study, workIndex, workScript } from './src/pages.ts';
 import { studies } from './src/content.ts';
 
 const out = 'dist';
@@ -10,6 +10,7 @@ await mkdir(`${out}/work`, { recursive: true });
 
 const pages: Record<string, string> = {
   'index.html': home(),
+  'work.html': workIndex(),
   'ui.html': kit(),
   '404.html': notFound(),
   ...Object.fromEntries(studies.map((s) => [`work/${s.slug}.html`, study(s)])),
@@ -18,6 +19,14 @@ const pages: Record<string, string> = {
 for (const [path, html] of Object.entries(pages)) {
   await Bun.write(`${out}/${path}`, html);
 }
+
+await Bun.write(`${out}/work.js`, workScript + '\n');
+
+// The same data as one file, for anything that wants the list without scraping HTML. Bodies stay out.
+await Bun.write(
+  `${out}/studies.json`,
+  JSON.stringify(studies.map(({ slug, date, tag, title, summary, stat }) => ({ slug, date, tag, title, summary, stat, url: `/work/${slug}.html` })), null, 2) + '\n',
+);
 
 // Favicon: a blue panel with an ink border and a yellow burst, drawn in code.
 const burst = Array.from({ length: 16 }, (_, i) => {

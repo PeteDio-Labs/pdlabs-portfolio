@@ -8,6 +8,8 @@
      widens its layout viewport to fit any overflow it sees, even for a frame, and then the page no longer lines up
      with the screen. So the page wrapper clips sideways overflow at the source, and html clips as a backstop.
      `hidden` comes first as the fallback for a browser without `clip`. */
+  /* A class that sets `display` would otherwise beat the `hidden` attribute the /work script relies on. */
+  [hidden] { display: none !important; }
   html { overflow-x: hidden; }
   .toon-page { overflow-x: hidden; overflow-x: clip; }
   body { @apply bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }

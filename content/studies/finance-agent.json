@@ -1,0 +1,50 @@
+{
+  "slug": "finance-agent",
+  "date": "2026-10-21",
+  "title": "A household finance agent with read-only access",
+  "tag": "Agents",
+  "accent": "red",
+  "summary": "A personal agent that reads email, calendar and bank data, writes only calendar events and sheet cells, and reads back every change.",
+  "stat": {
+    "value": "100+",
+    "label": "inbox messages triaged in a typical week"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "A household's money lives in many places: inboxes, calendars, bank apps and lender portals. Due dates slip and promotional deadlines pass unnoticed."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A personal agent with read-only access to email, calendar, spreadsheets and bank data. It can write calendar events and spreadsheet cells. It cannot move money, delete records or change account settings.",
+        "It verifies each fact at its source of record before it states a number: the calendar for dates, bank data for balances, the lender's statement for terms. It reads back every change it makes, by fetching the calendar event or sheet row again. The user approves sends, changes and anything hard to undo.",
+        "Mail is the coordination channel between the household's two agents, with a header block that names sender, topic and type. Logins stay in a secure vault and never appear in chat or mail.",
+        "The payoff plan orders debts by deadline first, then by rate, and every bill and payoff is a dated calendar event."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "The agent keeps about ten debts and payoffs in one sheet with their deadlines, and checks each payment before and after it happens.",
+        "It sweeps the inbox three times a day and triages more than a hundred messages in a typical week, without sending or deleting anything on its own. About ten automated checks fire before a payment lands: confirm the income posted, pull a fresh balance, report pay or hold. It built or corrected dozens of dated money events on the shared calendar. That handed several hours a week of bill and inbox triage off the household."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Limit what the agent can do before you tune how well it does it. Read-only access plus read-back made its mistakes cheap to catch."
+      ]
+    }
+  ],
+  "skills": [
+    "Agent safety design",
+    "Tool permissioning",
+    "Human-in-the-loop approval"
+  ],
+  "sources": [
+    "the agent's own spec, rounded as its publish rules require"
+  ]
+}
