@@ -12,6 +12,9 @@
   [hidden] { display: none !important; }
   html { overflow-x: hidden; }
   .toon-page { overflow-x: hidden; overflow-x: clip; }
+  /* Every panel, button and the nav throw an 8px hard shadow right and down, so the drawn edge sits 8px right of the
+     content box. Pad the right by that much and the drawn page, shadows included, is centered in the window. */
+  .toon-page { padding-right: calc(theme(spacing.s4) + 8px); }
   body { @apply bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
   :focus-visible { @apply outline outline-4 outline-offset-4 outline-toon-yellow; }
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
@@ -47,10 +50,11 @@
   .toon-card:nth-child(even) { --toon-tilt: 1deg; --toon-shadow: theme(colors.toon.violet); }
   .toon-card:nth-child(3n) { --toon-shadow: theme(colors.toon.blue); }
   .toon-card:hover { transform: rotate(0) translateY(-6px) scale(1.03); }
-  /* Card number: a tilted disc pinned past the top right corner. */
+  /* Card label or number: a tilted pill tucked into the top right corner. It sizes to its text ("Featured" fits)
+     and stays inside the gutter, so the page wrapper never clips it. */
   .toon-corner {
-    @apply absolute -right-s2 -top-s4 grid h-12 w-12 -rotate-12 place-items-center rounded-full border-toon border-toon-ink
-           bg-toon-yellow font-display text-title3 leading-none text-toon-ink;
+    @apply absolute right-s3 -top-s4 grid min-h-[2.75rem] min-w-[2.75rem] -rotate-6 place-items-center rounded-full border-toon
+           border-toon-ink bg-toon-yellow px-s3 font-display text-title3 leading-none tracking-wide text-toon-ink;
   }
   /* Pop-in on load; `animation-delay` on the element staggers a grid. Reduced motion cancels it below.
      `backwards`, not `both`: the end state must release, or it would pin the card's tilt and hover transform. */

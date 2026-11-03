@@ -91,7 +91,7 @@ ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ?
 </head>
 <body class="toon-dots">
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 toon-btn toon-btn-paper">Skip to content</a>
-<div class="toon-page mx-auto max-w-5xl px-s4 pb-16">
+<div class="toon-page mx-auto max-w-5xl pl-s4 pb-16">
   <header class="flex items-center justify-between gap-s3 py-s4 sm:py-s5">
     <a href="/" class="block shrink-0 no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { cls: 'text-[30px] sm:text-[40px]' })}</a>
     ${nav(opts.current ?? '', opts.path)}
