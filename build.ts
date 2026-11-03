@@ -48,7 +48,7 @@ const burst = Array.from({ length: 16 }, (_, i) => {
 }).join(' ');
 await Bun.write(
   `${out}/favicon.svg`,
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="3" y="3" width="58" height="58" rx="12" fill="#3d7bff" stroke="#0a0a1f" stroke-width="5"/><polygon points="${burst}" fill="#ffd60a" stroke="#0a0a1f" stroke-width="4" stroke-linejoin="round"/></svg>`,
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="3" y="3" width="58" height="58" rx="12" fill="#5f8dff" stroke="#0a0a1f" stroke-width="5"/><polygon points="${burst}" fill="#f2c94c" stroke="#0a0a1f" stroke-width="4" stroke-linejoin="round"/></svg>`,
 );
 
 const tw = Bun.spawnSync(['bunx', 'tailwindcss', '-i', 'ui/toonish.css', '-o', `${out}/toonish.css`, '--minify'], {
