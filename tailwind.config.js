@@ -3,8 +3,9 @@
  *
  * Structure (spacing grid, type scale, radii names, spring easing, durations) comes from the
  * PeteDio house tokens: petedio-workspace `.claude/skills/apple-design/references/tokens.md`.
- * Colour is the deliberate break from that set: neon cartoon on deep violet, chosen by Pedro
- * on 2026-11-03. Every neon fill carries `ink` text, which keeps contrast at 6.4:1 or better.
+ * Colour is the deliberate break from that set: a comic-book triad of electric blue, red and
+ * yellow, plus violet, on deep navy with cream panels (Pedro, 2026-11-03, replacing the cyan
+ * and orange pair). Every fill carries `ink` text, which keeps contrast at 5.1:1 or better.
  */
 export default {
   content: ['./src/**/*.ts', './ui/**/*.ts', './build.ts'],
@@ -12,12 +13,12 @@ export default {
     extend: {
       colors: {
         toon: {
-          ground: '#12062a', // page background
-          ink: '#0a0314',    // outlines and text on fills
-          paper: '#fff6e6',  // cards, bubbles; text on ground
-          cyan: '#19e6ff',
-          orange: '#ff6b1a',
-          yellow: '#ffe81a',
+          ground: '#0c1240', // page background, deep navy
+          ink: '#0a0a1f',    // outlines and text on fills
+          paper: '#fff6dc',  // panels, bubbles; text on ground
+          blue: '#3d7bff',
+          red: '#ff3d3d',
+          yellow: '#ffd60a',
           violet: '#9b7bff',
         },
       },
@@ -36,12 +37,12 @@ export default {
       borderRadius: { group: '12px', card: '16px', hero: '24px', sheet: '28px', toon: '10px' },
       borderWidth: { toon: '5px' },
       boxShadow: {
-        'toon-cyan': '8px 8px 0 #19e6ff',
-        'toon-orange': '8px 8px 0 #ff6b1a',
-        'toon-yellow': '8px 8px 0 #ffe81a',
+        'toon-blue': '8px 8px 0 #3d7bff',
+        'toon-red': '8px 8px 0 #ff3d3d',
+        'toon-yellow': '8px 8px 0 #ffd60a',
         'toon-violet': '8px 8px 0 #9b7bff',
-        'toon-lift': '11px 12px 0 var(--toon-shadow, #ff6b1a)',
-        'toon-press': '0 0 0 var(--toon-shadow, #ff6b1a)',
+        'toon-lift': '11px 12px 0 var(--toon-shadow, #ff3d3d)',
+        'toon-press': '0 0 0 var(--toon-shadow, #ff3d3d)',
       },
       transitionTimingFunction: {
         spring: 'cubic-bezier(.175,.885,.32,1.275)', // house spring

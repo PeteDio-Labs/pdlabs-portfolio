@@ -2,7 +2,7 @@
  * toonletter: the original toonish-ui display lettering.
  *
  * Each glyph is a hand-built centerline path on a 0-80 tall grid. A word renders as three
- * stacked strokes of the same paths: an offset shadow, a thick ink outline, and a neon core.
+ * stacked strokes of the same paths: an offset shadow, a thick ink outline, and a colored core.
  * Letters sit on a bouncy baseline: each one gets its own small rotation and lift.
  * No font file and no traced artwork. The site renders it at build time, so pages ship static SVG.
  */
@@ -61,9 +61,9 @@ export const GLYPHS: Record<string, [number, string]> = {
 };
 
 const DEFAULTS = {
-  core: '#19e6ff',   // neon fill
-  ink: '#0a0314',    // outline
-  shadow: '#ff6b1a', // offset shadow
+  core: '#3d7bff',   // fill
+  ink: '#0a0a1f',    // outline
+  shadow: '#ffd60a', // offset shadow
   weight: 10,        // core stroke width; the outline is weight + 12
   tracking: 14,
   bounce: 1,         // 0 sets every letter flat on the baseline
@@ -80,8 +80,12 @@ function escapeXml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => XML[c]);
 }
 
-/** Render text as an SVG string. Unknown characters are dropped and reported in data-missing. */
-export type ToonOptions = Partial<typeof DEFAULTS> & { label?: boolean };
+/**
+ * Render text as an SVG string. Unknown characters are dropped and reported in data-missing.
+ * `animate` wraps each letter in a `toon-letter` group with its own delay, so the kit's CSS
+ * can bob the letters one after another. The three layers share the delay, so they stay aligned.
+ */
+export type ToonOptions = Partial<typeof DEFAULTS> & { label?: boolean; animate?: boolean };
 
 export function toonWord(text: string, opts: ToonOptions = {}): string {
   const o = { ...DEFAULTS, ...opts };
@@ -98,7 +102,8 @@ export function toonWord(text: string, opts: ToonOptions = {}): string {
     if (d) {
       const rot = (jitter(i, seed) * 10 * o.bounce).toFixed(2);
       const lift = (jitter(i + 7, seed) * 8 * o.bounce).toFixed(2);
-      parts.push(`<path d="${d}" transform="translate(${x} ${pad + Number(lift)}) rotate(${rot} ${w / 2} 40)"/>`);
+      const path = `<path d="${d}" transform="translate(${x} ${pad + Number(lift)}) rotate(${rot} ${w / 2} 40)"/>`;
+      parts.push(o.animate ? `<g class="toon-letter" style="animation-delay:${i * 90}ms">${path}</g>` : path);
     }
     x += w + o.tracking;
   });

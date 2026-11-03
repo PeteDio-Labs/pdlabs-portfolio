@@ -4,36 +4,40 @@
 @tailwind utilities;
 
 @layer base {
-  /* overflow-x clip: a tilted card or a corner disc may reach past the gutter, and must not add a sideways scroll. */
+  /* overflow-x clip: a tilted panel or a corner disc may reach past the gutter, and must not add a sideways scroll. */
   body { @apply overflow-x-clip bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
   :focus-visible { @apply outline outline-4 outline-offset-4 outline-toon-yellow; }
 }
 
 @layer components {
-  /* 1. Button: neon fill, ink outline, hard offset shadow, bounce on hover, press flattens. */
+  /* 1. Button: fill, ink outline, hard offset shadow, bounce on hover, press flattens. */
   .toon-btn {
-    --toon-shadow: theme(colors.toon.orange);
-    @apply inline-block cursor-pointer rounded-full border-toon border-toon-ink bg-toon-cyan px-s6 py-s3
+    --toon-shadow: theme(colors.toon.yellow);
+    @apply inline-block cursor-pointer rounded-full border-toon border-toon-ink bg-toon-blue px-s6 py-s3
            font-body text-body font-bold text-toon-ink no-underline transition duration-fast ease-bounce;
     box-shadow: 8px 8px 0 var(--toon-shadow);
   }
   .toon-btn:hover { @apply -translate-x-0.5 -translate-y-1 -rotate-2 scale-105 shadow-toon-lift; }
   .toon-btn:active { @apply translate-x-2 translate-y-2 rotate-0 scale-100 shadow-toon-press; }
-  .toon-btn-orange { --toon-shadow: theme(colors.toon.violet); @apply bg-toon-orange; }
-  .toon-btn-yellow { --toon-shadow: theme(colors.toon.cyan); @apply bg-toon-yellow; }
-  .toon-btn-paper  { --toon-shadow: theme(colors.toon.cyan); @apply bg-toon-paper; }
+  .toon-btn-red    { --toon-shadow: theme(colors.toon.yellow); @apply bg-toon-red; }
+  .toon-btn-yellow { --toon-shadow: theme(colors.toon.blue); @apply bg-toon-yellow; }
+  .toon-btn-paper  { --toon-shadow: theme(colors.toon.blue); @apply bg-toon-paper; }
+  /* Squash and stretch on hover, the cartoon take on a press. */
+  .toon-wiggle:hover { animation: toon-squash .6s cubic-bezier(.34,1.8,.5,1); }
 
-  /* 2. Card: paper panel, tilted, lifts and straightens on hover. */
+  /* 2. Card: a comic panel. Cream with a faint halftone, tilted, lifts and straightens on hover. */
   .toon-card {
-    --toon-shadow: theme(colors.toon.orange);
+    --toon-shadow: theme(colors.toon.yellow);
     @apply rounded-toon border-toon border-toon-ink bg-toon-paper p-s6 text-toon-ink transition duration-normal ease-bounce;
+    background-image: radial-gradient(rgb(10 10 31 / .07) 1px, transparent 1.4px);
+    background-size: 8px 8px;
     box-shadow: 8px 8px 0 var(--toon-shadow);
     transform: rotate(var(--toon-tilt, -1.5deg));
   }
   .toon-card:nth-child(even) { --toon-tilt: 1deg; --toon-shadow: theme(colors.toon.violet); }
-  .toon-card:nth-child(3n) { --toon-shadow: theme(colors.toon.cyan); }
+  .toon-card:nth-child(3n) { --toon-shadow: theme(colors.toon.blue); }
   .toon-card:hover { transform: rotate(0) translateY(-6px) scale(1.03); }
-  /* Card number: a tilted neon disc pinned past the top right corner. */
+  /* Card number: a tilted disc pinned past the top right corner. */
   .toon-corner {
     @apply absolute -right-s2 -top-s4 grid h-12 w-12 -rotate-12 place-items-center rounded-full border-toon border-toon-ink
            bg-toon-yellow font-display text-title3 leading-none text-toon-ink;
@@ -41,30 +45,29 @@
   /* Pop-in on load; `animation-delay` on the element staggers a grid. Reduced motion cancels it below.
      `backwards`, not `both`: the end state must release, or it would pin the card's tilt and hover transform. */
   .toon-pop { animation: toon-pop .5s cubic-bezier(.34,1.8,.5,1) backwards; }
-  @keyframes toon-pop { 0% { transform: scale(.6); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
 
   /* 3. Heading: text fallback for the SVG lettering, same outline and shadow. */
   .toon-heading {
     @apply font-display font-normal leading-tight text-toon-yellow;
     -webkit-text-stroke: .07em theme(colors.toon.ink);
     paint-order: stroke fill;
-    text-shadow: .05em .05em 0 var(--toon-shade, theme(colors.toon.orange));
+    text-shadow: .05em .05em 0 var(--toon-shade, theme(colors.toon.blue));
     text-wrap: balance;
   }
-  .toon-heading-xl { @apply text-display1 text-toon-cyan; transform: rotate(-1.5deg); }
+  .toon-heading-xl { @apply text-display1 text-toon-blue; transform: rotate(-1.5deg); }
 
-  /* 4. Link: thick orange underline that springs on hover. */
+  /* 4. Link: thick red underline that springs on hover. */
   .toon-link {
-    @apply font-bold underline decoration-toon-orange decoration-4 underline-offset-4 transition-all duration-fast ease-bounce;
+    @apply font-bold underline decoration-toon-red decoration-4 underline-offset-4 transition-all duration-fast ease-bounce;
   }
   .toon-link:hover { @apply underline-offset-8; }
 
   /* 5. Badge */
   .toon-badge {
-    @apply inline-block rounded-full border-[3px] border-toon-ink bg-toon-orange px-s3 py-0.5
+    @apply inline-block rounded-full border-[3px] border-toon-ink bg-toon-red px-s3 py-0.5
            text-footnote font-bold uppercase tracking-wider text-toon-ink;
   }
-  .toon-badge-cyan { @apply bg-toon-cyan; }
+  .toon-badge-blue { @apply bg-toon-blue; }
   .toon-badge-yellow { @apply bg-toon-yellow; }
   .toon-badge-violet { @apply bg-toon-violet; }
 
@@ -75,35 +78,65 @@
   .toon-nav a {
     @apply rounded-full px-s4 py-s2 font-bold text-toon-ink no-underline transition duration-fast ease-bounce;
   }
-  .toon-nav a:hover { @apply -rotate-2 scale-110 bg-toon-cyan; }
-  .toon-nav a[aria-current] { @apply bg-toon-ink text-toon-cyan; }
+  .toon-nav a:hover { @apply -rotate-2 scale-110 bg-toon-yellow; }
+  .toon-nav a[aria-current] { @apply bg-toon-ink text-toon-yellow; }
 
   /* 7. Callout */
   .toon-callout {
-    @apply rounded-toon border-toon border-toon-ink bg-toon-violet px-s6 py-s5 text-toon-ink shadow-toon-orange;
+    @apply rounded-toon border-toon border-toon-ink bg-toon-violet px-s6 py-s5 text-toon-ink shadow-toon-red;
   }
-  .toon-callout-yellow { @apply bg-toon-yellow shadow-toon-cyan; }
+  .toon-callout-yellow { @apply bg-toon-yellow shadow-toon-blue; }
 
   /* 8. Footer */
-  .toon-footer { @apply mt-s8 flex flex-wrap items-center gap-x-s6 gap-y-s3 border-t-toon border-toon-orange pt-s5; }
+  .toon-footer { @apply mt-s8 flex flex-wrap items-center gap-x-s6 gap-y-s3 border-t-toon border-toon-red pt-s5; }
 
-  /* 9. Art frame: the slot that replaced the mascot. Holds an image, SVG or screenshot. */
+  /* 9. Art frame: a comic panel with square corners and a halftone, for an image, SVG or screenshot. */
   .toon-frame {
-    @apply relative overflow-hidden rounded-hero border-toon border-toon-ink bg-toon-paper shadow-toon-cyan;
+    @apply relative overflow-hidden rounded-toon border-toon border-toon-ink bg-toon-paper shadow-toon-blue;
+    background-image: radial-gradient(rgb(10 10 31 / .07) 1px, transparent 1.4px);
+    background-size: 8px 8px;
   }
   .toon-frame > img, .toon-frame > svg { @apply block h-auto w-full; }
+  .toon-panel-tilt { transform: rotate(1.5deg); @apply transition duration-normal ease-bounce; }
+  .toon-panel-tilt:hover { transform: rotate(0); }
 
   /* 10. Speech bubble */
   .toon-bubble {
-    @apply relative max-w-xs rounded-sheet border-toon border-toon-ink bg-toon-paper px-s5 py-s4 text-toon-ink shadow-toon-cyan;
+    @apply relative max-w-xs rounded-sheet border-toon border-toon-ink bg-toon-paper px-s5 py-s4 text-toon-ink shadow-toon-blue;
   }
   /* Tail: an ink triangle with a smaller paper triangle on top. */
   .toon-bubble::before, .toon-bubble::after { content: ""; position: absolute; width: 0; height: 0; border-style: solid; border-color: transparent; }
   .toon-bubble::before { left: 26px; bottom: -24px; border-width: 24px 16px 0 16px; border-top-color: theme(colors.toon.ink); }
   .toon-bubble::after  { left: 33px; bottom: -14px; border-width: 15px 9px 0 9px; border-top-color: theme(colors.toon.paper); }
 
+  /* 11. Caption: the yellow box a comic narrator speaks from. Square corners on purpose. */
+  .toon-caption {
+    @apply inline-block border-[3px] border-toon-ink bg-toon-yellow px-s3 py-s1 font-display text-footnote uppercase tracking-wider text-toon-ink;
+    box-shadow: 3px 3px 0 theme(colors.toon.ink);
+  }
+
+  /* 12. Burst: a starburst behind a word or a figure. `-spin` turns it slowly, `-hero` sits behind the hero's last line. */
+  .toon-burst { @apply absolute inset-0 h-full w-full; }
+  .toon-burst-spin { animation: toon-spin 24s linear infinite; }
+  .toon-burst-hero { @apply -right-[4%] -top-[55%] left-auto h-[180%] w-auto; animation: toon-spin 40s linear infinite; }
+
+  /* 13. Speed lines: a fan of ink strokes behind a panel. */
+  .toon-speed { @apply pointer-events-none absolute; }
+  .toon-speed-hero { @apply -left-[10%] -top-[8%] h-[70%] w-[60%]; }
+
+  /* 14. Lettering motion: with `animate`, each letter bobs in turn. The three stroke layers share a delay. */
+  .toon-letter { transform-box: fill-box; transform-origin: 50% 100%; animation: toon-bob 2.6s cubic-bezier(.34,1.8,.5,1) infinite; }
+  .toon-blink { animation: toon-blink 1.1s steps(2, start) infinite; }
+
   /* Halftone ground, opt-in on <body>. */
-  .toon-dots { background-image: radial-gradient(rgb(255 232 26 / .14) 1.2px, transparent 1.6px); background-size: 10px 10px; }
+  .toon-dots { background-image: radial-gradient(rgb(255 214 10 / .13) 1.2px, transparent 1.6px); background-size: 10px 10px; }
+
+  /* Keyframes. Tailwind only writes a theme keyframe for an animate-* utility, so the kit owns them here. */
+  @keyframes toon-pop { 0% { transform: scale(.6); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes toon-bob { 0%, 55%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-7%) rotate(-3deg); } 40% { transform: translateY(2%) rotate(1deg); } }
+  @keyframes toon-squash { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(1.12, .88); } 60% { transform: translateY(-6px) scale(.96, 1.08); } }
+  @keyframes toon-spin { to { transform: rotate(360deg); } }
+  @keyframes toon-blink { to { visibility: hidden; } }
 }
 
 @media (prefers-reduced-motion: reduce) {
