@@ -1,7 +1,7 @@
 {
   "slug": "finance-agent",
   "date": "2026-11-01",
-  "title": "A household finance agent with read-only access",
+  "title": "A household finance agent with limits and read-back",
   "tag": "Agents",
   "accent": "red",
   "summary": "A personal agent that reads email, calendar and bank data, writes calendar events and sheet cells, and reads back every change. Bank data stays read-only, and the agent never moves money.",
@@ -22,7 +22,7 @@
         "A personal agent that reads email, calendar, spreadsheets and bank data. Bank data is strictly read-only. The agent writes calendar events and spreadsheet cells, marks mail read, and sends mail to the household's other agent. It cannot move money or change account settings.",
         "It verifies each fact at its source of record before it states a number: the calendar for dates, bank data for balances, the lender's statement for terms. A clearly labelled estimate is the one exception, and it is never presented as verified. After every calendar or sheet change, it fetches the event or row again and reads it back before it calls the work done.",
         "The agent asks me before it sends to anyone outside the household, deletes anything or takes any step that is hard to undo. Two things run on standing authorization instead: mail between the household's two agents, and routine bill logging inside the scheduled sweeps. Mail between the agents uses a header block that names sender, topic, type and date. Logins stay in a secure vault and never appear in chat or mail.",
-        "The payoff plan pays cards first, then loans in order of interest rate (highest first), then keeps a buffer for bills. Every bill and payoff is a dated calendar event."
+        "Every bill and payoff is a dated calendar event."
       ]
     },
     {
