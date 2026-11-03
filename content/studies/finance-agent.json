@@ -1,13 +1,13 @@
 {
   "slug": "finance-agent",
   "date": "2026-11-01",
-  "title": "A household finance agent with read-only access",
+  "title": "A household finance agent with limits and read-back",
   "tag": "Agents",
   "accent": "red",
-  "summary": "A personal agent that reads email, calendar and bank data, writes only calendar events and sheet cells, and reads back every change.",
+  "summary": "A personal agent that reads email, calendar and bank data, writes calendar events and sheet cells, and reads back every change. Bank data stays read-only, and the agent never moves money.",
   "stat": {
-    "value": "100+",
-    "label": "inbox messages triaged in a typical week"
+    "value": "50+",
+    "label": "dated money events built on the shared calendar in one month"
   },
   "sections": [
     {
@@ -19,23 +19,31 @@
     {
       "heading": "What I built",
       "paragraphs": [
-        "A personal agent with read-only access to email, calendar, spreadsheets and bank data. It can write calendar events and spreadsheet cells. It cannot move money, delete records or change account settings.",
-        "It verifies each fact at its source of record before it states a number: the calendar for dates, bank data for balances, the lender's statement for terms. It reads back every change it makes, by fetching the calendar event or sheet row again. The user approves sends, changes and anything hard to undo.",
-        "Mail is the coordination channel between the household's two agents, with a header block that names sender, topic and type. Logins stay in a secure vault and never appear in chat or mail.",
-        "The payoff plan orders debts by deadline first, then by rate, and every bill and payoff is a dated calendar event."
+        "A personal agent that reads email, calendar, spreadsheets and bank data. Bank data is strictly read-only. The agent writes calendar events and spreadsheet cells, marks mail read, and sends mail to the household's other agent. It cannot move money or change account settings.",
+        "It verifies each fact at its source of record before it states a number: the calendar for dates, bank data for balances, the lender's statement for terms. A clearly labelled estimate is the one exception, and it is never presented as verified. After every calendar or sheet change, it fetches the event or row again and reads it back before it calls the work done.",
+        "The agent asks me before it sends to anyone outside the household, deletes anything or takes any step that is hard to undo. Two things run on standing authorization instead: mail between the household's two agents, and routine bill logging inside the scheduled sweeps. Mail between the agents uses a header block that names sender, topic, type and date. Logins stay in a secure vault and never appear in chat or mail.",
+        "Every bill and payoff is a dated calendar event."
       ]
     },
     {
       "heading": "Result",
       "paragraphs": [
-        "The agent keeps about ten debts and payoffs in one sheet with their deadlines, and checks each payment before and after it happens.",
-        "It sweeps the inbox three times a day and triages more than a hundred messages in a typical week, without sending or deleting anything on its own. About ten automated checks fire before a payment lands: confirm the income posted, pull a fresh balance, report pay or hold. It built or corrected dozens of dated money events on the shared calendar. That handed several hours a week of bill and inbox triage off the household."
+        "The agent keeps about 20 dated bill and payoff rows in one tracker sheet, covering a mid-teens count of obligations.",
+        "It sweeps the inbox three times a day. Volume varies: a sweep can find a couple of messages or more than 50, and a busy week clears 100. It built more than 50 dated money events in one month, and it has corrected others since.",
+        "About eight payoff checks fire over two months. Each one runs the morning after a due date to confirm the payment posted, then marks it done. The checks verify, and I decide what to pay. I have no time measurement behind an hours-saved figure, so I do not claim one."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "The agent once gave me the wrong due date for a payment. It took the date from a stale tracker row, while the calendar showed a later date. It corrected the date the same day. The rule since is calendar first, tracker second: it never states a date or amount from the tracker alone.",
+        "Silent sweep runs taught a second rule: no report means failure, so a sweep that finishes owes a summary without being asked."
       ]
     },
     {
       "heading": "Lesson",
       "paragraphs": [
-        "Limit what the agent can do before you tune how well it does it. Read-only access plus read-back made its mistakes cheap to catch."
+        "Limit what the agent can do, and name the exceptions, before you tune how well it does it. Verify at the source of record and read every change back, so mistakes are cheap to catch. An agent that can write, send and mark mail read is still safe to run when each of those has a check and a stated limit."
       ]
     }
   ],
@@ -45,6 +53,6 @@
     "Human-in-the-loop approval"
   ],
   "sources": [
-    "the agent's own spec, rounded as its publish rules require"
+    "the agent's own audit reply, 2026-11-03 (permissions, sweep schedule, ordering, counts, checks, the wrong-date incident)"
   ]
 }
