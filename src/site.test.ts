@@ -134,3 +134,20 @@ test('sitemap source covers the work index, and llms.txt points at the list and 
   expect(llmsTxt()).toContain('https://pdlab.dev/work.html');
   expect(llmsTxt()).toContain('https://pdlab.dev/studies.json');
 });
+
+test('footer links open Privacy and Terms in a modal and stay real links without JavaScript', () => {
+  for (const html of all()) {
+    expect(html).toContain('href="/privacy.html" data-toon-modal');
+    expect(html).toContain('href="/terms.html" data-toon-modal');
+    expect(html).toContain('class="toon-link whitespace-nowrap" href="/ui.html"');
+  }
+  expect(siteScript).toContain('showModal');
+  expect(siteScript).not.toMatch(/innerHTML|eval\(|document\.write/);
+});
+
+test('the kit page demonstrates an accessible modal', () => {
+  const html = kit();
+  expect(html).toMatch(/<dialog id="k-modal-demo" class="toon-modal" aria-modal="true" aria-labelledby="k-modal-demo-title">/);
+  expect(html).toContain('data-toon-modal-open="k-modal-demo"');
+  expect(html).toContain('data-toon-modal-close');
+});

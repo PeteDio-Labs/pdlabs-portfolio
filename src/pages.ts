@@ -101,8 +101,12 @@ ${opts.body}
   </main>
   <footer class="toon-footer">
     <span class="block">${letters('pdlab', 'red', { cls: 'text-title1' })}</span>
-    <p class="m-0 text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link" href="/ui.html">toonish-ui</a>, an original kit. <a class="toon-link" href="${site.github}">GitHub</a></p>
-    <p class="m-0 text-footnote"><a class="toon-link" href="/privacy.html">Privacy</a> · <a class="toon-link" href="/terms.html">Terms</a></p>
+    <p class="toon-footer-note text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link whitespace-nowrap" href="/ui.html">toonish-ui</a>, an original kit.</p>
+    <nav aria-label="Footer"><ul class="toon-footer-links text-footnote">
+      <li><a class="toon-link" href="${site.github}">GitHub</a></li>
+      <li><a class="toon-link" href="/privacy.html" data-toon-modal>Privacy</a></li>
+      <li><a class="toon-link" href="/terms.html" data-toon-modal>Terms</a></li>
+    </ul></nav>
   </footer>
 </div>
 <script src="/site.js" defer></script>${opts.scriptSrc ? `\n<script src="${opts.scriptSrc}" defer></script>` : ''}
@@ -359,6 +363,17 @@ export function kit(): string {
         <div class="toon-bubble">A speech bubble with a tail.</div>
       </div>
       <div class="toon-callout mt-s8"><strong>Callout:</strong> violet by default, yellow with <code>toon-callout-yellow</code>.</div>
+    </section>
+
+    <section class="py-s6" aria-labelledby="k-modal"><h2 id="k-modal" class="toon-heading mb-s6 text-display2">Modal</h2>
+      <p class="max-w-[60ch]">A <code>toon-modal</code> is a native <code>&lt;dialog&gt;</code>: it traps focus, closes on <kbd>Esc</kbd> or a tap on the backdrop, marks the page behind it inert and returns focus to the button that opened it. The footer uses it for Privacy and Terms: a link with <code>data-toon-modal</code> opens the linked page's article in the modal, and without JavaScript it stays an ordinary link.</p>
+      <button class="toon-btn toon-btn-yellow" type="button" data-toon-modal-open="k-modal-demo">Open a modal</button>
+      <dialog id="k-modal-demo" class="toon-modal" aria-modal="true" aria-labelledby="k-modal-demo-title">
+        <div class="toon-modal-box">
+          <div class="toon-modal-head"><h2 id="k-modal-demo-title" class="toon-heading m-0 text-display2">POW!</h2><button type="button" class="toon-btn toon-btn-red toon-modal-x" data-toon-modal-close>Close</button></div>
+          <div class="toon-modal-body"><p class="mt-0">Any markup fits here. Tab stays inside the box, <kbd>Esc</kbd> closes it, and the pop-in stops under reduced motion.</p><p class="mb-0"><button type="button" class="toon-btn toon-btn-paper" data-toon-modal-close>Got it</button></p></div>
+        </div>
+      </dialog>
     </section>
 
     <section class="py-s6" aria-labelledby="k-let"><h2 id="k-let" class="toon-heading mb-s6 text-display2">Display type</h2>

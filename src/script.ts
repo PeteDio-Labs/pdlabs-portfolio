@@ -1,6 +1,6 @@
 // Browser behaviour for every page. build.ts writes it to dist/site.js, so the Content-Security-Policy
 // can allow scripts from 'self' only and needs no inline hash.
-export const siteScript = String.raw`// Two behaviours, no framework. Pages stay static HTML, so S3 and CloudFront need no rewrite.
+export const siteScript = String.raw`// Three behaviours, no framework. Pages stay static HTML, so S3 and CloudFront need no rewrite.
 (() => {
   // 1. Scroll spy: on the home page, the main nav marks the section in view, not the page.
   const links = [...document.querySelectorAll('nav[aria-label="Main"] a[data-spy]')];
@@ -29,5 +29,72 @@ export const siteScript = String.raw`// Two behaviours, no framework. Pages stay
       b.classList.add('toon-boing');
     });
   });
+  // 3. Modals: native <dialog> gives the focus trap, Esc and an inert page. This adds opening, backdrop taps,
+  // scroll lock, and a shared dialog that shows another page's <article> (the footer's Privacy and Terms).
+  // If <dialog> is missing or the fetch fails, a link keeps working as a plain link.
+  const lock = (on) => document.documentElement.classList.toggle('toon-modal-open', on);
+  const open = (d) => { d.showModal(); lock(true); };
+  document.addEventListener('close', (e) => { if (e.target.classList && e.target.classList.contains('toon-modal')) lock(false); }, true);
+  document.addEventListener('click', (e) => {
+    if (e.target.classList && e.target.classList.contains('toon-modal')) e.target.close(); // a tap on the backdrop
+  });
+  if (typeof HTMLDialogElement === 'function') {
+    document.addEventListener('click', (e) => {
+      const closer = e.target.closest('[data-toon-modal-close]');
+      if (closer) { const d = closer.closest('dialog'); if (d) d.close(); return; }
+      const opener = e.target.closest('[data-toon-modal-open]');
+      if (opener) { const d = document.getElementById(opener.dataset.toonModalOpen); if (d) open(d); return; }
+      const link = e.target.closest('a[data-toon-modal]');
+      if (!link || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      showPage(link).catch(() => { location.href = link.href; });
+    });
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+    const cache = new Map();
+    let shared;
+    const sharedDialog = () => {
+      if (shared) return shared;
+      const d = el('dialog', 'toon-modal');
+      d.setAttribute('aria-modal', 'true');
+      d.setAttribute('aria-labelledby', 'toon-modal-title');
+      const box = el('div', 'toon-modal-box');
+      const head = el('div', 'toon-modal-head');
+      const title = el('h2', 'toon-heading m-0 text-display2');
+      title.id = 'toon-modal-title';
+      const x = el('button', 'toon-btn toon-btn-red toon-modal-x', 'Close');
+      x.type = 'button';
+      x.dataset.toonModalClose = '';
+      head.append(title, x);
+      box.append(head, el('div', 'toon-modal-body'));
+      d.append(box);
+      document.body.append(d);
+      return (shared = d);
+    };
+    const showPage = async (link) => {
+      const url = new URL(link.href, location.href);
+      if (url.origin !== location.origin) throw new Error('cross-origin');
+      if (!cache.has(url.pathname)) {
+        const res = await fetch(url.pathname, { headers: { Accept: 'text/html' } });
+        if (!res.ok) throw new Error(String(res.status));
+        const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+        const article = doc.querySelector('article');
+        const h1 = article && article.querySelector('h1');
+        if (!article || !h1) throw new Error('no article');
+        cache.set(url.pathname, { title: h1.textContent.trim(), nodes: [...article.children].filter((n) => n !== h1) });
+      }
+      const page = cache.get(url.pathname);
+      const d = sharedDialog();
+      d.querySelector('#toon-modal-title').textContent = page.title;
+      const body = d.querySelector('.toon-modal-body');
+      body.replaceChildren(...page.nodes.map((n) => document.importNode(n, true)));
+      const more = el('p', 'mb-0 mt-s6 text-footnote');
+      const a = el('a', 'toon-link', 'Open as a full page');
+      a.href = url.pathname;
+      more.append(a);
+      body.append(more);
+      body.scrollTop = 0;
+      open(d);
+    };
+  }
 })();
 `;
