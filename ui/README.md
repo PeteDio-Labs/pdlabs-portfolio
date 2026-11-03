@@ -35,12 +35,28 @@ Both pass WCAG AA.
 `toon-btn` (plus `-red`, `-yellow`, `-paper`, and `toon-wiggle` for squash and stretch on hover),
 `toon-card` (plus `toon-corner` for a number disc and `toon-pop` for a staggered pop-in),
 `toon-heading` (plus `-xl`), `toon-link`, `toon-badge` (plus `-blue`, `-yellow`, `-violet`),
-`toon-nav`, `toon-callout`, `toon-footer`, `toon-frame` (a comic panel for an image or SVG, with
+`toon-nav`, `toon-callout`, `toon-footer`, `toon-modal`, `toon-frame` (a comic panel for an image or SVG, with
 `toon-panel-tilt`), `toon-bubble`, `toon-caption` (a narrator's box), `toon-burst` (a starburst,
 `-spin` or `-hero`) and `toon-speed` (speed lines). The kit owns its keyframes in `toonish.css`,
 because Tailwind writes a theme keyframe only for an `animate-*` utility.
 Add `toon-dots` to `<body>` for the halftone ground. Every animation and transition stops
 under `prefers-reduced-motion`.
+
+## Modal
+
+`toon-modal` is a native `<dialog>`, so the browser traps focus, closes it on `Esc` and makes the
+page behind it inert. `src/script.ts` adds the rest: a tap on the backdrop closes it, the page stops
+scrolling, and focus returns to the opener. Two ways to open one:
+
+- **Inline:** put a `<dialog class="toon-modal">` in the page, with `toon-modal-box`, `toon-modal-head`
+  and `toon-modal-body` inside, and a `data-toon-modal-open="<dialog id>"` button. Any
+  `data-toon-modal-close` button inside closes it. `/ui.html` has a working example.
+- **From a page:** a link with `data-toon-modal` fetches its own `href`, takes the `<article>` and shows
+  it in a shared modal. The footer does this for `/privacy.html` and `/terms.html`. Without
+  JavaScript, or if the fetch fails, the link navigates to the real page, so crawlers, the sitemap
+  and no-JS visitors still get it.
+
+The pop-in stops under `prefers-reduced-motion`, like every kit animation.
 
 ## Display type
 
