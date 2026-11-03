@@ -148,7 +148,7 @@ export function home(): string {
       </div>
       <div class="relative">
         ${speedLines('toon-speed-hero')}
-        <figure class="toon-frame toon-panel-tilt m-0">
+        <figure class="toon-frame m-0 bg-toon-ground">
           <span class="toon-caption absolute right-s3 top-s3">The lab</span>
           <svg viewBox="0 0 320 236" role="img" aria-label="A terminal: terraform plan reports no changes, and the merge lands after CI and review">
             <rect width="320" height="236" fill="#0c1240"/>

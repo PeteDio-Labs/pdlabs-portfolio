@@ -16,6 +16,11 @@
      content box. Pad the right by that much and the drawn page, shadows included, is centered in the window. */
   .toon-page { padding-right: calc(theme(spacing.s4) + 4px); }
   body { @apply bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
+  /* A fill paints out to the border box by default, so at a rounded corner on a high-density screen its colour shows as
+     a thin sliver outside the antialiased ink border. Clip every bordered fill to the padding box: the border is opaque
+     ink, so nothing visible changes except the sliver. */
+  .toon-btn, .toon-card, .toon-badge, .toon-nav, .toon-callout, .toon-frame, .toon-bubble, .toon-caption,
+  .toon-corner, .toon-modal-box, .toon-modal-head { background-clip: padding-box; }
   :focus-visible { @apply outline outline-4 outline-offset-4 outline-toon-yellow; }
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 }
@@ -155,8 +160,7 @@
     @apply relative overflow-hidden rounded-toon border-toon border-toon-ink bg-toon-paper shadow-toon-blue;
   }
   .toon-frame > img, .toon-frame > svg { @apply block h-auto w-full; }
-  .toon-panel-tilt { transform: rotate(.5deg); @apply transition duration-normal ease-bounce; }
-  .toon-panel-tilt:hover { transform: rotate(0); }
+  .toon-panel-tilt { }
 
   /* 10. Speech bubble */
   .toon-bubble {
@@ -170,7 +174,6 @@
   /* 11. Caption: the yellow box a comic narrator speaks from. Square corners on purpose. */
   .toon-caption {
     @apply inline-block border-[3px] border-toon-ink bg-toon-yellow px-s3 py-s1 font-display text-footnote uppercase tracking-wider text-toon-ink;
-    box-shadow: 3px 3px 0 theme(colors.toon.ink);
   }
 
   /* 12. Burst: a starburst behind a word or a figure. `-spin` turns it slowly, `-hero` sits behind the hero's last line. */
