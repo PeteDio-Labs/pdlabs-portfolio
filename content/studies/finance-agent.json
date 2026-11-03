@@ -28,15 +28,15 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "The agent keeps about 20 dated bill and payoff rows in one tracker sheet, covering a mid-teens count of obligations across cards, loans and collections.",
-        "It sweeps the inbox three times a day. Volume varies: a sweep can find a couple of messages or more than 50, and a busy week clears 100. It built more than 50 dated money events in one month, one loan series alone being 38 events, and it has corrected others since.",
+        "The agent keeps about 20 dated bill and payoff rows in one tracker sheet, covering a mid-teens count of obligations.",
+        "It sweeps the inbox three times a day. Volume varies: a sweep can find a couple of messages or more than 50, and a busy week clears 100. It built more than 50 dated money events in one month, and it has corrected others since.",
         "About eight payoff checks fire over two months. Each one runs the morning after a due date to confirm the payment posted, then marks it done. The checks verify, and I decide what to pay. I have no time measurement behind an hours-saved figure, so I do not claim one."
       ]
     },
     {
       "heading": "What went wrong",
       "paragraphs": [
-        "The agent once gave me the wrong due date for a loan payment. It took the date from a stale tracker row, while the calendar showed a later first date. It corrected the date the same day. The rule since is calendar first, tracker second: it never states a date or amount from the tracker alone.",
+        "The agent once gave me the wrong due date for a payment. It took the date from a stale tracker row, while the calendar showed a later date. It corrected the date the same day. The rule since is calendar first, tracker second: it never states a date or amount from the tracker alone.",
         "Silent sweep runs taught a second rule: no report means failure, so a sweep that finishes owes a summary without being asked."
       ]
     },
