@@ -5,7 +5,7 @@
 // until Pedro supplies the fact. Nothing here is invented: each fact below names its source in
 // a comment when it did not come from the draft.
 
-export type Accent = 'cyan' | 'orange' | 'yellow' | 'violet';
+export type Accent = 'blue' | 'red' | 'yellow' | 'violet';
 
 export interface Section {
   heading: string;
@@ -39,7 +39,7 @@ export const studies: CaseStudy[] = [
     slug: 'agent-merge-gate',
     title: 'A review-gated agent team with a merge gate',
     tag: 'GitOps',
-    accent: 'cyan',
+    accent: 'blue',
     summary: 'Each task gets its own agent session, every pull request gets a review, and a tiered gate decides what merges on its own.',
     stat: { value: '214', label: 'PRs merged in one week, up from 55 the week before' },
     sections: [
@@ -88,7 +88,7 @@ export const studies: CaseStudy[] = [
     slug: 'finance-agent',
     title: 'A household finance agent with read-only access',
     tag: 'Agents',
-    accent: 'orange',
+    accent: 'red',
     summary: 'A personal agent that reads email, calendar and bank data, writes only calendar events and sheet cells, and reads back every change.',
     stat: { value: '100+', label: 'inbox messages triaged in a typical week' },
     sections: [
