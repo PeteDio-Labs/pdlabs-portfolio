@@ -191,14 +191,14 @@ export const studies: CaseStudy[] = [
     title: 'Recovering a burnt server from backups and config in git',
     tag: 'Resilience',
     accent: 'red',
-    summary: 'A RAID controller caught fire and took a hypervisor down. The services came back from off-cluster backups and rescued config, and I kept a written record of every mistake.',
-    stat: { value: '9 hrs', label: 'age of the backups the guests came back from' },
+    summary: 'A RAID controller caught fire while I was debugging a power supply. Infrastructure as code and off-cluster backups brought the platform back in about four hours, and I wrote down every mistake.',
+    stat: { value: '~4 hrs', label: 'to rebuild the platform from code and backups' },
     sections: [
       {
         heading: 'Problem',
         paragraphs: [
-          'At 12:34 on 3 September both nodes of my two-node cluster dropped within the same second, and every guest followed within 35 seconds. The router and a separate GPU machine stayed up, which ruled out a power event on the circuit and a network fault.',
-          'One node showed the PowerEdge electrical-fault light and smelled of burning. Its RAID controller had caught fire. The second node was collateral: it lost the media share the first one served.',
+          'The server had a power-supply warning light. It had two supplies, so I pulled them one at a time to find the bad one. When I tested the bad one, the RAID controller caught fire.',
+          'At 12:34 on 3 September both nodes of my two-node cluster dropped within the same second, and every guest followed within 35 seconds. The router and a separate GPU machine stayed up, which ruled out a power event on the circuit and a network fault. The fault light and the smell of burning pointed at the controller. The second node was collateral: it lost the media share the first one served.',
         ],
       },
       {
@@ -212,7 +212,7 @@ export const studies: CaseStudy[] = [
         heading: 'Recovery',
         paragraphs: [
           'The surviving node came up without quorum, so its configuration store was read-only and nothing could start. I set the expected vote count to one, removed the dead member, and cleared its node directory to free the guest IDs. Before the last step I copied the 18 guest configs off the dead node, because they were the only record of how each guest was wired. They now live in git.',
-          'Archives existed for all 18 guests. I restored the media and platform guests from them onto the surviving node, and a few came back over the following days. A third node joined the next day and the platform tier moved onto it: twelve containers in 36 minutes, with no data loss and no rebuild.',
+          'Archives existed for all 18 guests. I restored them from the archives onto the surviving node and flashed a fresh machine as a new third node, and Terraform and Ansible brought the platform back in about four hours. A few guests came back over the following days. The platform tier moved onto the new node: twelve containers in 36 minutes, with no data loss and no rebuild.',
           'Terraform could not move a container, because a changed node name forces replacement. The plan gates refused the change and showed red CI, which was the gate working. I reconciled state with a repair script scoped to one environment, and I now reach for declarative state blocks first, wherever the language can express the repair.',
         ],
       },
@@ -234,7 +234,7 @@ export const studies: CaseStudy[] = [
         heading: 'Lesson',
         paragraphs: [
           'Put backups outside the failure domain, and keep the config that describes your guests in git. An empty result is not evidence of an empty directory, so check the exit status before you report absence.',
-          'I wrote the incident up while the detail was fresh, and every mistake became a check in the migration guide.',
+          'The old GPU machine later became the first node again, so the cluster is back to three nodes. I wrote the incident up while the detail was fresh, and every mistake became a check in the migration guide.',
         ],
       },
     ],
