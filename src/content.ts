@@ -1,7 +1,9 @@
-// Portfolio content. Source: /mnt/project-files/portfolio/case-studies-draft.md (draft 2).
+// Portfolio content. Source: /mnt/project-files/portfolio/case-studies-draft.md (draft 2, with the
+// 2026-11-03 correction). Study 1's counts come from data/pr-stats.json (scripts/pr-stats.ts).
 // Public-safe rule from that draft: no secrets, internal IPs, hostnames, tokens, account
 // details, tool paths or schedule internals. Sections the draft marks [TODO] are left out
-// until Pedro supplies the fact. Nothing here is invented.
+// until Pedro supplies the fact. Nothing here is invented: each fact below names its source in
+// a comment when it did not come from the draft.
 
 export type Accent = 'cyan' | 'orange' | 'yellow' | 'violet';
 
@@ -25,6 +27,7 @@ export const site = {
   name: 'Pedro Delgadillo',
   domain: 'pdlab.dev',
   role: 'I build systems with AI.',
+  tagline: 'Infrastructure, agents and the gates between them.',
   intro:
     'I run a homelab platform shaped like AWS, on three Proxmox nodes, and I run it with a team of AI agents. Every change goes through a pull request, a review and a gate that decides what merges on its own.',
   github: 'https://github.com/petedillo',
@@ -38,7 +41,7 @@ export const studies: CaseStudy[] = [
     tag: 'GitOps',
     accent: 'cyan',
     summary: 'Each task gets its own agent session, every pull request gets a review, and a tiered gate decides what merges on its own.',
-    stat: { value: '~210', label: 'PRs merged in one week, up from ~55' },
+    stat: { value: '214', label: 'PRs merged in one week, up from 55 the week before' },
     sections: [
       {
         heading: 'Problem',
@@ -55,8 +58,8 @@ export const studies: CaseStudy[] = [
       {
         heading: 'Result',
         paragraphs: [
-          'About 210 PRs merged in the week of 19 October, up from about 55 the week before. That count covers seven repos by GitHub merge date, Monday to Sunday, UTC.',
-          'The next week had about 26, so the first week was a peak, not a steady rate. Throughput is the measure here, not quality.',
+          '214 PRs merged in the week of 19 October, up from 55 the week before. Of the 214, 211 were opened by agent sessions and 3 by hand. The count covers eight repos by GitHub merge date, Monday to Sunday, UTC.',
+          'The week after had 26, so the 19 October week was a peak, not a steady rate. Throughput is the measure here, not quality.',
         ],
       },
       {
@@ -70,6 +73,14 @@ export const studies: CaseStudy[] = [
         heading: 'Scale',
         paragraphs: ['About ten repos and about two dozen containers and VMs on three Proxmox nodes.'],
       },
+      {
+        // Source: the rule the repo now carries, written after six items with the same shape.
+        heading: 'What I would do differently',
+        paragraphs: [
+          'Write the reporting rule before the first automation, not after the sixth bug. Six separate work items had the same shape: a job that could not authenticate, could not reach its target, or checked nothing, and reported success.',
+          'The rule that ended it is short. A failure path exits non-zero, and a check says what it examined, not only what it found. A gate that relaxes a check replaces the signal it removed.',
+        ],
+      },
     ],
     skills: ['CI/CD design', 'Guardrails for AI agents', 'Terraform and Ansible', 'GitOps'],
   },
@@ -79,7 +90,7 @@ export const studies: CaseStudy[] = [
     tag: 'Agents',
     accent: 'orange',
     summary: 'A personal agent that reads email, calendar and bank data, writes only calendar events and sheet cells, and reads back every change.',
-    stat: { value: '~10', label: 'debts and payoffs tracked in one sheet' },
+    stat: { value: '100+', label: 'inbox messages triaged in a typical week' },
     sections: [
       {
         heading: 'Problem',
@@ -94,7 +105,11 @@ export const studies: CaseStudy[] = [
       },
       {
         heading: 'Result',
-        paragraphs: ['The agent keeps about ten debts and payoffs in one sheet with their deadlines, and checks each payment before and after it happens.'],
+        // Source: the agent's own spec, rounded as its publish rules require.
+        paragraphs: [
+          'The agent keeps about ten debts and payoffs in one sheet with their deadlines, and checks each payment before and after it happens.',
+          'It sweeps the inbox three times a day and triages more than a hundred messages in a typical week, without sending or deleting anything on its own. About ten automated checks fire before a payment lands: confirm the income posted, pull a fresh balance, report pay or hold. That handed several hours a week of bill and inbox triage off the household.',
+        ],
       },
       {
         heading: 'Lesson',
@@ -109,7 +124,7 @@ export const studies: CaseStudy[] = [
     tag: 'Security',
     accent: 'yellow',
     summary: 'Per-role SSH through short-lived certificates instead of static keys and shared sudo grants.',
-    stat: { value: '1 + 6', label: 'PRs: phase 1 plus six review fixes' },
+    stat: { value: '60 min', label: 'longest a certificate lives; the service role gets 30' },
     sections: [
       {
         heading: 'Problem',
@@ -123,7 +138,8 @@ export const studies: CaseStudy[] = [
         heading: 'Result so far',
         paragraphs: [
           'Phase 1 shipped as one PR plus six follow-up fixes after review rounds, through the normal PR flow.',
-          'The role adds certificate trust beside the existing keys and never removes a static key, so no host has dropped static keys yet.',
+          'Each signing role names one principal and one lifetime: an hour for admin work, thirty minutes for the service that reads the inventory. Revocation is the clock, not a list.',
+          'The role adds certificate trust beside the keys a host already has and never removes a static key. The rollout goes one canary host at a time, and the canary has not passed its live check yet, so no host has dropped static keys.',
         ],
       },
       {
@@ -154,6 +170,15 @@ export const studies: CaseStudy[] = [
         paragraphs: [
           'About 70 tokens per second on consumer hardware.',
           'The chat model is an 8-billion-parameter Qwen3 (5.2 GB, Q4_K_M) on an 8 GB GPU. The embedding model is a 0.6-billion-parameter Qwen3 (Q8_0) on a 6 GB GPU.',
+        ],
+      },
+      {
+        // Source: the model audit in the lab notes and the agent's README.
+        heading: 'Trade-off',
+        paragraphs: [
+          'The local model is right only with its thinking turned on, so every answer pays for a reasoning block first. The agent loop caps it at eight tool turns and an eighty-second deadline, and marks a cut answer incomplete instead of passing it off as whole.',
+          'Two smaller candidate models never closed their thinking block: they returned an empty answer with a clean status, so the audit deleted them. A model has to be tested on the real question before it earns the default slot.',
+          'What the agent stopped needing: an API gateway, a hosted key and a monthly spend cap. The gateway is retired.',
         ],
       },
     ],

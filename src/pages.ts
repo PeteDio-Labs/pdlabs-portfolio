@@ -79,7 +79,8 @@ export function home(): string {
         <div class="w-full [&>svg]:h-auto [&>svg]:w-full">${letters('I build', 'cyan')}</div>
         <div class="w-full [&>svg]:h-auto [&>svg]:w-full">${letters('systems', 'yellow')}</div>
         <div class="w-3/4 [&>svg]:h-auto [&>svg]:w-full">${letters('with AI!', 'orange')}</div>
-        <p class="mt-s6 max-w-[38ch] text-title3">${esc(site.intro)}</p>
+        <p class="mt-s6 flex flex-wrap items-baseline gap-x-s3 gap-y-s1"><span class="font-display text-title2 text-toon-yellow">${esc(site.name)}</span><span class="text-subhead text-toon-paper/80">${esc(site.tagline)}</span></p>
+        <p class="mt-s4 max-w-[38ch] text-title3">${esc(site.intro)}</p>
         <div class="mt-s6 flex flex-wrap gap-s4">
           <a class="toon-btn" href="#work">See the work</a>
           <a class="toon-btn toon-btn-orange" href="${site.org}">Browse the repos</a>
@@ -138,13 +139,14 @@ export function home(): string {
 export function study(s: CaseStudy): string {
   const i = studies.indexOf(s);
   const next = studies[(i + 1) % studies.length];
+  const prev = studies[(i + studies.length - 1) % studies.length];
   const body = `
     <article class="py-s8">
       <a class="toon-link" href="/#work">All case studies</a>
       <header class="mb-s8 mt-s6 grid items-end gap-s6 md:grid-cols-[1fr_auto]">
         <div class="min-w-0">
           <span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span>
-          <h1 class="toon-heading mt-s4 text-display2" style="color:${HEX[s.accent]}">${esc(s.title)}</h1>
+          <h1 class="toon-heading mt-s4 text-display2" style="color:${HEX[s.accent]}; --toon-shade:${HEX[PAIR[s.accent]]}">${esc(s.title)}</h1>
           <p class="mt-s4 max-w-[60ch] text-title3">${md(s.summary)}</p>
         </div>
         <div class="toon-card m-0 text-center" style="--toon-shadow:${HEX[PAIR[s.accent]]}">
@@ -166,10 +168,10 @@ export function study(s: CaseStudy): string {
           <ul class="m-0 flex list-none flex-wrap gap-s2 p-0">${s.skills.map((k) => `<li class="toon-badge toon-badge-violet">${esc(k)}</li>`).join('')}</ul>
         </section>
       </div>
-      <div class="mt-16 flex flex-wrap items-center gap-s4">
-        <span>Next:</span>
-        <a class="toon-btn toon-btn-paper" href="/work/${next.slug}.html">${esc(next.title)}</a>
-      </div>
+      <nav class="mt-16 grid gap-s6 sm:grid-cols-2" aria-label="Case studies">
+        <a class="toon-btn toon-btn-paper justify-self-start" href="/work/${prev.slug}.html"><span class="block text-footnote font-normal">Previous</span>${esc(prev.title)}</a>
+        <a class="toon-btn justify-self-start sm:justify-self-end sm:text-right" href="/work/${next.slug}.html"><span class="block text-footnote font-normal">Next</span>${esc(next.title)}</a>
+      </nav>
     </article>`;
   return layout({ title: s.title, path: `/work/${s.slug}.html`, current: 'Work', description: s.summary.replace(/`/g, ''), body });
 }

@@ -38,7 +38,7 @@
     @apply font-display font-normal leading-tight text-toon-yellow;
     -webkit-text-stroke: .07em theme(colors.toon.ink);
     paint-order: stroke fill;
-    text-shadow: .05em .05em 0 theme(colors.toon.orange);
+    text-shadow: .05em .05em 0 var(--toon-shade, theme(colors.toon.orange));
     text-wrap: balance;
   }
   .toon-heading-xl { @apply text-display1 text-toon-cyan; transform: rotate(-1.5deg); }
