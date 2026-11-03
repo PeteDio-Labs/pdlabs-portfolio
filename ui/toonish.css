@@ -1,0 +1,101 @@
+/* toonish-ui components. Tokens live in tailwind.config.js. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
+  :focus-visible { @apply outline outline-4 outline-offset-4 outline-toon-yellow; }
+}
+
+@layer components {
+  /* 1. Button: neon fill, ink outline, hard offset shadow, bounce on hover, press flattens. */
+  .toon-btn {
+    --toon-shadow: theme(colors.toon.orange);
+    @apply inline-block cursor-pointer rounded-full border-toon border-toon-ink bg-toon-cyan px-s6 py-s3
+           font-body text-body font-bold text-toon-ink no-underline transition duration-fast ease-bounce;
+    box-shadow: 8px 8px 0 var(--toon-shadow);
+  }
+  .toon-btn:hover { @apply -translate-x-0.5 -translate-y-1 -rotate-2 scale-105 shadow-toon-lift; }
+  .toon-btn:active { @apply translate-x-2 translate-y-2 rotate-0 scale-100 shadow-toon-press; }
+  .toon-btn-orange { --toon-shadow: theme(colors.toon.violet); @apply bg-toon-orange; }
+  .toon-btn-yellow { --toon-shadow: theme(colors.toon.cyan); @apply bg-toon-yellow; }
+  .toon-btn-paper  { --toon-shadow: theme(colors.toon.cyan); @apply bg-toon-paper; }
+
+  /* 2. Card: paper panel, tilted, lifts and straightens on hover. */
+  .toon-card {
+    --toon-shadow: theme(colors.toon.orange);
+    @apply rounded-toon border-toon border-toon-ink bg-toon-paper p-s6 text-toon-ink transition duration-normal ease-bounce;
+    box-shadow: 8px 8px 0 var(--toon-shadow);
+    transform: rotate(var(--toon-tilt, -1.5deg));
+  }
+  .toon-card:nth-child(even) { --toon-tilt: 1deg; --toon-shadow: theme(colors.toon.violet); }
+  .toon-card:nth-child(3n) { --toon-shadow: theme(colors.toon.cyan); }
+  .toon-card:hover { transform: rotate(0) translateY(-6px) scale(1.03); }
+
+  /* 3. Heading: text fallback for the SVG lettering, same outline and shadow. */
+  .toon-heading {
+    @apply font-display font-normal leading-tight text-toon-yellow;
+    -webkit-text-stroke: .07em theme(colors.toon.ink);
+    paint-order: stroke fill;
+    text-shadow: .05em .05em 0 theme(colors.toon.orange);
+    text-wrap: balance;
+  }
+  .toon-heading-xl { @apply text-display1 text-toon-cyan; transform: rotate(-1.5deg); }
+
+  /* 4. Link: thick orange underline that springs on hover. */
+  .toon-link {
+    @apply font-bold underline decoration-toon-orange decoration-4 underline-offset-4 transition-all duration-fast ease-bounce;
+  }
+  .toon-link:hover { @apply underline-offset-8; }
+
+  /* 5. Badge */
+  .toon-badge {
+    @apply inline-block rounded-full border-[3px] border-toon-ink bg-toon-orange px-s3 py-0.5
+           text-footnote font-bold uppercase tracking-wider text-toon-ink;
+  }
+  .toon-badge-cyan { @apply bg-toon-cyan; }
+  .toon-badge-yellow { @apply bg-toon-yellow; }
+  .toon-badge-violet { @apply bg-toon-violet; }
+
+  /* 6. Nav: capsule bar of pill links. */
+  .toon-nav {
+    @apply flex w-fit max-w-full flex-wrap gap-s2 rounded-full border-toon border-toon-ink bg-toon-paper p-s2 shadow-toon-yellow;
+  }
+  .toon-nav a {
+    @apply rounded-full px-s4 py-s2 font-bold text-toon-ink no-underline transition duration-fast ease-bounce;
+  }
+  .toon-nav a:hover { @apply -rotate-2 scale-110 bg-toon-cyan; }
+  .toon-nav a[aria-current] { @apply bg-toon-ink text-toon-cyan; }
+
+  /* 7. Callout */
+  .toon-callout {
+    @apply rounded-toon border-toon border-toon-ink bg-toon-violet px-s6 py-s5 text-toon-ink shadow-toon-orange;
+  }
+  .toon-callout-yellow { @apply bg-toon-yellow shadow-toon-cyan; }
+
+  /* 8. Footer */
+  .toon-footer { @apply mt-s8 flex flex-wrap items-center gap-x-s6 gap-y-s3 border-t-toon border-toon-orange pt-s5; }
+
+  /* 9. Art frame: the slot that replaced the mascot. Holds an image, SVG or screenshot. */
+  .toon-frame {
+    @apply relative overflow-hidden rounded-hero border-toon border-toon-ink bg-toon-paper shadow-toon-cyan;
+  }
+  .toon-frame > img, .toon-frame > svg { @apply block h-auto w-full; }
+
+  /* 10. Speech bubble */
+  .toon-bubble {
+    @apply relative max-w-xs rounded-sheet border-toon border-toon-ink bg-toon-paper px-s5 py-s4 text-toon-ink shadow-toon-cyan;
+  }
+  /* Tail: an ink triangle with a smaller paper triangle on top. */
+  .toon-bubble::before, .toon-bubble::after { content: ""; position: absolute; width: 0; height: 0; border-style: solid; border-color: transparent; }
+  .toon-bubble::before { left: 26px; bottom: -24px; border-width: 24px 16px 0 16px; border-top-color: theme(colors.toon.ink); }
+  .toon-bubble::after  { left: 33px; bottom: -14px; border-width: 15px 9px 0 9px; border-top-color: theme(colors.toon.paper); }
+
+  /* Halftone ground, opt-in on <body>. */
+  .toon-dots { background-image: radial-gradient(rgb(255 232 26 / .14) 1.2px, transparent 1.6px); background-size: 10px 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
