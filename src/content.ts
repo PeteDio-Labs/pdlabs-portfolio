@@ -50,28 +50,30 @@ export const studies: CaseStudy[] = [
       {
         heading: 'What I built',
         paragraphs: [
-          'An agent workflow where each task gets its own session, every pull request gets a review, and no session approves its own work.',
-          'A tiered gate decides what merges automatically. A script scores each PR\'s blast radius, and the low tiers merge after CI and a clean review. A PR does not auto-merge when its review has a blocking finding, a check is red or skipped, or it has no checks. It also waits when it carries a hold label, asks to wait, or needs a hand step.',
-          'An unrecognised file path counts as the highest tier, because the rules fail closed. Infrastructure changes run `validate` on PR, then `plan` and `apply` on merge.',
+          'An agent workflow where each task gets its own session, every pull request gets a review, and no session approves its own work. A session may merge its own PR only outside the infrastructure repo, and only after an independent review, a proof of the change and a check that its base is not stale.',
+          'A tiered gate decides who merges. A script scores each PR\'s blast radius from the files it touches. Tier 0 is prose. Tier 1 is code that runs nothing on merge. Tier 2 is everything else, such as Terraform, workflows and the gate\'s own rules. A merge bot with deterministic code merges tiers 0 and 1 after CI and a clean review, and a separate reviewer thread handles tier 2 under the same gate. No model output widens what merges.',
+          'A PR waits when its review has a blocking finding, a check is red or skipped, or it has no checks. It also waits when it carries a hold label, asks to wait, or needs a hand step. A push voids the review of the old head, and the merge is pinned to the commit that was reviewed. After each merge, the bot reads the main branch back and expects the change to be there.',
+          'An unrecognised file path counts as tier 2, because the rules fail closed. Infrastructure changes run `validate` on PR, then `plan` and `apply` on merge. Credentials and destructive flags stay hand steps that no merge runs.',
         ],
       },
       {
         heading: 'Result',
         paragraphs: [
-          '214 PRs merged in the week of 19 October, up from 55 the week before. Of the 214, 211 were opened by agent sessions and 3 by hand. The count covers eight repos by GitHub merge date, Monday to Sunday, UTC.',
+          '214 PRs merged in the week of 19 October, up from 55 the week before. Of the 214, 211 carried an agent author or footer and 3 did not, which is a heuristic because agent PRs can come from my own login. The count covers eight repos by GitHub merge date, Monday to Sunday, UTC.',
           'The week after had 26, so the 19 October week was a peak, not a steady rate. Throughput is the measure here, not quality.',
         ],
       },
       {
         heading: 'A failure that taught me',
         paragraphs: [
-          'One night the secrets store was sealed for about nine and a half hours. The nightly reconcile job reported success on all eleven repos while scanning none of them. A failed token step was set to continue, and the next step treated a missing token as a clean exit.',
-          'The job now names the repo and the reason, writes a summary saying it never reached the scan, and exits non-zero. The recurring bug was a green check over work that never happened. In the status jobs I audited, each now fails non-zero and reports what it examined, not only what it found.',
+          'On 9 September the secrets store sat sealed for 9 hours and 34 minutes. The nightly backup restarts every guest, the store always starts sealed, and the watcher that unsealed it ran on a laptop that had gone to sleep. The tracker reconcile job, which had gained eleven calling repos the day before, reported success in all eleven while reconciling nothing. Its token step was set to continue, and the next step treated a missing token as a clean exit. A warning annotation does not colour a check.',
+          'Two other things stood out. The sibling reconcile job had hit the same error and failed loudly, because an earlier incident had already fixed it there. And the uptime monitor recorded 1,724 consecutive DOWN heartbeats for the sealed store, then told nobody, because none of its 19 monitors had a notification channel attached.',
+          'The reconcile job now fails when it cannot get a token, and says why. The unseal watcher moved to an always-on host and re-reads the seal status after it submits the key, so it exits non-zero if the store is still sealed. The recurring bug was a green check over work that never happened. In the status jobs I audited, each now fails non-zero and reports what it examined, not only what it found.',
         ],
       },
       {
         heading: 'Scale',
-        paragraphs: ['About ten repos and about two dozen containers and VMs on three Proxmox nodes.'],
+        paragraphs: ['About ten repos and about two dozen containers and VMs on three Proxmox nodes. The platform follows the AWS shape: containers stand in for EC2, MinIO for S3, Postgres for RDS and Vault for Secrets Manager, so it can move to AWS by swapping the provider and variables.'],
       },
       {
         // Source: the rule the repo now carries, written after six items with the same shape.
@@ -100,7 +102,9 @@ export const studies: CaseStudy[] = [
         heading: 'What I built',
         paragraphs: [
           'A personal agent with read-only access to email, calendar, spreadsheets and bank data. It can write calendar events and spreadsheet cells. It cannot move money, delete records or change account settings.',
-          'It verifies each fact at its source of record before it states a number, and it reads back every change it makes. The user approves sends, changes and anything hard to undo.',
+          'It verifies each fact at its source of record before it states a number: the calendar for dates, bank data for balances, the lender\'s statement for terms. It reads back every change it makes, by fetching the calendar event or sheet row again. The user approves sends, changes and anything hard to undo.',
+          'Mail is the coordination channel. A dedicated label carries mail between the household\'s two agents, with a topic in the subject and a header block naming sender, topic and type, and a push watcher relays new mail within minutes. Logins stay in a secure vault and never appear in chat or mail.',
+          'The payoff plan orders debts by deadline first, because a missed deferred-interest deadline adds retroactive interest, then by rate. Each bill, payoff and savings transfer is a dated calendar event. A standing rule sends surplus to savings first, then to the highest-rate loan.',
         ],
       },
       {
@@ -108,7 +112,7 @@ export const studies: CaseStudy[] = [
         // Source: the agent's own spec, rounded as its publish rules require.
         paragraphs: [
           'The agent keeps about ten debts and payoffs in one sheet with their deadlines, and checks each payment before and after it happens.',
-          'It sweeps the inbox three times a day and triages more than a hundred messages in a typical week, without sending or deleting anything on its own. About ten automated checks fire before a payment lands: confirm the income posted, pull a fresh balance, report pay or hold. That handed several hours a week of bill and inbox triage off the household.',
+          'It sweeps the inbox three times a day and triages more than a hundred messages in a typical week, without sending or deleting anything on its own. About ten automated checks fire before a payment lands: confirm the income posted, pull a fresh balance, report pay or hold. It built or corrected dozens of dated money events on the shared calendar, and moved payoff dates to match the days income posts. That handed several hours a week of bill and inbox triage off the household.',
         ],
       },
       {
@@ -132,14 +136,17 @@ export const studies: CaseStudy[] = [
       },
       {
         heading: 'What I built',
-        paragraphs: ['Per-role SSH through short-lived certificates signed by Vault, with a time-limited break-glass path for admin work.'],
+        paragraphs: [
+          'Before this, every CD role shared one key that opened root on every Terraform-managed container, the secrets host and the CI runner. An audit flagged it as a high finding. I chose Vault-signed certificates over a directory service, an LDAP proxy and per-role static keys.',
+          'Vault holds the CA private key and it never leaves. A caller sends its public key to a signing role and gets back a certificate that names one principal and expires with the role. A host trusts the CA and lists, per local user, which principals may log in as that user. Hosts verify certificates offline, so no host calls Vault. A time-limited break-glass path covers admin work.',
+        ],
       },
       {
         heading: 'Result so far',
         paragraphs: [
-          'Phase 1 shipped as one PR plus six follow-up fixes after review rounds, through the normal PR flow.',
-          'Each signing role names one principal and one lifetime: an hour for admin work, thirty minutes for the service that reads the inventory. Revocation is the clock, not a list.',
-          'The role adds certificate trust beside the keys a host already has and never removes a static key. The rollout goes one canary host at a time, and the canary has not passed its live check yet, so no host has dropped static keys.',
+          'Phase 1 shipped as one PR, then six follow-up PRs through the normal flow: two that closed review findings before the first canary run, and four that fixed the role and its checks, such as revoking principals files the role does not own and not reloading sshd on hosts that start it by socket.',
+          'Each signing role names one principal and one lifetime: an hour for admin work, thirty minutes for the service that reads the inventory. Revocation is the clock, not a list. Because Vault seals every night, nothing is signed while it is sealed, and a scheduled caller fails loudly.',
+          'The role adds certificate trust beside the keys a host already has and never removes a static key. The rollout goes one canary host at a time, and the canary has not passed its live check yet, so as of 3 November no host has dropped static keys.',
         ],
       },
       {
@@ -154,7 +161,7 @@ export const studies: CaseStudy[] = [
     title: 'A self-hosted LLM on Proxmox',
     tag: 'AI infra',
     accent: 'violet',
-    summary: 'A local Qwen model and an embedding model on separate consumer GPUs, with a shared search service over docs and repos.',
+    summary: 'A local Qwen model and an embedding model on separate consumer GPUs, with a shared search service over the vault, the tracker and repo docs.',
     stat: { value: '~70', label: 'tokens per second on consumer GPUs' },
     sections: [
       {
@@ -163,12 +170,15 @@ export const studies: CaseStudy[] = [
       },
       {
         heading: 'What I built',
-        paragraphs: ['A local Qwen model and an embedding model on separate GPUs, with a search service over docs and repos that the agents share.'],
+        paragraphs: [
+          'A local Qwen model and an embedding model on separate GPUs, each served by its own Ollama instance pinned to one card. A lab agent answers questions about the platform from the local model, and a search service that the agents share supplies the context.',
+          'The search service indexes four sources: the knowledge vault, the tracker, a lab digest and repo docs. It embeds with the local embedding model, refuses to start without a caller token, and keeps a short list of private notes out of the index for every caller. Its tests use a fake embedder, so CI needs no route to the lab.',
+        ],
       },
       {
         heading: 'Result',
         paragraphs: [
-          'About 70 tokens per second on consumer hardware.',
+          'About 70 tokens per second on consumer hardware: 71 with thinking on and 128 with it off, measured on 4 September. The model, a 5.2 GB file, fits on one 8 GB card with its context.',
           'The chat model is an 8-billion-parameter Qwen3 (5.2 GB, Q4_K_M) on an 8 GB GPU. The embedding model is a 0.6-billion-parameter Qwen3 (Q8_0) on a 6 GB GPU.',
         ],
       },
@@ -176,8 +186,8 @@ export const studies: CaseStudy[] = [
         // Source: the model audit in the lab notes and the agent's README.
         heading: 'Trade-off',
         paragraphs: [
-          'The local model is right only with its thinking turned on, so every answer pays for a reasoning block first. The agent loop caps it at eight tool turns and an eighty-second deadline, and marks a cut answer incomplete instead of passing it off as whole.',
-          'Two smaller candidate models never closed their thinking block: they returned an empty answer with a clean status, so the audit deleted them. A model has to be tested on the real question before it earns the default slot.',
+          'A thinking Qwen3 spends its output limit on reasoning, so the agent turns thinking off. In one July measurement a one-line request took 80 seconds with thinking on and 7.7 seconds warm with thinking off, a pinned model and a capped answer. The agent loop caps each reply at 1,024 tokens, eight model turns and an eighty-second deadline. The last turn offers no tools, and a cut or empty answer is marked incomplete instead of being passed off as whole.',
+          'I audited every installed model on one question with thinking on and off: how many simultaneous disk failures a RAIDZ1 vdev survives. The Qwen3 8B model answered correctly both ways. Gemma 4 answered correctly only with thinking on. The two Qwen3.5 models, a 4B and a 9B, never closed their thinking block: they returned an empty answer with a clean status, so the audit deleted them. A model has to be tested on the real question before it earns the default slot.',
           'What the agent stopped needing: an API gateway, a hosted key and a monthly spend cap. The gateway is retired.',
         ],
       },
