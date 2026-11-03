@@ -36,6 +36,16 @@ The build also writes `studies.json`, the same list without the bodies.
 Pages are flat files (`/work/<slug>.html`), so S3 and CloudFront can serve them with no
 rewrite function.
 
+## Production signals
+
+| Signal | Where |
+|---|---|
+| Analytics | Cloudflare Web Analytics, cookieless. The build adds the beacon only when `CF_ANALYTICS_TOKEN` is set, and the privacy page text follows that setting. Case-study opens show as page views of `/work/<slug>.html`, with the referrer. Set the token as a public build variable, not a secret |
+| Cookies | None, so there is no banner. A test fails the build if a page or `site.js` sets a cookie or uses web storage. Add a consent banner only with the first cookie |
+| Legal | `/privacy.html` and `/terms.html`, from `src/legal.ts`, linked in every footer |
+| Search and LLMs | `robots.txt` (allows all crawlers), `sitemap.xml`, `llms.txt`, Open Graph and Twitter tags, JSON-LD `ProfilePage` on the home page, and `public/og.png` |
+| Headers | CSP and HSTS come from the CloudFront response headers policy in `petedio-iac` (`modules/portfolio-site`). The pages carry no inline script, so the CSP allows scripts from `self` and the analytics host only |
+
 ## Content rules
 
 The case studies come from draft 2 in the project files. They hold no secrets, internal IP
