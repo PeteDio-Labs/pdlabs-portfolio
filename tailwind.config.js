@@ -3,8 +3,9 @@
  *
  * Structure (spacing grid, type scale, radii names, spring easing, durations) comes from the
  * PeteDio house tokens: petedio-workspace `.claude/skills/apple-design/references/tokens.md`.
- * Colour is the deliberate break from that set: neon cartoon on deep violet, chosen by Pedro
- * on 2026-11-03. Every neon fill carries `ink` text, which keeps contrast at 6.4:1 or better.
+ * Colour is the deliberate break from that set: a comic-book triad of electric blue, red and
+ * yellow, plus violet, on deep navy with cream panels (Pedro, 2026-11-03, replacing the cyan
+ * and orange pair). Every fill carries `ink` text, which keeps contrast at 5.1:1 or better.
  */
 export default {
   content: ['./src/**/*.ts', './ui/**/*.ts', './build.ts'],
@@ -12,36 +13,36 @@ export default {
     extend: {
       colors: {
         toon: {
-          ground: '#12062a', // page background
-          ink: '#0a0314',    // outlines and text on fills
-          paper: '#fff6e6',  // cards, bubbles; text on ground
-          cyan: '#19e6ff',
-          orange: '#ff6b1a',
-          yellow: '#ffe81a',
+          ground: '#0c1240', // page background, deep navy
+          ink: '#0a0a1f',    // outlines and text on fills
+          paper: '#fff6dc',  // panels, bubbles; text on ground
+          blue: '#3d7bff',
+          red: '#ff3d3d',
+          yellow: '#ffd60a',
           violet: '#9b7bff',
         },
       },
       fontFamily: {
-        display: ['"Bowlby One"', '"Arial Black"', 'sans-serif'],
+        display: ['Bangers', '"Arial Black"', 'Impact', 'sans-serif'],
         body: ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       // House type scale: 11 / 12 / 13 / 15 / 17 / 20 / 22 / 28, plus display sizes.
       fontSize: {
         caption2: '11px', caption1: '12px', footnote: '13px', subhead: '15px',
         body: '17px', title3: '20px', title2: '22px', title1: '28px',
-        display2: 'clamp(28px,5vw,44px)', display1: 'clamp(44px,10vw,104px)',
+        display2: 'clamp(32px,5.5vw,52px)', display1: 'clamp(44px,10vw,104px)', hero: 'clamp(64px,12vw,150px)',
       },
       // House 8pt grid.
       spacing: { s1: '4px', s2: '8px', s3: '12px', s4: '16px', s5: '20px', s6: '24px', s8: '32px' },
       borderRadius: { group: '12px', card: '16px', hero: '24px', sheet: '28px', toon: '10px' },
       borderWidth: { toon: '5px' },
       boxShadow: {
-        'toon-cyan': '8px 8px 0 #19e6ff',
-        'toon-orange': '8px 8px 0 #ff6b1a',
-        'toon-yellow': '8px 8px 0 #ffe81a',
+        'toon-blue': '8px 8px 0 #3d7bff',
+        'toon-red': '8px 8px 0 #ff3d3d',
+        'toon-yellow': '8px 8px 0 #ffd60a',
         'toon-violet': '8px 8px 0 #9b7bff',
-        'toon-lift': '11px 12px 0 var(--toon-shadow, #ff6b1a)',
-        'toon-press': '0 0 0 var(--toon-shadow, #ff6b1a)',
+        'toon-lift': '11px 12px 0 var(--toon-shadow, #ff3d3d)',
+        'toon-press': '0 0 0 var(--toon-shadow, #ff3d3d)',
       },
       transitionTimingFunction: {
         spring: 'cubic-bezier(.175,.885,.32,1.275)', // house spring
