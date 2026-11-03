@@ -16,7 +16,7 @@ export const legalPages = (analytics: boolean): LegalPage[] => [
         paragraphs: [
           'This site sets no cookies, has no accounts and runs no advertising. It stores nothing in your browser.',
           analytics
-            ? 'It uses one privacy-friendly analytics service that counts page views without cookies or fingerprinting.'
+            ? 'It uses one privacy-friendly analytics service that counts page views without cookies or browser storage.'
             : 'It runs no analytics.',
         ],
       },
@@ -30,8 +30,8 @@ export const legalPages = (analytics: boolean): LegalPage[] => [
         heading: 'Analytics',
         paragraphs: analytics
           ? [
-              'The site uses Cloudflare Web Analytics to count visits, which pages get read, which case studies get opened, the referring site, country, browser and device type. Cloudflare Web Analytics sets no cookies and does not track you across sites or build a profile of you. It does not store your IP address in a way that identifies you to the site owner.',
-              'Cloudflare processes this data under its own privacy policy. To avoid being counted, turn on the Do Not Track setting in your browser or use a content blocker.',
+              'The site uses Cloudflare Web Analytics to count visits, which pages get read, which case studies get opened, the referring site, country, browser and device type. Cloudflare Web Analytics sets no cookies and stores nothing in your browser. Cloudflare says it does not track individual visitors across its customers\' sites.',
+              'Cloudflare processes this data under its own privacy policy. Cloudflare does not document support for the Do Not Track setting, so do not rely on it. To avoid being counted, use a content blocker.',
             ]
           : ['The site collects no analytics. Hosting logs may exist at the provider, as described next.'],
       },
