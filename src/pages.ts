@@ -1,5 +1,6 @@
 import { esc, md } from './html.ts';
-import { site, studies, type Accent, type CaseStudy } from './content.ts';
+import { legalPages, legalUpdated } from './legal.ts';
+import { site, studies, featured, latest, tags, type Accent, type CaseStudy } from './content.ts';
 
 const HEX: Record<Accent, string> = { blue: '#3d7bff', red: '#ff3d3d', yellow: '#ffd60a', violet: '#9b7bff' };
 // Shadow paired with each accent: never a complementary clash, never the fill's own colour.
@@ -40,7 +41,7 @@ const lettered = (id: string, text: string, accent: Accent, cls: string) =>
 
 const nav = (current: string, path: string) => {
   const items: [string, string, string?][] = [
-    ['Work', '/#work', 'work'],
+    ['Work', '/work.html', 'work'],
     ['About', '/#about', 'about'],
     ['UI kit', '/ui.html'],
   ];
@@ -54,7 +55,9 @@ const nav = (current: string, path: string) => {
     .join('')}</nav>`;
 };
 
-export function layout(opts: { title: string; description: string; path: string; current?: string; body: string }): string {
+const analyticsToken = process.env.CF_ANALYTICS_TOKEN?.trim() || '';
+
+export function layout(opts: { title: string; description: string; path: string; current?: string; body: string; scriptSrc?: string; noindex?: boolean; jsonLd?: object }): string {
   const fullTitle = opts.path === '/' ? `${site.name}: systems built with AI` : `${opts.title} | ${site.name}`;
   return `<!doctype html>
 <html lang="en">
@@ -66,8 +69,20 @@ export function layout(opts: { title: string; description: string; path: string;
 <title>${esc(fullTitle)}</title>
 <meta name="description" content="${esc(opts.description)}">
 <link rel="canonical" href="https://${site.domain}${opts.path}">
+<meta property="og:type" content="${opts.path.startsWith('/work/') ? 'article' : 'website'}">
+<meta property="og:site_name" content="${esc(site.name)}">
+<meta property="og:url" content="https://${site.domain}${opts.path}">
 <meta property="og:title" content="${esc(fullTitle)}">
 <meta property="og:description" content="${esc(opts.description)}">
+<meta property="og:image" content="https://${site.domain}/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="pdlab: systems built with AI, in comic-book style">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(fullTitle)}">
+<meta name="twitter:description" content="${esc(opts.description)}">
+<meta name="twitter:image" content="https://${site.domain}/og.png">
+${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ? `<script type="application/ld+json">${JSON.stringify(opts.jsonLd).replace(/</g, '\\u003c')}</script>\n` : ''}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -87,49 +102,23 @@ ${opts.body}
   <footer class="toon-footer">
     <span class="block">${letters('pdlab', 'red', { cls: 'text-title1' })}</span>
     <p class="m-0 text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link" href="/ui.html">toonish-ui</a>, an original kit. <a class="toon-link" href="${site.github}">GitHub</a></p>
+    <p class="m-0 text-footnote"><a class="toon-link" href="/privacy.html">Privacy</a> · <a class="toon-link" href="/terms.html">Terms</a></p>
   </footer>
 </div>
-<script>
-// Two behaviours, no framework. Pages stay static HTML, so S3 and CloudFront need no rewrite.
-(() => {
-  // 1. Scroll spy: on the home page, the main nav marks the section in view, not the page.
-  const links = [...document.querySelectorAll('nav[aria-label="Main"] a[data-spy]')];
-  const mark = (id) => links.forEach((a) => (a.dataset.spy === id ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current')));
-  const targets = links.map((a) => document.getElementById(a.dataset.spy)).filter(Boolean);
-  if (targets.length) {
-    const seen = new Map();
-    const pick = () => {
-      // The last section whose top has passed the upper third of the screen wins. Above the first one, Work stays marked.
-      let id = targets[0].id;
-      for (const t of targets) if (t.getBoundingClientRect().top < innerHeight * 0.35) id = t.id;
-      mark(id);
-    };
-    addEventListener('scroll', pick, { passive: true });
-    addEventListener('hashchange', pick);
-    pick();
-  }
-  // 2. Toggle groups: one pressed button at a time, with a bounce on the newly pressed one.
-  document.querySelectorAll('[data-toon-toggle]').forEach((group) => {
-    group.addEventListener('click', (e) => {
-      const b = e.target.closest('button');
-      if (!b || !group.contains(b)) return;
-      group.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-      b.classList.remove('toon-boing');
-      void b.offsetWidth; // restart the animation on a repeat tap
-      b.classList.add('toon-boing');
-    });
-  });
-})();
-</script>
-</body>
+<script src="/site.js" defer></script>${opts.scriptSrc ? `\n<script src="${opts.scriptSrc}" defer></script>` : ''}
+${analyticsToken ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${esc(analyticsToken)}"}'></script>\n` : ''}</body>
 </html>
 `;
 }
 
-const studyCard = (s: CaseStudy, i: number) => `
-      <article class="toon-card toon-pop relative flex flex-col" style="--toon-shadow:${HEX[s.accent]}; --toon-tilt:${i % 2 ? '1deg' : '-1.5deg'}; animation-delay:${120 * i}ms">
-        <span class="toon-corner" style="background:${HEX[s.accent]}" aria-hidden="true">0${i + 1}</span>
-        <span class="toon-badge ${BADGE[s.accent]} self-start">${esc(s.tag)}</span>
+/** "Oct 2026": the month is enough, and it does not promise a precision the dates do not have. */
+const month = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+
+/** A case-study card. The data attributes let the /work sort script order and filter without re-reading the page. */
+const studyCard = (s: CaseStudy, i: number, label = '') => `
+      <article class="toon-card toon-pop relative flex flex-col" data-study data-date="${s.date}" data-tag="${esc(s.tag)}" data-title="${esc(s.title)}" style="--toon-shadow:${HEX[s.accent]}; --toon-tilt:${i % 2 ? '1deg' : '-1.5deg'}; animation-delay:${120 * i}ms">
+        ${label ? `<span class="toon-corner" style="background:${HEX[s.accent]}">${esc(label)}</span>` : ''}
+        <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
         <h3 class="mb-s2 mt-s3 text-title2 font-bold leading-snug">${esc(s.title)}</h3>
         <p class="my-0">${md(s.summary)}</p>
         <p class="mt-s4 mb-s4">${figure(s.stat.value, s.accent, 'text-[52px]')}<span class="mt-s1 block text-footnote">${esc(s.stat.label)}</span></p>
@@ -176,15 +165,18 @@ export function home(): string {
 
     <section id="work" class="scroll-mt-8 py-s8" aria-labelledby="work-h">
       ${lettered('work-h', 'Case studies', 'yellow', 'mb-s8 max-w-md')}
-      <div class="grid gap-s8 sm:grid-cols-2">${studies.map(studyCard).join('')}
+      <div class="grid gap-s8 sm:grid-cols-2">${[studyCard(featured, 0, 'Featured'), ...(latest ? [studyCard(latest, 1, 'Latest')] : [])].join('')}
       </div>
+      <p class="mt-s8"><a class="toon-btn toon-btn-yellow" href="/work.html">All ${studies.length} case studies<span class="sr-only">, sortable by date and topic</span></a></p>
     </section>
 
     <section id="about" class="scroll-mt-8 grid gap-s8 py-s8 md:grid-cols-[1fr_1fr]" aria-labelledby="about-h">
       <div class="min-w-0">
         ${lettered('about-h', 'How I work', 'blue', 'mb-s6 max-w-sm')}
         <p class="mb-s4 mt-0 max-w-[60ch]">I treat AI agents like a team, not a tool. Each task gets its own session and its own branch. Nothing merges without a review, and no session approves its own work.</p>
-        <p class="m-0 max-w-[60ch]">The infrastructure is declared, not hand-run: Terraform builds it, Ansible configures it, and a repair is a config change before it is ever a script. When a check reports success, it also says what it examined.</p>
+        <p class="mb-s4 m-0 max-w-[60ch]">The infrastructure is declared, not hand-run: Terraform builds it, Ansible configures it, and a repair is a config change before it is ever a script. When a check reports success, it also says what it examined.</p>
+        <h3 class="mb-s3 mt-s6 text-title2 font-bold">Background</h3>
+        <p class="m-0 max-w-[60ch]">${esc(site.background)}</p>
       </div>
       <div class="toon-callout toon-callout-yellow self-start">
         <h3 class="mb-s3 mt-0 text-title2 font-bold">The stack</h3>
@@ -204,7 +196,86 @@ export function home(): string {
         <a class="toon-btn toon-btn-yellow toon-wiggle" href="${site.github}">Find me on GitHub</a>
       </div>
     </section>`;
-  return layout({ title: 'Home', path: '/', current: 'Work', description: `${site.name}. ${site.role} ${site.intro}`, body });
+  return layout({ title: 'Home', path: '/', current: 'Work', description: `${site.name}. ${site.role} ${site.intro}`, body, jsonLd: personJsonLd() });
+}
+
+/**
+ * The /work page script, written to dist/work.js so a Content-Security-Policy of script-src 'self' allows it.
+ * The page is complete without it: cards arrive newest first and the controls
+ * stay hidden. With it, the controls appear and the cards reorder and filter in place, with no fetch
+ * and no animation of its own. The choice lives in the query string, so a sorted view can be shared.
+ */
+export const workScript = `(() => {
+  const list = document.getElementById('study-list');
+  const controls = document.getElementById('study-controls');
+  const sort = document.getElementById('study-sort');
+  const tagBar = document.getElementById('study-tags');
+  const status = document.getElementById('study-status');
+  if (!list || !controls || !sort || !tagBar || !status) return;
+  const cards = [...list.querySelectorAll('[data-study]')];
+  const by = {
+    newest: (a, b) => b.dataset.date.localeCompare(a.dataset.date) || a.dataset.title.localeCompare(b.dataset.title),
+    oldest: (a, b) => a.dataset.date.localeCompare(b.dataset.date) || a.dataset.title.localeCompare(b.dataset.title),
+    title: (a, b) => a.dataset.title.localeCompare(b.dataset.title),
+  };
+  const state = { sort: 'newest', tag: '' };
+  const q = new URLSearchParams(location.search);
+  if (by[q.get('sort')]) state.sort = q.get('sort');
+  if (cards.some((c) => c.dataset.tag === q.get('tag'))) state.tag = q.get('tag');
+  const render = () => {
+    cards.sort(by[state.sort]).forEach((c) => {
+      list.appendChild(c);
+      c.hidden = !!state.tag && c.dataset.tag !== state.tag;
+    });
+    sort.value = state.sort;
+    tagBar.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tag === state.tag)));
+    const shown = cards.filter((c) => !c.hidden).length;
+    status.textContent = 'Showing ' + shown + ' of ' + cards.length + ' case studies' + (state.tag ? ', topic ' + state.tag : '') + ', ' + sort.selectedOptions[0].textContent.toLowerCase() + '.';
+    const next = new URLSearchParams();
+    if (state.sort !== 'newest') next.set('sort', state.sort);
+    if (state.tag) next.set('tag', state.tag);
+    try { history.replaceState(null, '', location.pathname + (next.size ? '?' + next : '')); } catch (e) {}
+  };
+  sort.addEventListener('change', () => { state.sort = sort.value; render(); });
+  tagBar.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (b && tagBar.contains(b)) { state.tag = b.dataset.tag; render(); }
+  });
+  controls.hidden = false;
+  render();
+})();`;
+
+export function workIndex(): string {
+  const body = `
+    <section class="py-s8" aria-labelledby="work-h">
+      <h1 id="work-h" class="m-0">${letters('Case studies', 'yellow', { live: true, cls: 'text-hero leading-[.9]' })}</h1>
+      <p class="mt-s4 max-w-[60ch] text-title3">${studies.length} write-ups of systems I built with AI. Each one names the problem, what I built, the result and what went wrong.</p>
+      <div id="study-controls" class="mt-s6 flex flex-wrap items-end gap-x-s6 gap-y-s4" hidden>
+        <label class="grid gap-s1 text-footnote font-bold" for="study-sort">Sort by
+          <select id="study-sort" class="rounded-toon border-toon border-toon-ink bg-toon-paper px-s3 py-s2 font-body text-body font-bold text-toon-ink">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="title">Title, A to Z</option>
+          </select>
+        </label>
+        <div class="grid gap-s1 text-footnote font-bold"><span id="study-tags-label">Topic</span>
+          <div id="study-tags" class="toon-nav" role="group" aria-labelledby="study-tags-label" data-toon-toggle>
+            <button type="button" data-tag="" aria-pressed="true">All</button>${tags.map((g) => `<button type="button" data-tag="${esc(g)}" aria-pressed="false">${esc(g)}</button>`).join('')}
+          </div>
+        </div>
+      </div>
+      <p id="study-status" class="sr-only" role="status" aria-live="polite"></p>
+      <div id="study-list" class="mt-s8 grid gap-s8 sm:grid-cols-2">${studies.map((s, i) => studyCard(s, i)).join('')}
+      </div>
+    </section>`;
+  return layout({
+    title: 'Case studies',
+    path: '/work.html',
+    current: 'Work',
+    description: `${studies.length} case studies on building systems with AI: agents, merge gates, short-lived access, local models and disaster recovery. Sort by date or filter by topic.`,
+    body,
+    scriptSrc: '/work.js',
+  });
 }
 
 export function study(s: CaseStudy): string {
@@ -213,7 +284,7 @@ export function study(s: CaseStudy): string {
   const prev = studies[(i + studies.length - 1) % studies.length];
   const body = `
     <article class="py-s8">
-      <a class="toon-link" href="/#work">All case studies</a>
+      <a class="toon-link" href="/work.html">All case studies</a>
       <header class="mb-s8 mt-s6 grid items-end gap-s6 md:grid-cols-[1fr_auto]">
         <div class="min-w-0">
           <span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span>
@@ -319,8 +390,39 @@ export function notFound(): string {
     <section class="py-16">
       <h1 class="sr-only">Page not found</h1>
       <div class="text-hero leading-none">${letters('404!', 'red', { live: true })}</div>
-      <p class="text-title3">That page doesn't exist. It may have moved when the site was rebuilt.</p>
+      <p class="text-title3">There is no page at this address. The link may be mistyped, or the page may have moved when the site was rebuilt.</p>
       <a class="toon-btn" href="/">Go to the home page</a>
     </section>`;
-  return layout({ title: 'Page not found', path: '/404.html', description: 'Page not found.', body });
+  return layout({ title: 'Page not found', path: '/404.html', description: 'Page not found.', noindex: true, body });
+}
+
+/** Structured data for search engines and LLMs: a ProfilePage whose main entity is the person. */
+export const personJsonLd = () => ({
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  url: `https://${site.domain}/`,
+  mainEntity: {
+    '@type': 'Person',
+    name: site.name,
+    url: `https://${site.domain}/`,
+    jobTitle: 'Full-stack and infrastructure engineer',
+    description: `${site.role} ${site.background}`,
+    sameAs: [site.github, site.org],
+    knowsAbout: ['AI agents', 'Terraform', 'Ansible', 'AWS', 'TypeScript', 'Bun', 'GitOps', 'Vault', 'Proxmox', 'Full-stack web development'],
+  },
+});
+
+export function legal(slug: 'privacy' | 'terms'): string {
+  const page = legalPages(Boolean(analyticsToken)).find((l) => l.slug === slug)!;
+  const body = `
+    <article class="py-s8">
+      <h1 class="mt-0 leading-none">${letters(page.title, slug === 'privacy' ? 'blue' : 'yellow', { cls: 'text-display2' })}</h1>
+      <p class="text-footnote">Last updated ${legalUpdated}</p>
+      <div class="grid max-w-[68ch] gap-s6">${page.sections
+        .map((s) => `
+        <section><h2 class="mb-s2 mt-0 text-title2 font-bold">${esc(s.heading)}</h2>${s.paragraphs.map((t) => `<p class="my-s2">${md(t)}</p>`).join('')}</section>`)
+        .join('')}
+      </div>
+    </article>`;
+  return layout({ title: page.title, path: `/${slug}.html`, description: page.description, body });
 }

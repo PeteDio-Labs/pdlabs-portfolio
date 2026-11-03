@@ -1,6 +1,6 @@
 # pdlabs-portfolio
 
-Pedro Delgadillo's portfolio for `pdlab.dev`: four case studies about building systems with AI,
+Pedro Delgadillo's portfolio for `pdlab.dev`: case studies about building systems with AI,
 on toonish-ui, an original cartoon component kit (`PET-809`, under the `PET-773` epic).
 The site is static HTML rendered by TypeScript under Bun and styled with Tailwind CSS.
 
@@ -20,15 +20,31 @@ You need Bun 1.4.4 or later, because `bun.lock` uses lockfile version 2. CI pins
 
 | Path | Holds |
 |---|---|
-| `src/content.ts` | Case-study text and site details. Edit content here |
-| `src/pages.ts` | Page templates: home, case study, kit and 404 |
+| `content/studies/<slug>.json` | One file per case study: text, `date`, `tag`, `accent`, `stat`, `skills`, optional `featured` and `sources`. Add a file to add a study |
+| `src/content.ts` | Site details, and the loader that checks every study file and fails the build on a bad one |
+| `src/pages.ts` | Page templates: home, `/work`, case study, kit and 404 |
 | `build.ts` | Writes `dist/` and fails when a page or the CSS is missing |
 | `serve.ts` | Local preview server |
 | `ui/` | toonish-ui: the component CSS. See `ui/README.md` |
 | `tailwind.config.js` | The design tokens |
 
+The home page shows the featured study and the newest other one. `/work.html` lists every study
+newest first and, with JavaScript, sorts by date or title and filters by topic. The query string
+keeps the choice (`?sort=oldest&tag=Agents`). Without JavaScript the list stays in date order.
+The build also writes `studies.json`, the same list without the bodies.
+
 Pages are flat files (`/work/<slug>.html`), so S3 and CloudFront can serve them with no
 rewrite function.
+
+## Production signals
+
+| Signal | Where |
+|---|---|
+| Analytics | Cloudflare Web Analytics, cookieless. The build adds the beacon only when `CF_ANALYTICS_TOKEN` is set, and the privacy page text follows that setting. Case-study opens show as page views of `/work/<slug>.html`, with the referrer. Set the token as a public build variable, not a secret |
+| Cookies | None, so there is no banner. A test fails the build if a page or `site.js` sets a cookie or uses web storage. Add a consent banner only with the first cookie |
+| Legal | `/privacy.html` and `/terms.html`, from `src/legal.ts`, linked in every footer |
+| Search and LLMs | `robots.txt` (allows all crawlers), `sitemap.xml`, `llms.txt`, Open Graph and Twitter tags, JSON-LD `ProfilePage` on the home page, and `public/og.png` |
+| Headers | CSP and HSTS come from the CloudFront response headers policy in `petedio-iac` (`modules/portfolio-site`). The pages carry no inline script, so the CSP allows scripts from `self` and the analytics host only |
 
 ## Content rules
 
@@ -36,8 +52,8 @@ The case studies come from draft 2 in the project files. They hold no secrets, i
 addresses, hostnames, tokens, account details, tool paths or schedule internals. A test fails
 the build when a draft marker or a private-network address appears in a page. Sections the
 draft left open are filled only from a named source (the PR statistics in `data/pr-stats.json`,
-the agent's own spec, the Vault SSH roles or the model audit), and `src/content.ts` names that
-source in a comment.
+the agent's own spec, the Vault SSH roles or the model audit), and a study's `sources` field names that
+source.
 
 ## Deploy
 

@@ -1,8 +1,10 @@
 import { test, expect } from 'bun:test';
-import { home, kit, notFound, study } from './pages.ts';
-import { studies } from './content.ts';
+import { home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
+import { llmsTxt, robotsTxt, sitemapXml } from './seo.ts';
+import { siteScript } from './script.ts';
+import { site, studies, featured, latest } from './content.ts';
 
-const all = () => [home(), kit(), notFound(), ...studies.map(study)];
+const all = () => [home(), workIndex(), kit(), notFound(), legal('privacy'), legal('terms'), ...studies.map(study)];
 
 test('every page has one h1, a title, and a description', () => {
   for (const html of all()) {
@@ -23,7 +25,7 @@ test('every case study links to the previous one, the next one and back', () => 
     const html = study(s);
     const next = studies[(i + 1) % studies.length];
     const prev = studies[(i + studies.length - 1) % studies.length];
-    expect(html).toContain('href="/#work"');
+    expect(html).toContain('href="/work.html"');
     expect(html).toContain(`href="/work/${next.slug}.html"`);
     expect(html).toContain(`href="/work/${prev.slug}.html"`);
     expect(html).not.toContain(`href="/work/${s.slug}.html"`);
@@ -44,7 +46,91 @@ test('kit sample nav switches in place instead of reloading', () => {
   expect(html).not.toMatch(/aria-label="Sample"[^>]*>\s*<a /);
 });
 
-test('home links every case study', () => {
+test('home shows the featured and the latest study and links to /work', () => {
   const html = home();
-  for (const s of studies) expect(html).toContain(`/work/${s.slug}.html`);
+  expect(html).toContain(`/work/${featured.slug}.html`);
+  expect(html).toContain(`/work/${latest!.slug}.html`);
+  expect(html.match(/<article[^>]* data-study/g)?.length).toBe(2);
+  expect(html).toContain('href="/work.html"');
+});
+
+test('studies are newest first, with unique slugs and real dates', () => {
+  const dates = studies.map((s) => s.date);
+  expect(dates).toEqual([...dates].sort().reverse());
+  expect(new Set(studies.map((s) => s.slug)).size).toBe(studies.length);
+});
+
+test('/work lists every study without JavaScript, and its controls start hidden', () => {
+  const html = workIndex();
+  for (const s of studies) expect(html).toContain(`href="/work/${s.slug}.html"`);
+  expect(html.match(/<article[^>]* data-study/g)?.length).toBe(studies.length);
+  expect(html).toMatch(/id="study-controls"[^>]*hidden/);
+  expect(html).toContain('id="study-sort"');
+  expect(html).toContain('<script src="/work.js" defer></script>');
+  expect(html).not.toMatch(/id="study-list"[\s\S]*<script>[\s\S]*study-list/);
+  expect(html).toContain('data-tag=""');
+});
+
+test('every page ships the main nav with Work pointing at /work', () => {
+  expect(study(studies[0])).toContain('<a href="/work.html" aria-current="page">Work</a>');
+  expect(workIndex()).toContain('<a href="/work.html" aria-current="page">Work</a>');
+});
+
+test('the privacy page says no cookies, so no page or script sets one or uses web storage', () => {
+  // The privacy page names these APIs to say the site uses none, so it is left out of the scan.
+  const text = [home(), kit(), notFound(), ...studies.map(study), siteScript].join('\n');
+  expect(text).not.toMatch(/document\.cookie|localStorage|sessionStorage|indexedDB|Set-Cookie/i);
+  expect(legal('privacy')).toContain('sets no cookies');
+});
+
+test('no page carries an inline script, so the CSP needs no hash', () => {
+  for (const html of all()) {
+    const inline = [...html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)].filter((m) => !m[1].includes('application/ld+json'));
+    expect(inline.length).toBe(0);
+  }
+});
+
+test('every page has Open Graph and Twitter tags, and the 404 is noindex', () => {
+  for (const html of all()) {
+    expect(html).toContain('property="og:image"');
+    expect(html).toContain('name="twitter:card"');
+    expect(html).toContain('rel="canonical"');
+  }
+  expect(notFound()).toContain('name="robots" content="noindex"');
+  expect(home()).not.toContain('noindex');
+});
+
+test('footer links the privacy and terms pages', () => {
+  for (const html of all()) {
+    expect(html).toContain('href="/privacy.html"');
+    expect(html).toContain('href="/terms.html"');
+  }
+});
+
+test('sitemap lists given pages, robots points at it and allows all crawlers', () => {
+  const xml = sitemapXml(['index.html', 'work/a.html', 'privacy.html'], '2026-01-01');
+  expect(xml).toContain('<loc>https://pdlab.dev/</loc>');
+  expect(xml).toContain('<loc>https://pdlab.dev/work/a.html</loc>');
+  expect(robotsTxt()).toContain('Sitemap: https://pdlab.dev/sitemap.xml');
+  expect(robotsTxt()).not.toMatch(/Disallow:\s*\//);
+});
+
+test('llms.txt names the person and every case study', () => {
+  const txt = llmsTxt();
+  expect(txt).toContain(site.name);
+  for (const s of studies) expect(txt).toContain(`/work/${s.slug}.html`);
+});
+
+test('home carries valid JSON-LD and states the background in About', () => {
+  const html = home();
+  const m = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s);
+  expect(m).not.toBeNull();
+  expect(JSON.parse(m![1])).toEqual(JSON.parse(JSON.stringify(personJsonLd())));
+  expect(html).toContain('master&#39;s in computer science');
+  expect(html).toContain('one year at Apple as a full-stack engineer');
+});
+
+test('sitemap source covers the work index, and llms.txt points at the list and its JSON', () => {
+  expect(llmsTxt()).toContain('https://pdlab.dev/work.html');
+  expect(llmsTxt()).toContain('https://pdlab.dev/studies.json');
 });
