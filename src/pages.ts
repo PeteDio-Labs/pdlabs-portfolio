@@ -263,7 +263,7 @@ export function workIndex(): string {
           </select>
         </label>
         <div class="grid gap-s1 text-footnote font-bold"><span id="study-tags-label">Topic</span>
-          <div id="study-tags" class="toon-nav" role="group" aria-labelledby="study-tags-label" data-toon-toggle>
+          <div id="study-tags" class="toon-nav toon-nav-wrap" role="group" aria-labelledby="study-tags-label" data-toon-toggle>
             <button type="button" data-tag="" aria-pressed="true">All</button>${tags.map((g) => `<button type="button" data-tag="${esc(g)}" aria-pressed="false">${esc(g)}</button>`).join('')}
           </div>
         </div>
