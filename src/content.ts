@@ -190,9 +190,9 @@ export const studies: CaseStudy[] = [
     slug: 'rack-loss-recovery',
     title: 'Recovering a burnt server from backups and config in git',
     tag: 'Resilience',
-    accent: 'orange',
+    accent: 'red',
     summary: 'A RAID controller caught fire and took a hypervisor down. The services came back from off-cluster backups and rescued config, and I kept a written record of every mistake.',
-    stat: { value: '18', label: 'guests restored from a backup taken 9 hours before the fire' },
+    stat: { value: '9 hrs', label: 'age of the backups the guests came back from' },
     sections: [
       {
         heading: 'Problem',
@@ -205,15 +205,15 @@ export const studies: CaseStudy[] = [
         heading: 'What I built before it happened',
         paragraphs: [
           'Backups that did not live in the cluster they protected. Every guest had a same-day archive on a directory store attached to the GPU machine, which is bare metal and never went down. Backups written to the cluster would have burned with it.',
-          'The nightly backup had finished between 02:30 and 03:01, so the newest archive was about nine hours old when the fire started.',
+          'The nightly backup had finished between 02:30 and 03:01 that morning, so the newest archive was about nine hours old when the fire started.',
         ],
       },
       {
         heading: 'Recovery',
         paragraphs: [
           'The surviving node came up without quorum, so its configuration store was read-only and nothing could start. I set the expected vote count to one, removed the dead member, and cleared its node directory to free the guest IDs. Before the last step I copied the 18 guest configs off the dead node, because they were the only record of how each guest was wired. They now live in git.',
-          'I restored 18 guests from the archives onto the surviving node. A third node joined the next day and the platform tier moved onto it: twelve containers in 36 minutes, with no data loss and no rebuild.',
-          'Terraform could not move a container, because a changed node name forces replacement. The plan gates refused the change and showed red CI, which was the gate working. I reconciled state with a script that is scoped to one environment, and after the incident I replaced one-off repairs with declarative state blocks wherever the language allows.',
+          'Archives existed for all 18 guests. I restored the media and platform guests from them onto the surviving node, and a few came back over the following days. A third node joined the next day and the platform tier moved onto it: twelve containers in 36 minutes, with no data loss and no rebuild.',
+          'Terraform could not move a container, because a changed node name forces replacement. The plan gates refused the change and showed red CI, which was the gate working. I reconciled state with a repair script scoped to one environment, and I now reach for declarative state blocks first, wherever the language can express the repair.',
         ],
       },
       {
