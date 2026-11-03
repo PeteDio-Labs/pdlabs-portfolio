@@ -148,7 +148,7 @@ export function home(): string {
       </div>
       <div class="relative">
         ${speedLines('toon-speed-hero')}
-        <figure class="toon-frame toon-panel-tilt m-0">
+        <figure class="toon-frame m-0 bg-toon-ground">
           <span class="toon-caption absolute right-s3 top-s3">The lab</span>
           <svg viewBox="0 0 320 236" role="img" aria-label="A terminal: terraform plan reports no changes, and the merge lands after CI and review">
             <rect width="320" height="236" fill="#0c1240"/>
@@ -352,7 +352,7 @@ export function kit(): string {
 
     <section class="py-s6" aria-labelledby="k-comic"><h2 id="k-comic" class="toon-heading mb-s6 text-display2">Panels, captions, bursts</h2>
       <div class="grid gap-s8 sm:grid-cols-[1fr_auto] items-start">
-        <div class="relative">${speedLines('toon-speed-hero')}<div class="toon-frame toon-panel-tilt p-s6"><span class="toon-caption absolute left-s3 top-s3">Caption</span><p class="mb-0 mt-s8">A <code>toon-frame</code> is a comic panel: cream, halftone, ink border, hard shadow. <code>toon-panel-tilt</code> tilts it and straightens it on hover. <code>toon-speed</code> fans speed lines behind it, and a <code>toon-caption</code> is the yellow box a narrator speaks from.</p></div></div>
+        <div class="relative">${speedLines('toon-speed-hero')}<div class="toon-frame p-s6"><span class="toon-caption absolute left-s3 top-s3">Caption</span><p class="mb-0 mt-s8">A <code>toon-frame</code> is a comic panel: off-white, ink border, short hard shadow. <code>toon-speed</code> fans speed lines behind it, and a <code>toon-caption</code> is the yellow box a narrator speaks from.</p></div></div>
         <div class="relative grid h-40 w-40 place-items-center">${burst('red', 'toon-burst-spin')}<span class="relative font-display text-title1 text-toon-ink">POW</span></div>
       </div>
     </section>
