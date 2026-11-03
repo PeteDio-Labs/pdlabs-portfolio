@@ -1,8 +1,8 @@
 # toonish-ui
 
-An original cartoon component kit for the pdlab.dev portfolio: thick ink outlines, hard
-offset shadows, halftone and bouncy motion, like a comic-book page: electric blue, red, yellow
-and violet on deep navy, with cream panels.
+An original cartoon component kit for the pdlab.dev portfolio: thin ink outlines, short hard
+shadows and a gentle lift on hover, like a calm comic-book page: blue, red, yellow and violet
+on deep navy, with off-white panels.
 It uses HTML and Tailwind CSS, compiled with the Tailwind CLI under Bun (`PET-809`).
 
 ## Commands
@@ -21,11 +21,11 @@ easing and accessibility floor come from the PeteDio house tokens (petedio-works
 |---|---|---|
 | `toon-ground` | `#0c1240` | Page background |
 | `toon-ink` | `#0a0a1f` | Outlines, and text on every fill |
-| `toon-paper` | `#fff6dc` | Panels and bubbles; text on the ground |
-| `toon-blue` | `#3d7bff` | Fill and shadow |
-| `toon-red` | `#ff3d3d` | Fill and shadow |
-| `toon-yellow` | `#ffd60a` | Fill and shadow |
-| `toon-violet` | `#9b7bff` | Fill and shadow |
+| `toon-paper` | `#f3efe6` | Panels and bubbles; text on the ground |
+| `toon-blue` | `#5f8dff` | Fill and shadow |
+| `toon-red` | `#f2706a` | Fill and shadow |
+| `toon-yellow` | `#f2c94c` | Fill and shadow |
+| `toon-violet` | `#a995f0` | Fill and shadow |
 
 Ink on the darkest fill (blue) measures 5.1:1, and paper on the ground measures 16:1.
 Both pass WCAG AA.
@@ -39,7 +39,7 @@ Both pass WCAG AA.
 `toon-panel-tilt`), `toon-bubble`, `toon-caption` (a narrator's box), `toon-burst` (a starburst,
 `-spin` or `-hero`) and `toon-speed` (speed lines). The kit owns its keyframes in `toonish.css`,
 because Tailwind writes a theme keyframe only for an `animate-*` utility.
-Add `toon-dots` to `<body>` for the halftone ground. Every animation and transition stops
+`toon-dots` is kept as an empty class; the halftone ground is gone. Every animation and transition stops
 under `prefers-reduced-motion`.
 
 ## Modal
@@ -60,16 +60,15 @@ The pop-in stops under `prefers-reduced-motion`, like every kit animation.
 
 ## Display type
 
-Display text is set in Bangers with an ink outline and a hard shadow in the paired colour.
-`toon-type` wraps each letter in a span (the templates do this in `src/pages.ts`), so every
-other letter tilts a little. `toon-type-live` bobs the letters in turn, with
-`animation-delay` from each span's `--i`, and `toon-type-flat` sets them straight for a
-figure. `--toon-fill` and `--toon-shade` set the colours. The text stays real text.
+Headings and figures are set in Space Grotesk in the accent colour. `toon-type` wraps each
+letter in a span (the templates do this in `src/pages.ts`). `toon-type-comic` switches to Bangers
+with an ink outline and a short shadow in the paired colour, for the logo and the hero, and
+tilts every other letter a little. `toon-type-flat` sets them straight. `--toon-fill` and `--toon-shade` set the colours. The text stays real text.
 
 The hand-drawn lettering engine that came before it was removed on 2026-11-03, when Pedro
 said he hated the lettering. It is in the history before that date.
 
 ## Fonts
 
-Body text uses DM Sans and display text uses Bangers. Both come from Google Fonts under the
+Body text uses DM Sans and display text uses Space Grotesk, with Bangers for the logo and hero. Both come from Google Fonts under the
 SIL Open Font License 1.1. No Cuphead art, fonts or traced shapes are used.

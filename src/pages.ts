@@ -2,7 +2,7 @@ import { esc, md } from './html.ts';
 import { legalPages, legalUpdated } from './legal.ts';
 import { site, studies, featured, latest, tags, type Accent, type CaseStudy } from './content.ts';
 
-const HEX: Record<Accent, string> = { blue: '#3d7bff', red: '#ff3d3d', yellow: '#ffd60a', violet: '#9b7bff' };
+const HEX: Record<Accent, string> = { blue: '#5f8dff', red: '#f2706a', yellow: '#f2c94c', violet: '#a995f0' };
 // Shadow paired with each accent: never a complementary clash, never the fill's own colour.
 const PAIR: Record<Accent, Accent> = { blue: 'yellow', red: 'yellow', yellow: 'blue', violet: 'red' };
 const BADGE: Record<Accent, string> = { blue: 'toon-badge-blue', red: '', yellow: 'toon-badge-yellow', violet: 'toon-badge-violet' };
@@ -20,15 +20,15 @@ const burst = (accent: Accent, cls = '') => {
 
 /** Speed lines: a fan of yellow strokes behind a panel. Ink would vanish on the navy ground. */
 const speedLines = (cls = '') =>
-  `<svg class="toon-speed ${cls}" viewBox="0 0 200 120" aria-hidden="true" focusable="false" preserveAspectRatio="none"><g stroke="#ffd60a" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke">${[8, 26, 44, 62, 80, 98, 116].map((y, i) => `<line class="toon-speed-line" style="--i:${i}" x1="4" y1="${y}" x2="${120 + (i % 3) * 30}" y2="${y}" pathLength="100" vector-effect="non-scaling-stroke"/>`).join('')}</g></svg>`;
+  `<svg class="toon-speed ${cls}" viewBox="0 0 200 120" aria-hidden="true" focusable="false" preserveAspectRatio="none"><g stroke="#f2c94c" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke">${[8, 26, 44, 62, 80, 98, 116].map((y, i) => `<line class="toon-speed-line" style="--i:${i}" x1="4" y1="${y}" x2="${120 + (i % 3) * 30}" y2="${y}" pathLength="100" vector-effect="non-scaling-stroke"/>`).join('')}</g></svg>`;
 
 /**
- * Display type: the comic font with an ink outline and a hard shadow in the paired colour.
- * Each letter is its own span, so the kit's CSS can tilt them in turn and, with `live`, bob them.
+ * Display type: a heavy sans in the accent colour. With `live`, the comic face with an ink outline and a short shadow in
+ * the paired colour, for the logo and the hero. Each letter is its own span, so the kit's CSS can tilt them in turn.
  * The text stays real text, so readers and search see it as written.
  */
 const letters = (text: string, accent: Accent = 'blue', opts: { live?: boolean; flat?: boolean; cls?: string } = {}) =>
-  `<span class="toon-type${opts.live ? ' toon-type-live' : ''}${opts.flat ? ' toon-type-flat' : ''} ${opts.cls ?? ''}" style="--toon-fill:${HEX[accent]}; --toon-shade:${HEX[PAIR[accent]]}">${[...text]
+  `<span class="toon-type${opts.live ? ' toon-type-comic' : ''}${opts.flat ? ' toon-type-flat' : ''} ${opts.cls ?? ''}" style="--toon-fill:${HEX[accent]}; --toon-shade:${HEX[PAIR[accent]]}">${[...text]
     .map((c, i) => (c === ' ' ? ' ' : `<span style="--i:${i}">${esc(c)}</span>`))
     .join('')}</span>`;
 
@@ -86,21 +86,21 @@ ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ?
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=DM+Sans:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=DM+Sans:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap">
 <link rel="stylesheet" href="/toonish.css">
 </head>
 <body class="toon-dots">
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 toon-btn toon-btn-paper">Skip to content</a>
 <div class="toon-page mx-auto max-w-5xl pl-s4 pb-16">
   <header class="flex items-center justify-between gap-s3 py-s4 sm:py-s5">
-    <a href="/" class="block shrink-0 no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { cls: 'text-[30px] sm:text-[40px]' })}</a>
+    <a href="/" class="block shrink-0 no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { live: true, cls: 'text-[30px] sm:text-[40px]' })}</a>
     ${nav(opts.current ?? '', opts.path)}
   </header>
   <main id="main">
 ${opts.body}
   </main>
   <footer class="toon-footer">
-    <span class="block">${letters('pdlab', 'red', { cls: 'text-title1' })}</span>
+    <span class="block">${letters('pdlab', 'red', { live: true, cls: 'text-title1' })}</span>
     <p class="toon-footer-note text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link whitespace-nowrap" href="/ui.html">toonish-ui</a>, an original kit.</p>
     <nav aria-label="Footer"><ul class="toon-footer-links text-footnote">
       <li><a class="toon-link" href="${site.github}">GitHub</a></li>
@@ -120,7 +120,7 @@ const month = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('
 
 /** A case-study card. The data attributes let the /work sort script order and filter without re-reading the page. */
 const studyCard = (s: CaseStudy, i: number, label = '') => `
-      <article class="toon-card toon-pop relative flex flex-col" data-study data-date="${s.date}" data-tag="${esc(s.tag)}" data-title="${esc(s.title)}" style="--toon-shadow:${HEX[s.accent]}; --toon-tilt:${i % 2 ? '1deg' : '-1.5deg'}; animation-delay:${120 * i}ms">
+      <article class="toon-card toon-pop relative flex flex-col" data-study data-date="${s.date}" data-tag="${esc(s.tag)}" data-title="${esc(s.title)}" style="--toon-shadow:${HEX[s.accent]}; animation-delay:${120 * i}ms">
         ${label ? `<span class="toon-corner" style="background:${HEX[s.accent]}">${esc(label)}</span>` : ''}
         <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
         <h3 class="mb-s2 mt-s3 text-title2 font-bold leading-snug">${esc(s.title)}</h3>
@@ -152,15 +152,15 @@ export function home(): string {
           <span class="toon-caption absolute right-s3 top-s3">The lab</span>
           <svg viewBox="0 0 320 236" role="img" aria-label="A terminal: terraform plan reports no changes, and the merge lands after CI and review">
             <rect width="320" height="236" fill="#0c1240"/>
-            <rect width="320" height="34" fill="#9b7bff"/>
-            <circle cx="22" cy="17" r="7" fill="#ff3d3d"/><circle cx="44" cy="17" r="7" fill="#ffd60a"/><circle cx="66" cy="17" r="7" fill="#3d7bff"/>
+            <rect width="320" height="34" fill="#a995f0"/>
+            <circle cx="22" cy="17" r="7" fill="#f2706a"/><circle cx="44" cy="17" r="7" fill="#f2c94c"/><circle cx="66" cy="17" r="7" fill="#5f8dff"/>
             <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15">
-              <text x="18" y="70" fill="#3d7bff">$ terraform plan</text>
-              <text x="18" y="96" fill="#fff6dc">No changes. Your infrastructure</text>
-              <text x="18" y="116" fill="#fff6dc">matches the configuration.</text>
-              <text x="18" y="152" fill="#ffd60a">$ gh pr merge --squash</text>
-              <text x="18" y="178" fill="#fff6dc">Merged after CI and review.</text>
-              <text x="18" y="212" fill="#ff3d3d" class="toon-blink">$ _</text>
+              <text x="18" y="70" fill="#5f8dff">$ terraform plan</text>
+              <text x="18" y="96" fill="#f3efe6">No changes. Your infrastructure</text>
+              <text x="18" y="116" fill="#f3efe6">matches the configuration.</text>
+              <text x="18" y="152" fill="#f2c94c">$ gh pr merge --squash</text>
+              <text x="18" y="178" fill="#f3efe6">Merged after CI and review.</text>
+              <text x="18" y="212" fill="#f2706a" class="toon-blink">$ _</text>
             </g>
           </svg>
         </figure>
@@ -329,7 +329,7 @@ export function kit(): string {
     <section class="py-s8">
       <h1 class="sr-only">toonish-ui</h1>
       <div class="text-hero leading-[.9]">${letters('toonish-ui', 'yellow', { live: true })}</div>
-      <p class="mt-s4 max-w-[60ch] text-title3">The component kit this site is built on. Comic-book panels: ink outlines, hard offset shadows, halftone and a bounce, in electric blue, red, yellow and violet on deep navy. Every animation stops when you ask your system for reduced motion.</p>
+      <p class="mt-s4 max-w-[60ch] text-title3">The component kit this site is built on. Calm comic-book panels: thin ink outlines, short hard shadows and a gentle lift on hover, in blue, red, yellow and violet on deep navy. Every animation stops when you ask your system for reduced motion.</p>
     </section>
 
     <section class="py-s6" aria-labelledby="k-btn"><h2 id="k-btn" class="toon-heading mb-s6 text-display2">Buttons</h2>
@@ -344,7 +344,7 @@ export function kit(): string {
 
     <section class="py-s6" aria-labelledby="k-card"><h2 id="k-card" class="toon-heading mb-s6 text-display2">Cards, badges and links</h2>
       <div class="grid gap-s8 sm:grid-cols-3">
-        <div class="toon-card relative"><span class="toon-corner" aria-hidden="true">01</span><span class="toon-badge">Badge</span><p>A paper card tilts a little and straightens when you point at it. A <code>toon-corner</code> numbers it.</p><a class="toon-link" href="/ui.html">A link</a></div>
+        <div class="toon-card relative"><span class="toon-corner" aria-hidden="true">01</span><span class="toon-badge">Badge</span><p>A paper card lifts a little when you point at it. A <code>toon-corner</code> labels or numbers it.</p><a class="toon-link" href="/ui.html">A link</a></div>
         <div class="toon-card"><span class="toon-badge toon-badge-blue">Blue</span><p>Its shadow color comes from <code>--toon-shadow</code>.</p></div>
         <div class="toon-card"><span class="toon-badge toon-badge-yellow">Yellow</span> <span class="toon-badge toon-badge-violet">Violet</span><p>Badges sit on any surface.</p></div>
       </div>
@@ -377,17 +377,17 @@ export function kit(): string {
     </section>
 
     <section class="py-s6" aria-labelledby="k-let"><h2 id="k-let" class="toon-heading mb-s6 text-display2">Display type</h2>
-      <p class="max-w-[60ch]">Display text is set in Bangers, a comic lettering face, with an ink outline and a hard shadow in the paired colour. <code>toon-type</code> wraps each letter in a span, so every other letter tilts a little. <code>toon-type-live</code> bobs them in turn, as the hero does, and <code>toon-type-flat</code> sets them straight for a figure.</p>
+      <p class="max-w-[60ch]">Headings and figures are set in Space Grotesk, a heavy sans, in the accent colour. <code>toon-type-comic</code> switches to Bangers with an ink outline and a short shadow in the paired colour, for the logo and the hero, and tilts every other letter a little. <code>toon-type-flat</code> sets them straight.</p>
       <div class="grid gap-s3 text-display2 leading-none">
         <div>${letters('ABCDEFGHIJKLM', 'blue', { live: true })}</div>
         <div>${letters('NOPQRSTUVWXYZ', 'yellow')}</div>
         <div>${letters('0123456789 &?! +~%/', 'violet')}</div>
       </div>
-      <p class="max-w-[60ch]">A figure on a card is the same type, flat, so a number reads as part of the drawing.</p>
+      <p class="max-w-[60ch]">A figure on a card is the same sans, so a number reads as part of the card.</p>
       <div class="grid gap-s8 sm:grid-cols-3">
-        <div class="toon-card" style="--toon-shadow:#ffd60a">${figure('214', 'blue', 'text-[52px]')}<span class="mt-s1 block text-footnote">a count</span></div>
-        <div class="toon-card" style="--toon-shadow:#3d7bff">${figure('60 min', 'yellow', 'text-[52px]')}<span class="mt-s1 block text-footnote">a duration</span></div>
-        <div class="toon-card" style="--toon-shadow:#ff3d3d">${figure('~70%', 'violet', 'text-[52px]')}<span class="mt-s1 block text-footnote">an estimate</span></div>
+        <div class="toon-card" style="--toon-shadow:#f2c94c">${figure('214', 'blue', 'text-[52px]')}<span class="mt-s1 block text-footnote">a count</span></div>
+        <div class="toon-card" style="--toon-shadow:#5f8dff">${figure('60 min', 'yellow', 'text-[52px]')}<span class="mt-s1 block text-footnote">a duration</span></div>
+        <div class="toon-card" style="--toon-shadow:#f2706a">${figure('~70%', 'violet', 'text-[52px]')}<span class="mt-s1 block text-footnote">an estimate</span></div>
       </div>
     </section>
 

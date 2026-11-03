@@ -15,15 +15,16 @@ export default {
         toon: {
           ground: '#0c1240', // page background, deep navy
           ink: '#0a0a1f',    // outlines and text on fills
-          paper: '#fff6dc',  // panels, bubbles; text on ground
-          blue: '#3d7bff',
-          red: '#ff3d3d',
-          yellow: '#ffd60a',
-          violet: '#9b7bff',
+          paper: '#f3efe6',  // panels, bubbles; text on ground
+          blue: '#5f8dff',
+          red: '#f2706a',
+          yellow: '#f2c94c',
+          violet: '#a995f0',
         },
       },
       fontFamily: {
-        display: ['Bangers', '"Arial Black"', 'Impact', 'sans-serif'],
+        display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+        comic: ['Bangers', '"Arial Black"', 'Impact', 'sans-serif'],
         body: ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       // House type scale: 11 / 12 / 13 / 15 / 17 / 20 / 22 / 28, plus display sizes.
@@ -35,14 +36,14 @@ export default {
       // House 8pt grid.
       spacing: { s1: '4px', s2: '8px', s3: '12px', s4: '16px', s5: '20px', s6: '24px', s8: '32px' },
       borderRadius: { group: '12px', card: '16px', hero: '24px', sheet: '28px', toon: '10px' },
-      borderWidth: { toon: '5px' },
+      borderWidth: { toon: '2px' },
       boxShadow: {
-        'toon-blue': '8px 8px 0 #3d7bff',
-        'toon-red': '8px 8px 0 #ff3d3d',
-        'toon-yellow': '8px 8px 0 #ffd60a',
-        'toon-violet': '8px 8px 0 #9b7bff',
-        'toon-lift': '11px 12px 0 var(--toon-shadow, #ff3d3d)',
-        'toon-press': '0 0 0 var(--toon-shadow, #ff3d3d)',
+        'toon-blue': '4px 4px 0 #5f8dff',
+        'toon-red': '4px 4px 0 #f2706a',
+        'toon-yellow': '4px 4px 0 #f2c94c',
+        'toon-violet': '4px 4px 0 #a995f0',
+        'toon-lift': '6px 7px 0 var(--toon-shadow, #f2706a)',
+        'toon-press': '0 0 0 var(--toon-shadow, #f2706a)',
       },
       transitionTimingFunction: {
         spring: 'cubic-bezier(.175,.885,.32,1.275)', // house spring
