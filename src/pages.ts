@@ -1,5 +1,5 @@
 import { esc, md } from './html.ts';
-import { site, studies, type Accent, type CaseStudy } from './content.ts';
+import { site, studies, featured, latest, tags, type Accent, type CaseStudy } from './content.ts';
 
 const HEX: Record<Accent, string> = { blue: '#3d7bff', red: '#ff3d3d', yellow: '#ffd60a', violet: '#9b7bff' };
 // Shadow paired with each accent: never a complementary clash, never the fill's own colour.
@@ -40,7 +40,7 @@ const lettered = (id: string, text: string, accent: Accent, cls: string) =>
 
 const nav = (current: string, path: string) => {
   const items: [string, string, string?][] = [
-    ['Work', '/#work', 'work'],
+    ['Work', '/work.html', 'work'],
     ['About', '/#about', 'about'],
     ['UI kit', '/ui.html'],
   ];
@@ -54,7 +54,7 @@ const nav = (current: string, path: string) => {
     .join('')}</nav>`;
 };
 
-export function layout(opts: { title: string; description: string; path: string; current?: string; body: string }): string {
+export function layout(opts: { title: string; description: string; path: string; current?: string; body: string; scriptSrc?: string }): string {
   const fullTitle = opts.path === '/' ? `${site.name}: systems built with AI` : `${opts.title} | ${site.name}`;
   return `<!doctype html>
 <html lang="en">
@@ -120,16 +120,20 @@ ${opts.body}
     });
   });
 })();
-</script>
+</script>${opts.scriptSrc ? `\n<script src="${opts.scriptSrc}" defer></script>` : ''}
 </body>
 </html>
 `;
 }
 
-const studyCard = (s: CaseStudy, i: number) => `
-      <article class="toon-card toon-pop relative flex flex-col" style="--toon-shadow:${HEX[s.accent]}; --toon-tilt:${i % 2 ? '1deg' : '-1.5deg'}; animation-delay:${120 * i}ms">
-        <span class="toon-corner" style="background:${HEX[s.accent]}" aria-hidden="true">0${i + 1}</span>
-        <span class="toon-badge ${BADGE[s.accent]} self-start">${esc(s.tag)}</span>
+/** "Oct 2026": the month is enough, and it does not promise a precision the dates do not have. */
+const month = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+
+/** A case-study card. The data attributes let the /work sort script order and filter without re-reading the page. */
+const studyCard = (s: CaseStudy, i: number, label = '') => `
+      <article class="toon-card toon-pop relative flex flex-col" data-study data-date="${s.date}" data-tag="${esc(s.tag)}" data-title="${esc(s.title)}" style="--toon-shadow:${HEX[s.accent]}; --toon-tilt:${i % 2 ? '1deg' : '-1.5deg'}; animation-delay:${120 * i}ms">
+        ${label ? `<span class="toon-corner" style="background:${HEX[s.accent]}">${esc(label)}</span>` : ''}
+        <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
         <h3 class="mb-s2 mt-s3 text-title2 font-bold leading-snug">${esc(s.title)}</h3>
         <p class="my-0">${md(s.summary)}</p>
         <p class="mt-s4 mb-s4">${figure(s.stat.value, s.accent, 'text-[52px]')}<span class="mt-s1 block text-footnote">${esc(s.stat.label)}</span></p>
@@ -176,8 +180,9 @@ export function home(): string {
 
     <section id="work" class="scroll-mt-8 py-s8" aria-labelledby="work-h">
       ${lettered('work-h', 'Case studies', 'yellow', 'mb-s8 max-w-md')}
-      <div class="grid gap-s8 sm:grid-cols-2">${studies.map(studyCard).join('')}
+      <div class="grid gap-s8 sm:grid-cols-2">${[studyCard(featured, 0, 'Featured'), ...(latest ? [studyCard(latest, 1, 'Latest')] : [])].join('')}
       </div>
+      <p class="mt-s8"><a class="toon-btn toon-btn-yellow" href="/work.html">All ${studies.length} case studies<span class="sr-only">, sortable by date and topic</span></a></p>
     </section>
 
     <section id="about" class="scroll-mt-8 grid gap-s8 py-s8 md:grid-cols-[1fr_1fr]" aria-labelledby="about-h">
@@ -207,13 +212,92 @@ export function home(): string {
   return layout({ title: 'Home', path: '/', current: 'Work', description: `${site.name}. ${site.role} ${site.intro}`, body });
 }
 
+/**
+ * The /work page script, written to dist/work.js so a Content-Security-Policy of script-src 'self' allows it.
+ * The page is complete without it: cards arrive newest first and the controls
+ * stay hidden. With it, the controls appear and the cards reorder and filter in place, with no fetch
+ * and no animation of its own. The choice lives in the query string, so a sorted view can be shared.
+ */
+export const workScript = `(() => {
+  const list = document.getElementById('study-list');
+  const controls = document.getElementById('study-controls');
+  const sort = document.getElementById('study-sort');
+  const tagBar = document.getElementById('study-tags');
+  const status = document.getElementById('study-status');
+  if (!list || !controls || !sort || !tagBar || !status) return;
+  const cards = [...list.querySelectorAll('[data-study]')];
+  const by = {
+    newest: (a, b) => b.dataset.date.localeCompare(a.dataset.date) || a.dataset.title.localeCompare(b.dataset.title),
+    oldest: (a, b) => a.dataset.date.localeCompare(b.dataset.date) || a.dataset.title.localeCompare(b.dataset.title),
+    title: (a, b) => a.dataset.title.localeCompare(b.dataset.title),
+  };
+  const state = { sort: 'newest', tag: '' };
+  const q = new URLSearchParams(location.search);
+  if (by[q.get('sort')]) state.sort = q.get('sort');
+  if (cards.some((c) => c.dataset.tag === q.get('tag'))) state.tag = q.get('tag');
+  const render = () => {
+    cards.sort(by[state.sort]).forEach((c) => {
+      list.appendChild(c);
+      c.hidden = !!state.tag && c.dataset.tag !== state.tag;
+    });
+    sort.value = state.sort;
+    tagBar.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tag === state.tag)));
+    const shown = cards.filter((c) => !c.hidden).length;
+    status.textContent = 'Showing ' + shown + ' of ' + cards.length + ' case studies' + (state.tag ? ', topic ' + state.tag : '') + ', ' + sort.selectedOptions[0].textContent.toLowerCase() + '.';
+    const next = new URLSearchParams();
+    if (state.sort !== 'newest') next.set('sort', state.sort);
+    if (state.tag) next.set('tag', state.tag);
+    try { history.replaceState(null, '', location.pathname + (next.size ? '?' + next : '')); } catch (e) {}
+  };
+  sort.addEventListener('change', () => { state.sort = sort.value; render(); });
+  tagBar.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (b && tagBar.contains(b)) { state.tag = b.dataset.tag; render(); }
+  });
+  controls.hidden = false;
+  render();
+})();`;
+
+export function workIndex(): string {
+  const body = `
+    <section class="py-s8" aria-labelledby="work-h">
+      <h1 id="work-h" class="m-0">${letters('Case studies', 'yellow', { live: true, cls: 'text-hero leading-[.9]' })}</h1>
+      <p class="mt-s4 max-w-[60ch] text-title3">${studies.length} write-ups of systems I built with AI. Each one names the problem, what I built, the result and what went wrong.</p>
+      <div id="study-controls" class="mt-s6 flex flex-wrap items-end gap-x-s6 gap-y-s4" hidden>
+        <label class="grid gap-s1 text-footnote font-bold" for="study-sort">Sort by
+          <select id="study-sort" class="rounded-toon border-toon border-toon-ink bg-toon-paper px-s3 py-s2 font-body text-body font-bold text-toon-ink">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="title">Title, A to Z</option>
+          </select>
+        </label>
+        <div class="grid gap-s1 text-footnote font-bold"><span id="study-tags-label">Topic</span>
+          <div id="study-tags" class="toon-nav" role="group" aria-labelledby="study-tags-label" data-toon-toggle>
+            <button type="button" data-tag="" aria-pressed="true">All</button>${tags.map((g) => `<button type="button" data-tag="${esc(g)}" aria-pressed="false">${esc(g)}</button>`).join('')}
+          </div>
+        </div>
+      </div>
+      <p id="study-status" class="sr-only" role="status" aria-live="polite"></p>
+      <div id="study-list" class="mt-s8 grid gap-s8 sm:grid-cols-2">${studies.map((s, i) => studyCard(s, i)).join('')}
+      </div>
+    </section>`;
+  return layout({
+    title: 'Case studies',
+    path: '/work.html',
+    current: 'Work',
+    description: `${studies.length} case studies on building systems with AI: agents, merge gates, short-lived access, local models and disaster recovery. Sort by date or filter by topic.`,
+    body,
+    scriptSrc: '/work.js',
+  });
+}
+
 export function study(s: CaseStudy): string {
   const i = studies.indexOf(s);
   const next = studies[(i + 1) % studies.length];
   const prev = studies[(i + studies.length - 1) % studies.length];
   const body = `
     <article class="py-s8">
-      <a class="toon-link" href="/#work">All case studies</a>
+      <a class="toon-link" href="/work.html">All case studies</a>
       <header class="mb-s8 mt-s6 grid items-end gap-s6 md:grid-cols-[1fr_auto]">
         <div class="min-w-0">
           <span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span>
