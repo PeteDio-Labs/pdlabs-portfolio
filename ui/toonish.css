@@ -12,9 +12,9 @@
   [hidden] { display: none !important; }
   html { overflow-x: hidden; }
   .toon-page { overflow-x: hidden; overflow-x: clip; }
-  /* Every panel, button and the nav throw an 8px hard shadow right and down, so the drawn edge sits 8px right of the
+  /* Every panel, button and the nav throw a 4px hard shadow right and down, so the drawn edge sits 4px right of the
      content box. Pad the right by that much and the drawn page, shadows included, is centered in the window. */
-  .toon-page { padding-right: calc(theme(spacing.s4) + 8px); }
+  .toon-page { padding-right: calc(theme(spacing.s4) + 4px); }
   body { @apply bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
   :focus-visible { @apply outline outline-4 outline-offset-4 outline-toon-yellow; }
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
