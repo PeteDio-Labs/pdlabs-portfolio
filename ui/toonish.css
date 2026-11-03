@@ -12,6 +12,9 @@
   [hidden] { display: none !important; }
   html { overflow-x: hidden; }
   .toon-page { overflow-x: hidden; overflow-x: clip; }
+  /* Every panel, button and the nav throw a 4px hard shadow right and down, so the drawn edge sits 4px right of the
+     content box. Pad the right by that much and the drawn page, shadows included, is centered in the window. */
+  .toon-page { padding-right: calc(theme(spacing.s4) + 4px); }
   body { @apply bg-toon-ground text-toon-paper font-body text-body leading-normal antialiased; }
   :focus-visible { @apply outline outline-4 outline-offset-4 outline-toon-yellow; }
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
@@ -23,12 +26,12 @@
     --toon-shadow: theme(colors.toon.yellow);
     @apply inline-block cursor-pointer rounded-full border-toon border-toon-ink bg-toon-blue px-s6 py-s3
            font-body text-body font-bold text-toon-ink no-underline transition duration-fast ease-bounce;
-    box-shadow: 8px 8px 0 var(--toon-shadow);
+    box-shadow: 4px 4px 0 var(--toon-shadow);
   }
   @media (hover: hover) {
-    .toon-btn:hover { @apply -translate-x-0.5 -translate-y-1 -rotate-2 scale-105 shadow-toon-lift; }
+    .toon-btn:hover { @apply -translate-y-0.5 shadow-toon-lift; }
   }
-  .toon-btn:active { @apply translate-x-2 translate-y-2 rotate-0 scale-100 shadow-toon-press; }
+  .toon-btn:active { @apply translate-x-1 translate-y-1 shadow-toon-press; }
   .toon-btn-red    { --toon-shadow: theme(colors.toon.yellow); @apply bg-toon-red; }
   .toon-btn-yellow { --toon-shadow: theme(colors.toon.blue); @apply bg-toon-yellow; }
   .toon-btn-paper  { --toon-shadow: theme(colors.toon.blue); @apply bg-toon-paper; }
@@ -39,18 +42,17 @@
   .toon-card {
     --toon-shadow: theme(colors.toon.yellow);
     @apply rounded-toon border-toon border-toon-ink bg-toon-paper p-s6 text-toon-ink transition duration-normal ease-bounce;
-    background-image: radial-gradient(rgb(10 10 31 / .07) 1px, transparent 1.4px);
-    background-size: 8px 8px;
-    box-shadow: 8px 8px 0 var(--toon-shadow);
-    transform: rotate(var(--toon-tilt, -1.5deg));
+    box-shadow: 4px 4px 0 var(--toon-shadow);
+    transform: rotate(var(--toon-tilt, 0deg));
   }
-  .toon-card:nth-child(even) { --toon-tilt: 1deg; --toon-shadow: theme(colors.toon.violet); }
+  .toon-card:nth-child(even) { --toon-shadow: theme(colors.toon.violet); }
   .toon-card:nth-child(3n) { --toon-shadow: theme(colors.toon.blue); }
-  .toon-card:hover { transform: rotate(0) translateY(-6px) scale(1.03); }
-  /* Card number: a tilted disc pinned past the top right corner. */
+  .toon-card:hover { transform: rotate(0) translateY(-3px); }
+  /* Card label or number: a tilted pill tucked into the top right corner. It sizes to its text ("Featured" fits)
+     and stays inside the gutter, so the page wrapper never clips it. */
   .toon-corner {
-    @apply absolute -right-s2 -top-s4 grid h-12 w-12 -rotate-12 place-items-center rounded-full border-toon border-toon-ink
-           bg-toon-yellow font-display text-title3 leading-none text-toon-ink;
+    @apply absolute right-s3 -top-s4 grid min-h-[2.75rem] min-w-[2.75rem] -rotate-3 place-items-center rounded-full border-toon
+           border-toon-ink bg-toon-yellow px-s3 font-display text-title3 leading-none tracking-wide text-toon-ink;
   }
   /* Pop-in on load; `animation-delay` on the element staggers a grid. Reduced motion cancels it below.
      `backwards`, not `both`: the end state must release, or it would pin the card's tilt and hover transform. */
@@ -58,29 +60,29 @@
 
   /* 3. Heading: display type with an ink outline and a hard shadow. */
   .toon-heading {
-    @apply font-display font-normal leading-tight tracking-wide text-toon-yellow;
-    -webkit-text-stroke: .06em theme(colors.toon.ink);
-    paint-order: stroke fill;
-    text-shadow: .06em .06em 0 var(--toon-shade, theme(colors.toon.blue));
+    @apply font-display font-bold leading-tight tracking-tight text-toon-yellow;
     text-wrap: balance;
   }
-  .toon-heading-xl { @apply text-display1 text-toon-blue; transform: rotate(-1.5deg); }
+  .toon-heading-xl { @apply text-display1 text-toon-blue; }
 
-  /* 3b. Type: the same look, one span per letter, so letters tilt in turn and can bob.
-     `--toon-fill` and `--toon-shade` set the colours. `-flat` sets the letters straight; `-live` bobs them. */
+  /* 3b. Type: a heavy sans in the accent colour, with no outline. `--toon-fill` sets the colour. The comic face is kept
+     for the logo and the hero (`toon-type-comic`), where it carries the identity; there it gets an ink outline,
+     a short hard shadow in `--toon-shade` and a slight alternating tilt. Each letter is its own span. */
   .toon-type {
-    @apply inline-block font-display font-normal tracking-wide;
+    @apply inline-block font-display font-bold tracking-tight;
     color: var(--toon-fill, theme(colors.toon.blue));
-    -webkit-text-stroke: .06em theme(colors.toon.ink);
-    paint-order: stroke fill;
-    text-shadow: .06em .06em 0 var(--toon-shade, theme(colors.toon.yellow));
   }
-  .toon-type > span { display: inline-block; transform-origin: 50% 100%; }
-  .toon-type > span:nth-child(odd)  { transform: rotate(-2.5deg) translateY(.02em); }
-  .toon-type > span:nth-child(even) { transform: rotate(1.5deg) translateY(-.03em); }
-  .toon-type > span:nth-child(3n)   { transform: rotate(3deg); }
+  .toon-type > span { display: inline-block; }
+  .toon-type-comic {
+    @apply font-comic font-normal tracking-wide;
+    -webkit-text-stroke: .05em theme(colors.toon.ink);
+    paint-order: stroke fill;
+    text-shadow: .05em .05em 0 var(--toon-shade, theme(colors.toon.yellow));
+  }
+  .toon-type-comic > span { transform-origin: 50% 100%; }
+  .toon-type-comic > span:nth-child(odd)  { transform: rotate(-1.5deg); }
+  .toon-type-comic > span:nth-child(even) { transform: rotate(1deg); }
   .toon-type-flat > span { transform: none !important; }
-  .toon-type-live > span { animation: toon-bob 2.6s cubic-bezier(.34,1.8,.5,1) infinite; animation-delay: calc(var(--i, 0) * 90ms); }
 
   /* 4. Link: thick red underline that springs on hover. */
   .toon-link {
@@ -109,7 +111,7 @@
   }
   /* Hover only where a pointer can hover: on a phone a tap would leave the pill stuck yellow. */
   @media (hover: hover) {
-    .toon-nav a:hover, .toon-nav button:hover { @apply -rotate-2 scale-110 bg-toon-yellow; }
+    .toon-nav a:hover, .toon-nav button:hover { @apply bg-toon-yellow; }
   }
   .toon-nav a[aria-current], .toon-nav button[aria-pressed="true"] { @apply bg-toon-ink text-toon-yellow; }
   /* The script adds this to a newly pressed pill. */
@@ -137,8 +139,6 @@
   .toon-modal-box {
     @apply flex flex-col overflow-hidden rounded-toon border-toon border-toon-ink bg-toon-paper shadow-toon-red;
     max-height: 86vh; max-height: 86dvh;
-    background-image: radial-gradient(rgb(10 10 31 / .07) 1px, transparent 1.4px);
-    background-size: 8px 8px;
   }
   .toon-modal-head { @apply flex items-center justify-between gap-s3 border-b-toon border-toon-ink bg-toon-blue px-s5 py-s3; }
   .toon-modal-body { @apply overflow-y-auto px-s6 py-s5; overscroll-behavior: contain; }
@@ -150,11 +150,9 @@
   /* 9. Art frame: a comic panel with square corners and a halftone, for an image, SVG or screenshot. */
   .toon-frame {
     @apply relative overflow-hidden rounded-toon border-toon border-toon-ink bg-toon-paper shadow-toon-blue;
-    background-image: radial-gradient(rgb(10 10 31 / .07) 1px, transparent 1.4px);
-    background-size: 8px 8px;
   }
   .toon-frame > img, .toon-frame > svg { @apply block h-auto w-full; }
-  .toon-panel-tilt { transform: rotate(1.5deg); @apply transition duration-normal ease-bounce; }
+  .toon-panel-tilt { transform: rotate(.5deg); @apply transition duration-normal ease-bounce; }
   .toon-panel-tilt:hover { transform: rotate(0); }
 
   /* 10. Speech bubble */
@@ -174,21 +172,21 @@
 
   /* 12. Burst: a starburst behind a word or a figure. `-spin` turns it slowly, `-hero` sits behind the hero's last line. */
   .toon-burst { @apply absolute inset-0 h-full w-full; }
-  .toon-burst-spin { animation: toon-spin 24s linear infinite; }
+  .toon-burst-spin { }
   /* -z-10 inside the hero column's own stacking context (`relative z-0`), so the burst sits behind every line. */
-  .toon-burst-hero { @apply -right-[10%] -top-[28%] left-auto -z-10 h-[150%] w-auto; animation: toon-spin 40s linear infinite; }
+  .toon-burst-hero { @apply -right-[10%] -top-[28%] left-auto -z-10 h-[150%] w-auto;  }
 
   /* 13. Speed lines: a fan of yellow strokes behind a panel, drawn in src/pages.ts. */
   .toon-speed { @apply pointer-events-none absolute; }
   /* Each line streaks in from the left, in turn, then holds and fades: pathLength="100" makes the dash math uniform. */
-  .toon-speed-line { stroke-dasharray: 100; stroke-dashoffset: 100; animation: toon-streak 1.8s cubic-bezier(.2,.8,.2,1) infinite; animation-delay: calc(var(--i, 0) * 110ms); }
+  .toon-speed-line { stroke-dasharray: 100; stroke-dashoffset: 100; animation: toon-streak 1.8s cubic-bezier(.2,.8,.2,1) 1 forwards; animation-delay: calc(var(--i, 0) * 110ms); }
   .toon-speed-hero { @apply -left-[10%] -top-[8%] h-[70%] w-[60%]; }
 
   /* 14. Blink, for a prompt cursor. */
   .toon-blink { animation: toon-blink 1.1s steps(2, start) infinite; }
 
   /* Halftone ground, opt-in on <body>. */
-  .toon-dots { background-image: radial-gradient(rgb(255 214 10 / .13) 1.2px, transparent 1.6px); background-size: 10px 10px; }
+  .toon-dots { }
 
   /* Keyframes. Tailwind only writes a theme keyframe for an animate-* utility, so the kit owns them here. */
   /* The pop keeps the element's tilt in every frame, so a card never snaps when the animation ends. */
