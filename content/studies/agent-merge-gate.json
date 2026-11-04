@@ -34,6 +34,13 @@
       ]
     },
     {
+      "heading": "Testing the control",
+      "paragraphs": [
+        "Before this gate, I built and retired an unattended agent that opened draft pull requests from labelled tickets. Its safety rested on one claim: the GitHub App it used could not merge its own pull request. I tested the claim instead of assuming it. As the real App, against two throwaway branches, the merge call returned 405 on the branch that required one review and 200 on an unprotected control, ninety seconds apart. The control is what makes the 405 mean something: without it, a refusal looks the same as a broken credential.",
+        "I never enabled that agent's timer and retired it on 30 September. Codex review, the merge gate above and one project thread per task replaced it. Two rules outlived it: every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo."
+      ]
+    },
+    {
       "heading": "A failure that taught me",
       "paragraphs": [
         "On 9 September the secrets store sat sealed for 9 hours and 34 minutes. The watcher that unsealed it ran on a laptop that had gone to sleep. The tracker reconcile job, which had gained eleven calling repos the day before, reported success in all eleven while reconciling nothing. Its token step was set to continue, and the next step treated a missing token as a clean exit. A warning annotation does not colour a check.",
@@ -64,6 +71,7 @@
   "sources": [
     "petedio-vault Incidents/2026-09-09-vault-sealed-nine-hours.md (9 h 34 min, 1,724 DOWN heartbeats, 19 monitors, eleven repos)",
     "data/pr-stats.json (scripts/pr-stats.ts)",
-    "the rule the repo now carries, written after six items with the same shape"
+    "the rule the repo now carries, written after six items with the same shape",
+    "petedio-vault Systems/claude-loop.md (the 405 and 200 test of 12 September; retirement on 30 September)"
   ]
 }
