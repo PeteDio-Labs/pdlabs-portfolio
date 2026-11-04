@@ -1,0 +1,62 @@
+{
+  "slug": "aws-free-plan",
+  "date": "2026-11-04",
+  "title": "Using a Free-plan AWS account without a surprise bill",
+  "tag": "Cloud",
+  "accent": "blue",
+  "summary": "An off-site watchdog and this site's hosting on an AWS Free-plan account, built in Terraform with guardrails, one blocked auth method and a dated exit plan.",
+  "stat": {
+    "value": "$0–1",
+    "label": "a month for the off-site watchdog: one Lambda, one table, one schedule rule and three parameters"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "My lab runs on hardware in my home, so a power or internet outage silences the monitoring that would report it. I wanted a watcher outside the house, and a home for this site, on an AWS account with credit that expires on 20 April 2027."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "The watchdog is one Lambda function. The lab sends it a heartbeat every two minutes. A scheduled run of the same function posts a message to my Discord when the heartbeat stops, and probes the lab's public endpoints. It uses one on-demand table, one schedule rule and three parameters, and I wrote it in Terraform like the rest of the lab.",
+        "The site is a private S3 bucket behind CloudFront with origin access control and a certificate. A custom response-headers policy sets a content security policy and HSTS. DNS stays at Cloudflare, so the account uses no Route 53. The module is written so it stays inside the always-free allowance.",
+        "I wrote the account rules down before the first resource existed. No AWS Organization, no Control Tower and no advanced features, because any of them ends credit earning. Free-plan-eligible services only, at the smallest sizes. A permissions boundary on the Terraform user stops it from creating a role more powerful than itself. A $5 monthly budget watches real money, a second budget counts credit burn, and anomaly detection emails me."
+      ]
+    },
+    {
+      "heading": "Trade-off",
+      "paragraphs": [
+        "The deploy pipeline was designed around GitHub's OIDC login, so no long-lived key would exist. The account's organization has a service control policy that denies creating an OIDC provider, and a Free-plan account cannot lift it. I changed the design instead of working around the policy. The deploy identity is now a deploy-only IAM user with the same narrow policy. Terraform never creates its access key, so no secret reaches state. A script I run by hand creates the key and stores it as secrets on a protected environment that only the main branch may deploy to.",
+        "That is a weaker design than OIDC, and I chose it knowingly. The key can be rotated with one command, and the module switches back to OIDC with one variable on any account that allows it."
+      ]
+    },
+    {
+      "heading": "Result so far",
+      "paragraphs": [
+        "The watchdog is deployed, and the lab's heartbeat reaches it. The deploy workflow for this site and the hosting module are merged. As of this writing, the site is not yet served from AWS: the first apply and the DNS change wait on my go-ahead, and the deploy has not run. The watchdog's daily \"alive\" message had not arrived yet when I last checked, so I count that part as unconfirmed.",
+        "The first deploy design failed on the policy above, and I am telling that part plainly because it changed the plan."
+      ]
+    },
+    {
+      "heading": "What I would do differently",
+      "paragraphs": [
+        "Check the account's policy limits before designing the auth. A short test that tries to create the OIDC provider would have found the block on the first day.",
+        "The exit plan is dated. The Free plan ends on 20 April 2027, and a reminder fires before 6 April. By then I either upgrade with a budget alert in place, which should cost cents a month for a static site, or move the site to free static hosting and delete the bucket and distribution so nothing bills."
+      ]
+    }
+  ],
+  "skills": [
+    "Cloud cost control",
+    "Terraform",
+    "IAM and permission boundaries",
+    "Operating within constraints"
+  ],
+  "sources": [
+    "petedio-iac environments/offsite-watchdog/README.md (design, account rules, permissions boundary)",
+    "petedio-iac modules/portfolio-site/README.md and environments/portfolio/README.md (hosting module, OIDC block, IAM user)",
+    "pdlabs-portfolio docs/hosting-and-exit-plan.md (exit plan and dates)",
+    "project files aws/credit-spend-plan.md (budgets and anomaly detection)",
+    "project memory: watchdog live, daily alive line unconfirmed as of 3 November"
+  ]
+}
