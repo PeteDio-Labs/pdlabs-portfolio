@@ -39,10 +39,11 @@
       ]
     },
     {
-      "heading": "A failure that taught me",
+      "heading": "What replaced it",
       "paragraphs": [
-        "I never enabled the timer. I retired the loop on 30 September, deleted the GitHub App, removed the role's tasks, and checked that its services stay absent. One successful run proved the mechanism. It said nothing about how the agent behaves at three in the morning on a ticket nobody chose.",
-        "Two rules outlived it. Every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo. A sudo grant belongs to the user ID, not the process, so any session running as that user inherits it."
+        "I never enabled the timer. I retired the loop on 30 September, deleted the GitHub App, removed the role's tasks, and checked that its services stay absent. One successful run proved the mechanism, and I chose a different shape for the work instead of switching it on.",
+        "Three pieces took its place. Codex reviews each pull request. A merge desk, deterministic code, merges the low-risk tiers after CI and a clean review. Work now starts in a project thread, one per task, where a person can see and steer the agent. Review and merge control stayed, and the unattended, ticket-triggered session went.",
+        "Two rules outlived the loop. Every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo. A sudo grant belongs to the user ID, not the process, so any session running as that user inherits it."
       ]
     }
   ],
