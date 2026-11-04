@@ -119,11 +119,11 @@ ${analyticsToken ? `<script defer src="https://static.cloudflareinsights.com/bea
 const month = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 
 /** A case-study card. The data attributes let the /work sort script order and filter without re-reading the page. */
-const studyCard = (s: CaseStudy, i: number, label = '') => `
+const studyCard = (s: CaseStudy, i: number, label = '', h: 'h2' | 'h3' = 'h3') => `
       <article class="toon-card toon-pop relative flex flex-col" data-study data-date="${s.date}" data-tag="${esc(s.tag)}" data-title="${esc(s.title)}" style="--toon-shadow:${HEX[s.accent]}; animation-delay:${120 * i}ms">
         ${label ? `<span class="toon-corner" style="background:${HEX[s.accent]}">${esc(label)}</span>` : ''}
         <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
-        <h3 class="mb-s2 mt-s3 text-title2 font-bold leading-snug">${esc(s.title)}</h3>
+        <${h} class="mb-s2 mt-s3 text-title2 font-bold leading-snug">${esc(s.title)}</${h}>
         <p class="my-0">${md(s.summary)}</p>
         <p class="mt-s4 mb-s4">${figure(s.stat.value, s.accent, 'text-[52px]')}<span class="mt-s1 block text-footnote">${esc(s.stat.label)}</span></p>
         <a class="toon-link mt-auto self-start" href="/work/${s.slug}.html">Read the case study<span class="sr-only">: ${esc(s.title)}</span></a>
@@ -269,7 +269,7 @@ export function workIndex(): string {
         </div>
       </div>
       <p id="study-status" class="sr-only" role="status" aria-live="polite"></p>
-      <div id="study-list" class="mt-s8 grid gap-s8 sm:grid-cols-2">${studies.map((s, i) => studyCard(s, i)).join('')}
+      <div id="study-list" class="mt-s8 grid gap-s8 sm:grid-cols-2">${studies.map((s, i) => studyCard(s, i, '', 'h2')).join('')}
       </div>
     </section>`;
   return layout({
