@@ -7,7 +7,7 @@
   "summary": "In one working session, an AI agent turned a landlord's loose to-do list into a Drive folder, a four-tab capital plan, calendar reminders and a handoff email, inside written rules about what it may do alone.",
   "stat": {
     "value": "$27K",
-    "label": "($26,750) of repairs funded in order from rent alone, every project paid in cash by May 2028"
+    "label": "($26,750) of repairs and cushion funded in order from rent alone, every item paid in cash by May 2028"
   },
   "sections": [
     {
@@ -28,7 +28,7 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "Rent alone pays for all four projects by May 2028: the microwave at $750, the water heater at $3,500, a $2,500 emergency cushion and the roof at $20,000, which makes $26,750. The three smaller items are covered within five months of the first rent payment, and the roof takes the next twelve.",
+        "Rent alone pays for all four items by May 2028: the microwave at $750, the water heater at $3,500, a $2,500 emergency cushion and the roof at $20,000, which makes $26,750. The three smaller items, the microwave, the water heater and the cushion, are covered within five months of the first rent payment, and the roof takes the next twelve.",
         "The session ran as a conversation, and the plan updated in the same exchange as each decision. I gave the starting inputs, and the agent built the folder and the funding model. I corrected a filter size, a backflow date and a cost, and it filled the inputs and added yearly reminders. When I said the roof was about $20,000, it flagged that my December 2027 target came before the money, and then tied the target date to the funding date. When I asked whether the insurer could help with the water heater, it found that wear and tear is excluded, and I chose to switch to a rental policy first. The agent then put that deadline on the calendar. When I asked what I was overlooking, it listed ten items and I cleared seven. When I asked for a cushion, it inserted $2,500 ahead of the roof, which moved the roof to May 2028.",
         "I then asked whether $2,500 was too little for the water heater. The agent checked local prices, found a range of $1,300 to $2,900 for a tank before extras, and recommended $3,500. It also found three licensed local plumbers to ask for quotes. I took the $3,500, and the roof stayed in May 2028."
       ]
