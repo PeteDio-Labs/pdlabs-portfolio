@@ -1,18 +1,26 @@
 {
   "date": "2026-11-04",
-  "title": "Retiring a finance tracker without losing the statements",
+  "title": "Retiring a finance tracker once an agent did the job",
   "tag": "Operations",
   "accent": "violet",
-  "summary": "I built a household savings tracker, then shut it down when an agent covered the need, and wrote the teardown so the source data survived it.",
+  "summary": "I built a household savings tracker by hand, then shut it down when an AI agent covered the need through email and calendar, and I wrote the teardown so the source data survived.",
   "stat": {
-    "value": "Verified",
-    "label": "every exported object is checked against the bucket before anything is removed"
+    "value": "Agent-first",
+    "label": "an agent working through email and the calendar replaced a hand-built app"
   },
   "sections": [
     {
       "heading": "Problem",
       "paragraphs": [
-        "I had built a private savings and trip tracker over years of bank statements, with its own container, database, public routes and access rules. Then I never used it, and the personal finance agent already handled the household's money. The tracker had become a service with real attack surface and no user."
+        "I had built a private savings and trip tracker over years of bank statements, with its own container, database, public routes and access rules. Then my household's finances moved to an AI agent that works through email and the calendar. It reads the inbox, builds dated bill and payoff events, and checks them the next morning. Nothing in that loop needed a custom app, and I never opened the tracker.",
+        "The tracker had become a service with real attack surface and no user. The agent was not a feature on top of it. It made the app unnecessary."
+      ]
+    },
+    {
+      "heading": "The decision",
+      "paragraphs": [
+        "I weighed what the tracker did that the agent could not. The answer was one thing: hold the source statements. A calendar and an inbox are enough to track due dates and payoffs, and they come with the access controls my household already uses. So I kept the data, and retired the code that served it.",
+        "Choosing to remove software because an agent made it redundant is the same judgment as choosing to build it, and I think it is the harder one."
       ]
     },
     {
