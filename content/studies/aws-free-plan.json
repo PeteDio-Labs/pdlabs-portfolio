@@ -6,14 +6,14 @@
   "accent": "blue",
   "summary": "An off-site watchdog and this site's hosting on an AWS Free-plan account, built in Terraform with guardrails, one blocked auth method and a dated exit plan.",
   "stat": {
-    "value": "$0–1",
-    "label": "a month for the off-site watchdog: one Lambda, one table, one schedule rule and three parameters"
+    "value": "Pennies",
+    "label": "a month for the off-site watchdog: one function, one table and one schedule rule"
   },
   "sections": [
     {
       "heading": "Problem",
       "paragraphs": [
-        "My lab runs on hardware in my home, so a power or internet outage silences the monitoring that would report it. I wanted a watcher outside the house, and a home for this site, on an AWS account with credit that expires on 20 April 2027."
+        "My lab runs on hardware in my home, so a power or internet outage silences the monitoring that would report it. I wanted a watcher outside the house, and a home for this site, on an AWS account with credit that expires in spring 2027."
       ]
     },
     {
@@ -21,7 +21,7 @@
       "paragraphs": [
         "The watchdog is one Lambda function. The lab sends it a heartbeat every two minutes. A scheduled run of the same function posts a message to my Discord when the heartbeat stops, and probes the lab's public endpoints. It uses one on-demand table, one schedule rule and three parameters, and I wrote it in Terraform like the rest of the lab.",
         "The site is a private S3 bucket behind CloudFront with origin access control and a certificate. A custom response-headers policy sets a content security policy and HSTS. DNS stays at Cloudflare, so the account uses no Route 53. The module is written so it stays inside the always-free allowance.",
-        "I wrote the account rules down before the first resource existed. No AWS Organization, no Control Tower and no advanced features, because any of them ends credit earning. Free-plan-eligible services only, at the smallest sizes. A permissions boundary on the Terraform user stops it from creating a role more powerful than itself. A $5 monthly budget watches real money, a second budget counts credit burn, and anomaly detection emails me."
+        "I wrote the account rules down before the first resource existed. No AWS Organization, no Control Tower and no advanced features, because any of them ends credit earning. Free-plan-eligible services only, at the smallest sizes. A permissions boundary on the Terraform user stops it from creating a role more powerful than itself. A small monthly budget watches real money, a second budget counts credit burn, and anomaly detection emails me."
       ]
     },
     {
@@ -35,7 +35,7 @@
       "heading": "Result",
       "paragraphs": [
         "The watchdog is deployed. The lab's heartbeat reaches it, and its daily \"alive\" message arrived in my Discord on 3 November.",
-        "The site deploys from a merge to the main branch. The first deploy ran on 3 November: it type-checked, tested and built the site, confirmed which identity it ran as, synced 20 files to S3 and invalidated the CloudFront cache. I then read the site back through CloudFront's own address: the home page and the case-study pages return 200 with the HSTS header, and a missing page returns the 404 page. The read-back also found that extensionless URLs such as /work return 404, because the build writes work.html. No link on the site uses that form, so nothing breaks today, but I still have to fix it.",
+        "The site deploys from a merge to the main branch. The first deploy ran on 3 November: it type-checked, tested and built the site, confirmed which identity it ran as, synced the built files to S3 and invalidated the CloudFront cache. I then read the site back through CloudFront's own address: the home page and the case-study pages return 200 with the HSTS header, and a missing page returns the 404 page. The read-back also found that extensionless URLs such as /work return 404, because the build writes work.html. No link on the site uses that form, so nothing breaks today, but I still have to fix it.",
         "What is not done: the pdlab.dev domain still points at Cloudflare. The certificate validation record and the DNS cutover wait on my go-ahead, so visitors do not reach the AWS copy yet. The access key for the deploy user is a stopgap, and replacing it with a short-lived credential from Vault is a tracked follow-up."
       ]
     },
@@ -43,7 +43,7 @@
       "heading": "What I would do differently",
       "paragraphs": [
         "Check the account's policy limits before designing the auth. A short test that tries to create the OIDC provider would have found the block on the first day.",
-        "The exit plan is dated. The Free plan ends on 20 April 2027, and a reminder fires before 6 April. By then I either upgrade with a budget alert in place, which should cost cents a month for a static site, or move the site to free static hosting and delete the bucket and distribution so nothing bills."
+        "The exit plan is dated. The Free plan ends in April 2027, and a reminder fires two weeks before. By then I either upgrade with a budget alert in place, which should cost cents a month for a static site, or move the site to free static hosting and delete the bucket and distribution so nothing bills."
       ]
     }
   ],

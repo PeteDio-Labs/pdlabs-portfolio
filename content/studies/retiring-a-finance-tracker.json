@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-04",
+  "title": "Retiring a finance tracker without losing the statements",
+  "tag": "Operations",
+  "accent": "violet",
+  "summary": "I built a household savings tracker, then shut it down when an agent covered the need, and wrote the teardown so the source data survived it.",
+  "stat": {
+    "value": "Verified",
+    "label": "every exported object is checked against the bucket before anything is removed"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "I had built a private savings and trip tracker over years of bank statements, with its own container, database, public routes and access rules. Then I never used it, and the personal finance agent already handled the household's money. The tracker had become a service with real attack surface and no user."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A teardown in stages, each in code. The first removed the host, the two public routes and their access app, the database, the monitors and the deploy tooling. A second removed the deploy role from the secrets store. A third was a script that deletes the tracker's remaining secrets, and it proves the host is gone before it deletes anything.",
+        "The statements were the hard part. Their bucket held the only copy of the source data, so I kept it through the teardown and wrote a separate export script. It copies every object, every older version and every delete marker, then checks each file against the bucket with a hash. It refuses a destination inside any git checkout, so bank data cannot end up in a repository. Removal needs an explicit flag and a typed confirmation, and then it verifies the saved export again instead of copying a second time."
+      ]
+    },
+    {
+      "heading": "What review found",
+      "paragraphs": [
+        "Two details came out of review. The script treated any message beginning with a common prefix as proof a key was absent, but that prefix appears on every failed lookup, so a broken credential would have looked like a clean removal. It now matches only the exact not-found code. And the storage client reports no latest-version flag, so the inventory records each version's order instead of guessing."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Stopping a project is a legitimate outcome, and it deserves the same care as shipping one. The same rule from my other work applies: a check that cannot fail is not a check. The teardown treats an unreadable answer as an error, never as absence, and it says what it examined before it reports success."
+      ]
+    }
+  ],
+  "skills": [
+    "Data retention",
+    "Safe deletion",
+    "Secrets cleanup",
+    "Treating errors as errors"
+  ],
+  "sources": [
+    "petedio-iac pull requests for the tracker teardown, the secrets cleanup and the statement export",
+    "petedio-vault Hosts/238-usaa.md (destroyed note)"
+  ],
+  "slug": "retiring-a-finance-tracker"
+}
