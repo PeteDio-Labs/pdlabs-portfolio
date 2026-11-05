@@ -4,7 +4,7 @@
   "title": "A read-only window into my lab for AI agents",
   "tag": "Agents",
   "accent": "blue",
-  "summary": "I gave my coding agents a typed, read-only view of my homelab over MCP, and an independent review agent caught me widening what they could read.",
+  "summary": "I gave my coding agents a typed, read-only view of my homelab over MCP, added a one-call overview, and let an independent review agent catch me widening what they could read.",
   "stat": {
     "value": "Read-only",
     "label": "every tool is a typed read that fails loudly, and a test refuses anything outside its allowlist"
@@ -21,7 +21,8 @@
       "paragraphs": [
         "A Model Context Protocol server that exposes the lab as a small set of typed, read-only tools: host lookups, guest state, monitor status, git history, service health, and work-item lookups. A model calls a tool with validated input and gets a capped answer that names what it read.",
         "It acts alone on reads only. It needs my word for anything that runs code from a branch, so that stays a separate, later design. It never writes, never returns a secret value, and has no shell tool. A read that fails returns an error with the cause, never an empty success.",
-        "The upgrade in this study makes the work-item tools project-aware. A tool takes a key such as one from the infrastructure board or the portfolio board. The server finds the project itself, so an agent no longer needs a hand-fed project identifier. A second tool lists the projects it may read."
+        "The upgrade in this study makes the work-item tools project-aware. A tool takes a key such as one from the infrastructure board or the portfolio board. The server finds the project itself, so an agent no longer needs a hand-fed project identifier. A second tool lists the projects it may read.",
+        "A second upgrade cut round trips. Asking what is wrong used to take four calls: monitors, guests, the merge desk and the services. One overview tool now runs those four reads together and returns a short list of what needs a look. Each source succeeds or fails on its own, and a source that cannot be read is named in the list. An unreadable source never counts as healthy, and the call fails outright only when every source fails."
       ]
     },
     {
@@ -40,7 +41,8 @@
     {
       "heading": "The tested control",
       "paragraphs": [
-        "The limit is the allowlist, and tests cover both sides. A key from an allowed board resolves and returns its title and state. A key from a board outside the list is refused, and the test asserts that no work-item request left the server. The refusal means something because the allowed case succeeds beside it. Other tests fail a call when the token is refused, when a project list is empty, and when an item belongs to a different project than its key claims."
+        "The limit is the allowlist, and tests cover both sides. A key from an allowed board resolves and returns its title and state. A key from a board outside the list is refused, and the test asserts that no work-item request left the server. The refusal means something because the allowed case succeeds beside it. Other tests fail a call when the token is refused, when a project list is empty, and when an item belongs to a different project than its key claims.",
+        "The overview has its own negative cases. A dead source shows up as unread, a desk that stopped without raising an error is flagged by its silence, and a source that answers in the wrong shape is reported by name instead of crashing the view. An independent review agent found the silent-desk gap; the same pattern, a check that stays green because it stopped working, is what the review exists to catch."
       ]
     },
     {
@@ -50,6 +52,13 @@
       ]
     }
   ],
-  "skills": ["Agent tool design", "Least privilege", "Model Context Protocol", "Code review"],
-  "sources": ["the lab MCP server's tests and review notes"]
+  "skills": [
+    "Agent tool design",
+    "Least privilege",
+    "Model Context Protocol",
+    "Code review"
+  ],
+  "sources": [
+    "the lab MCP server's tests and review notes"
+  ]
 }
