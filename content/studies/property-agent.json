@@ -4,47 +4,47 @@
   "title": "An agent that runs the paperwork for a rental house",
   "tag": "Agents",
   "accent": "yellow",
-  "summary": "In one working session, an AI agent turned a landlord's loose to-do list into a Drive folder, a four-tab capital plan, calendar reminders and a handoff email, inside written rules about what it may do alone.",
+  "summary": "In one sitting, an AI agent turned a landlord's scattered to-do list into a working system: a shared folder, a capital plan that reflows itself, calendar deadlines and a handoff to my other agents. A written rulebook decides what it may touch.",
   "stat": {
-    "value": "$27K",
-    "label": "($26,750) of repairs and cushion funded in order from rent alone, every item paid in cash by May 2028"
+    "value": "Rules",
+    "label": "come first: a written rulebook sets what the agent does alone, what needs my word and what it never does"
   },
   "sections": [
     {
       "heading": "Problem",
       "paragraphs": [
-        "My household owns a single-family rental that we manage from out of state, with no property manager. The house is about thirteen years old, so its original systems are reaching the end of their lives. A roof near $20,000 and an original water heater are the big items. A microwave upgrade, a yearly backflow test and a central air filter every three months are the small ones.",
-        "None of this was tracked in one place. The tenant was moving from a verbal agreement to a written lease, the homeowners policy had to become a rental policy before that lease started, and rent was $1,600 a month. The question was whether rent alone could pay for every repair, and in what order."
+        "My household owns a rental house that we manage from out of state, with no property manager. The house is old enough that its original systems are reaching the end of their lives. The roof is the big one, the water heater is close behind, and a pile of smaller jobs trails after them: a microwave upgrade, a yearly backflow test and an air filter that needs changing on a schedule.",
+        "None of it lived in one place. A lease was changing, the insurance had to change with it, and every repair sat in my head as a vague worry instead of a plan. The real question was simple to ask and hard to answer: can the rent alone pay for all of it, and in what order should the work happen?"
       ]
     },
     {
       "heading": "What I built",
       "paragraphs": [
-        "The agent runs as a named role defined by a one-page brief in a Claude Project. The brief has three lists. The agent may edit the lease document and read every change back, create and track dates on the shared finance calendar, keep the repair log and the capital plan, and read the listing site's data to draft text for me to post. It acts only on my word to change anything on the listing site, share a property file, or send updates to the other agents. It never messages the tenant, signs a lease or addendum, moves money, charges or waives a fee, or approves a rent change, a new occupant, a pet, a sublet or an early exit.",
-        "In one session it set up three linked tools around one Drive folder that my Google account owns. The folder holds a yearly lease template, signed leases, receipts and a capital plan spreadsheet with four tabs: Reserve, Projects, Recurring and Log. The calendar holds the deadlines, including the insurance switch and the yearly backflow test. Email carries the handoff to my other agents, in a fixed format with a tagged subject, a header and a signature, and it goes out only when I ask. The agent reads the listing site through my browser and cannot change it.",
-        "The plan sends all $1,600 of monthly rent to a savings reserve and pays for projects in priority order. Every target date is a spreadsheet formula over the rent, the starting balance and the running total of estimates, so a new quote or a missed payment moves every date without anyone retyping it."
+        "I gave an agent a job description. It runs as a named role, defined by a one-page brief in a Claude Project, and the brief is a rulebook with three columns. The first lists what the agent may do on its own: edit the lease document and read every change back, track dates on the shared finance calendar, keep the repair log and the capital plan, and read the listing site to draft text for me to post. The second lists what needs my word first: changing anything on the listing site, sharing a property file, sending updates to my other agents. The third lists what it never does: contact the tenant, sign anything, move money, waive a fee, or approve a change to the lease terms.",
+        "Inside those lines it built three tools around one folder that my own account owns. The folder holds the lease template, the signed leases, the receipts and a capital plan spreadsheet with four tabs for the reserve, the projects, the recurring chores and a log. The calendar holds the deadlines, from the insurance switch to the yearly backflow test. Email carries the handoff to my other agents, in a fixed format with a tagged subject, a header and a signature, and it only goes out when I ask. The agent can read the listing site through my browser and cannot change it.",
+        "The plan treats all the rent as a savings stream and pays for projects in priority order. Every target date in the sheet is a formula over the income, the balance and the running cost of the queue, so no date is typed in by hand."
       ]
     },
     {
       "heading": "Result",
       "paragraphs": [
-        "Rent alone pays for all four items by May 2028: the microwave at $750, the water heater at $3,500, a $2,500 emergency cushion and the roof at $20,000, which makes $26,750. The three smaller items, the microwave, the water heater and the cushion, are covered within five months of the first rent payment, and the roof takes the next twelve.",
-        "The session ran as a conversation, and the plan updated in the same exchange as each decision. I gave the starting inputs, and the agent built the folder and the funding model. I corrected a filter size, a backflow date and a cost, and it filled the inputs and added yearly reminders. When I said the roof was about $20,000, it flagged that my December 2027 target came before the money, and then tied the target date to the funding date. When I asked whether the insurer could help with the water heater, it found that wear and tear is excluded, and I chose to switch to a rental policy first. The agent then put that deadline on the calendar. When I asked what I was overlooking, it listed ten items and I cleared seven. When I asked for a cushion, it inserted $2,500 ahead of the roof, which moved the roof to May 2028.",
-        "I then asked whether $2,500 was too little for the water heater. The agent checked local prices, found a range of $1,300 to $2,900 for a tank before extras, and recommended $3,500. It also found three licensed local plumbers to ask for quotes. I took the $3,500, and the roof stayed in May 2028."
+        "The answer was yes: rent alone pays for every project, the roof last. Because the dates are formulas, the plan never goes stale. A new quote, a bigger estimate or a missed month moves the whole schedule on its own, and nobody retypes a thing.",
+        "The session worked like a conversation, and the plan changed in the same breath as each decision. I corrected a filter size, a test date and a cost, and the agent updated the inputs and added yearly reminders. When I gave it the roof estimate, it pointed out that my target date for the roof landed before the money would exist, then tied that date to the funding date so it could never drift ahead of reality. When I asked whether my insurer could help with the water heater, it researched the coverage, found that wear and tear is excluded, and I decided to move to a rental policy first. It put that deadline on the calendar before the conversation moved on.",
+        "Two prompts mattered most. When I asked what I might be overlooking, the agent came back with a list of ten gaps across the lease, the money and the upkeep, and I cleared most of them on the spot. When I wondered whether my water heater budget was too thin, it checked local prices, told me the range was wider than I had assumed and recommended a bigger number. It also found licensed local plumbers I could call for quotes. I took the recommendation, and the plan rebuilt itself around it."
       ]
     },
     {
       "heading": "What went wrong",
       "paragraphs": [
-        "The agent had predicted that the $3,500 change would push the roof to June. It then recalculated and reported that the roof stayed in May, and said it had been wrong. That is the behavior I want, because a plan that hides its own corrections is not one I can trust with money.",
-        "Two conflicts surfaced and it left both to me instead of resolving them: the roof date against the money, and the insurance policy type. The estimates are still ballparks until real quotes arrive. The plan also assumes rent arrives every month, so a vacancy or a late payment shifts every date. Recurring tasks only fire if their last-done dates are filled in, so the air filter reminder waits on a date from me."
+        "The agent got a prediction wrong, and said so. It told me a budget change would push the roof back a month, then recalculated and reported that the roof stayed where it was. I would rather have an agent that corrects itself in the open than one that quietly smooths over its misses.",
+        "Two conflicts surfaced and it left both to me instead of resolving them: the roof date against the money, and the choice of insurance policy. The numbers are also only as good as the estimates behind them. Until real quotes arrive, the plan is a well-organised guess. It assumes the rent arrives every month, so a vacancy would shift the whole schedule. And recurring reminders only fire once their last-done dates are filled in, so the air filter waits on a date from me."
       ]
     },
     {
       "heading": "Lesson",
       "paragraphs": [
-        "Written guardrails let the agent move fast on routine work without crossing into money, signatures or tenant contact. A short list of what it may do, what needs my word and what it never does cost almost nothing, and it was the thing I checked against when I read each change back.",
-        "Formulas beat typed numbers, because every new quote reflows the whole plan. Research should end in a decision: each lookup, whether insurance coverage, water heater prices or local plumbers, ended in a number or a choice for me. Next I need two or three water heater quotes, the air filter date, the rental policy switch and the signed lease in the folder."
+        "A short written rulebook beats trust. Because the agent knew in advance which actions were free, which needed my word and which were off the table, it moved fast on routine work and stopped at money, signatures and anything addressed to the tenant. The rulebook also gave me something to check each change against when I read it back.",
+        "Two other habits made the difference. Formulas beat typed numbers, since one new quote reflows the whole plan. And research is worth doing only if it ends in a decision: every lookup, from insurance coverage to repair prices to local plumbers, finished as a choice or a number I could act on. What is left is the human part: collecting a few quotes, filling in the filter date, switching the policy and filing the signed lease."
       ]
     }
   ],
@@ -55,6 +55,6 @@
     "Tool permissioning"
   ],
   "sources": [
-    "Claude Docs artifact 'Case Study: Agentic Property Management for a Single-Family Rental', 2026-11-05 (the agent's one-session summary). Location, insurer, bank, lease dates and vendor details left out for public safety"
+    "Claude Docs artifact 'Case Study: Agentic Property Management for a Single-Family Rental', 2026-11-05 (the agent's one-session summary). Dollar figures, dates, location and vendor details removed at Pedro's request"
   ]
 }
