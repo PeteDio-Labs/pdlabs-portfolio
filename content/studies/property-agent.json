@@ -1,0 +1,60 @@
+{
+  "slug": "property-agent",
+  "date": "2026-11-05",
+  "title": "An agent that runs the paperwork for a rental house",
+  "tag": "Agents",
+  "accent": "yellow",
+  "summary": "In one working session, an AI agent turned a landlord's loose to-do list into a Drive folder, a four-tab capital plan, calendar reminders and a handoff email, inside written rules about what it may do alone.",
+  "stat": {
+    "value": "$27K",
+    "label": "($26,750) of repairs funded in order from rent alone, every project paid in cash by May 2028"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "My household owns a single-family rental that we manage from out of state, with no property manager. The house is about thirteen years old, so its original systems are reaching the end of their lives. A roof near $20,000 and an original water heater are the big items. A microwave upgrade, a yearly backflow test and a central air filter every three months are the small ones.",
+        "None of this was tracked in one place. The tenant was moving from a verbal agreement to a written lease, the homeowners policy had to become a rental policy before that lease started, and rent was $1,600 a month. The question was whether rent alone could pay for every repair, and in what order."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "The agent runs as a named role defined by a one-page brief in a Claude Project. The brief has three lists. The agent may edit the lease document and read every change back, create and track dates on the shared finance calendar, keep the repair log and the capital plan, and read the listing site's data to draft text for me to post. It acts only on my word to change anything on the listing site, share a property file, or send updates to the other agents. It never messages the tenant, signs a lease or addendum, moves money, charges or waives a fee, or approves a rent change, a new occupant, a pet, a sublet or an early exit.",
+        "In one session it set up three linked tools around one Drive folder that my Google account owns. The folder holds a yearly lease template, signed leases, receipts and a capital plan spreadsheet with four tabs: Reserve, Projects, Recurring and Log. The calendar holds the deadlines, including the insurance switch and the yearly backflow test. Email carries the handoff to my other agents, in a fixed format with a tagged subject, a header and a signature, and it goes out only when I ask. The agent reads the listing site through my browser and cannot change it.",
+        "The plan sends all $1,600 of monthly rent to a savings reserve and pays for projects in priority order. Every target date is a spreadsheet formula over the rent, the starting balance and the running total of estimates, so a new quote or a missed payment moves every date without anyone retyping it."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "Rent alone pays for all four projects by May 2028: the microwave at $750, the water heater at $3,500, a $2,500 emergency cushion and the roof at $20,000, which makes $26,750. The three smaller items are covered within five months of the first rent payment, and the roof takes the next twelve.",
+        "The session ran as a conversation, and the plan updated in the same exchange as each decision. I gave the starting inputs, and the agent built the folder and the funding model. I corrected a filter size, a backflow date and a cost, and it filled the inputs and added yearly reminders. When I said the roof was about $20,000, it flagged that my December 2027 target came before the money, and then tied the target date to the funding date. When I asked whether the insurer could help with the water heater, it found that wear and tear is excluded, and I chose to switch to a rental policy first. The agent then put that deadline on the calendar. When I asked what I was overlooking, it listed ten items and I cleared seven. When I asked for a cushion, it inserted $2,500 ahead of the roof, which moved the roof to May 2028.",
+        "I then asked whether $2,500 was too little for the water heater. The agent checked local prices, found a range of $1,300 to $2,900 for a tank before extras, and recommended $3,500. It also found three licensed local plumbers to ask for quotes. I took the $3,500, and the roof stayed in May 2028."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "The agent had predicted that the $3,500 change would push the roof to June. It then recalculated and reported that the roof stayed in May, and said it had been wrong. That is the behavior I want, because a plan that hides its own corrections is not one I can trust with money.",
+        "Two conflicts surfaced and it left both to me instead of resolving them: the roof date against the money, and the insurance policy type. The estimates are still ballparks until real quotes arrive. The plan also assumes rent arrives every month, so a vacancy or a late payment shifts every date. Recurring tasks only fire if their last-done dates are filled in, so the air filter reminder waits on a date from me."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Written guardrails let the agent move fast on routine work without crossing into money, signatures or tenant contact. A short list of what it may do, what needs my word and what it never does cost almost nothing, and it was the thing I checked against when I read each change back.",
+        "Formulas beat typed numbers, because every new quote reflows the whole plan. Research should end in a decision: each lookup, whether insurance coverage, water heater prices or local plumbers, ended in a number or a choice for me. Next I need two or three water heater quotes, the air filter date, the rental policy switch and the signed lease in the folder."
+      ]
+    }
+  ],
+  "skills": [
+    "Agent safety design",
+    "Human-in-the-loop approval",
+    "Spreadsheet modeling",
+    "Tool permissioning"
+  ],
+  "sources": [
+    "Claude Docs artifact 'Case Study: Agentic Property Management for a Single-Family Rental', 2026-11-05 (the agent's one-session summary). Location, insurer, bank, lease dates and vendor details left out for public safety"
+  ]
+}
