@@ -27,15 +27,22 @@
       "heading": "Result",
       "paragraphs": [
         "In my September audit, turning thinking off made the model roughly twice as fast, and the lab agent runs with it off. The model fits on one consumer card with its context.",
-        "The chat model is a mid-size Qwen3 and the embedding model is a small one, each on its own consumer GPU."
+        "The chat model is a mid-size Qwen3 and the embedding model is a small one, each on its own consumer GPU.",
+        "Today the lab agent answers questions about the platform from the vault, the tracker and repo docs on this model, with no hosted key behind it."
       ]
     },
     {
       "heading": "Trade-off",
       "paragraphs": [
         "A thinking Qwen3 spends its output limit on reasoning, so the agent turns thinking off. The agent loop caps each reply length, the number of model turns and the total time. The last turn offers no tools, and a cut or empty answer is marked incomplete instead of being passed off as whole.",
-        "I audited every installed model on one question with thinking on and off: how many simultaneous disk failures a RAIDZ1 vdev survives. The Qwen3 model answered correctly both ways. Gemma 4 answered correctly only with thinking on. The two Qwen3.5 models, a 4B and a 9B, never closed their thinking block: they returned an empty answer with a clean status, so the audit deleted them. A model has to be tested on the real question before it earns the default slot.",
+        "I audited every installed model on one question with thinking on and off: how many simultaneous disk failures a RAIDZ1 vdev survives. The Qwen3 model answered correctly both ways. Gemma 4 answered correctly only with thinking on.",
         "What the agent stopped needing: an API gateway, a hosted key and a monthly spend cap. The gateway is retired."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "The two newer Qwen3.5 models, a small one and a larger one, never closed their thinking block. They returned an empty answer with a clean status, so nothing in the call looked broken. I deleted both. A model has to be tested on the real question before it earns the default slot."
       ]
     }
   ],

@@ -1,9 +1,9 @@
 {
   "date": "2026-11-04",
-  "title": "Retiring a finance tracker once an agent did the job",
+  "title": "Deciding what to stop running",
   "tag": "Operations",
   "accent": "violet",
-  "summary": "I built a household savings tracker by hand, then shut it down when an AI agent covered the need through email and calendar, and I wrote the teardown so the source data survived.",
+  "summary": "An AI agent made a hand-built finance app unnecessary, so I retired it, and two other services, in code while keeping the data that could not be rebuilt.",
   "stat": {
     "value": "Agent-first",
     "label": "an agent working through email and the calendar replaced a hand-built app"
@@ -41,6 +41,12 @@
       "paragraphs": [
         "Stopping a project is a legitimate outcome, and it deserves the same care as shipping one. The same rule from my other work applies: a check that cannot fail is not a check. The teardown treats an unreadable answer as an error, never as absence, and it says what it examined before it reports success."
       ]
+    },
+    {
+      "heading": "The same rule on two more services",
+      "paragraphs": [
+        "I applied the same order to a game server, a read-only code mirror and a network-boot container. One pull request removed all three with their roles, routes, secrets and backup hooks. The only irreplaceable item was the game world, so a script exports it and a runbook restores it before anything is destroyed. Review caught that the export script assumed tools its machine lacked, and that destroying the game container leaves networking rules on the host. Both were fixed in the same change."
+      ]
     }
   ],
   "skills": [
@@ -51,7 +57,9 @@
   ],
   "sources": [
     "petedio-iac pull requests for the tracker teardown, the secrets cleanup and the statement export",
-    "petedio-vault Hosts/238-usaa.md (destroyed note)"
+    "petedio-vault Hosts/238-usaa.md (destroyed note)",
+    "petedio-iac pull request PET-779 (retire Palworld, the Forgejo mirror and the netboot container)",
+    "petedio-vault Projects/forgejo-mirror.md and Hosts/234-palworld.md"
   ],
-  "slug": "retiring-a-finance-tracker"
+  "slug": "deciding-what-to-stop-running"
 }
