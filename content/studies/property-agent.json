@@ -6,8 +6,8 @@
   "accent": "yellow",
   "summary": "In one sitting, an AI agent turned a landlord's scattered to-do list into a working system: a shared folder, a capital plan that reflows itself, calendar deadlines and a handoff to my other agents. A written rulebook decides what it may touch.",
   "stat": {
-    "value": "1 sitting",
-    "label": "from a loose list of chores to a capital plan, a calendar and a handoff, with every decision still mine"
+    "value": "Rules",
+    "label": "come first: a written rulebook sets what the agent does alone, what needs my word and what it never does"
   },
   "sections": [
     {
