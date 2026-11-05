@@ -1,0 +1,55 @@
+{
+  "slug": "lab-mcp",
+  "date": "2026-11-05",
+  "title": "A read-only window into my lab for AI agents",
+  "tag": "Agents",
+  "accent": "blue",
+  "summary": "I gave my coding agents a typed, read-only view of my homelab over MCP, and an independent review agent caught me widening what they could read.",
+  "stat": {
+    "value": "Read-only",
+    "label": "every tool is a typed read that fails loudly, and a test refuses anything outside its allowlist"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "My coding agents work in the cloud and cannot reach my home network. Before this, every question about live state went through me, pasting a command into a session on the LAN. A general shell tool would have fixed that and handed an agent far more power than it needs."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A Model Context Protocol server that exposes the lab as a small set of typed, read-only tools: host lookups, guest state, monitor status, git history, service health, and work-item lookups. A model calls a tool with validated input and gets a capped answer that names what it read.",
+        "It acts alone on reads only. It needs my word for anything that runs code from a branch, so that stays a separate, later design. It never writes, never returns a secret value, and has no shell tool. A read that fails returns an error with the cause, never an empty success.",
+        "The upgrade in this study makes the work-item tools project-aware. A tool takes a key such as one from the infrastructure board or the portfolio board. The server finds the project itself, so an agent no longer needs a hand-fed project identifier. A second tool lists the projects it may read."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "Agents can name the work items a commit cites, across boards, in one call. I have no measurement of time saved, and I am not claiming one. What I can show is the control below."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "My first version resolved any project in the workspace. The tests passed. I handed the diff to a fresh review agent with no stake in it, and told it nothing about whether the change was safe. It pointed out that I had removed a hard limit. Before, the tool could read one board. Now a model, or text a model had been tricked by, could ask for any board, including one I treat as personal.",
+        "I had tested that the code worked and never asked what it could now reach. I added an allowlist of project identifiers, checked before the server contacts the tracker at all."
+      ]
+    },
+    {
+      "heading": "The tested control",
+      "paragraphs": [
+        "The limit is the allowlist, and tests cover both sides. A key from an allowed board resolves and returns its title and state. A key from a board outside the list is refused, and the test asserts that no work-item request left the server. The refusal means something because the allowed case succeeds beside it. Other tests fail a call when the token is refused, when a project list is empty, and when an item belongs to a different project than its key claims."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "When a change makes a tool more general, review what it can now reach, not only whether it works. Ask an independent reviewer that question, and write the refusal as a test."
+      ]
+    }
+  ],
+  "skills": ["Agent tool design", "Least privilege", "Model Context Protocol", "Code review"],
+  "sources": ["the lab MCP server's tests and review notes"]
+}
