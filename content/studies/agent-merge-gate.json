@@ -7,14 +7,21 @@
   "accent": "blue",
   "summary": "Each task gets its own agent session, every pull request gets a review, and a tiered gate decides when it merges.",
   "stat": {
-    "value": "214",
-    "label": "PRs merged in one week, up from 55 the week before"
+    "value": "Gated",
+    "label": "merge volume rose sharply once a deterministic gate, not me, decided what could merge"
   },
   "sections": [
     {
       "heading": "Problem",
       "paragraphs": [
-        "One person runs a homelab platform across many repos. Reviews and merges became the bottleneck."
+        "Each task gets its own agent session, and no session approves its own work. That rule is easy to state and easy to break, so the question was how to keep it true while one person runs a platform across many repos."
+      ]
+    },
+    {
+      "heading": "Testing the control",
+      "paragraphs": [
+        "Before this gate, I built and retired an unattended agent that opened draft pull requests from labelled tickets. Its safety rested on one claim: the GitHub App it used could not merge its own pull request. I tested the claim instead of assuming it. As the real App, against two throwaway branches, the merge call returned 405 on the branch that required one review and 200 on an unprotected control, back to back. The control is what makes the 405 mean something: without it, a refusal looks the same as a broken credential.",
+        "I never enabled that agent's timer and retired it. Independent review, the merge gate above and one project thread per task replaced it. Reviews now come from a Claude review skill, after my Codex quota ran out, and I count them as equivalent. Two rules outlived it: every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo."
       ]
     },
     {
@@ -29,29 +36,16 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "214 PRs merged in the week of 19 October, up from 55 the week before. Of the 214, 211 carried an agent author or footer and 3 did not, which is a heuristic because agent PRs can come from my own login. The count covers eight repos by GitHub merge date, Monday to Sunday, UTC.",
-        "The week after had 26, so the 19 October week was a peak, not a steady rate. Throughput is the measure here, not quality."
-      ]
-    },
-    {
-      "heading": "Testing the control",
-      "paragraphs": [
-        "Before this gate, I built and retired an unattended agent that opened draft pull requests from labelled tickets. Its safety rested on one claim: the GitHub App it used could not merge its own pull request. I tested the claim instead of assuming it. As the real App, against two throwaway branches, the merge call returned 405 on the branch that required one review and 200 on an unprotected control, ninety seconds apart. The control is what makes the 405 mean something: without it, a refusal looks the same as a broken credential.",
-        "I never enabled that agent's timer and retired it on 30 September. Codex review, the merge gate above and one project thread per task replaced it. Two rules outlived it: every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo."
+        "In one busy week, merged pull requests rose several-fold over the week before, and almost all carried an agent author or footer. That is a heuristic, because agent PRs can come from my own login.",
+        "The week after was far quieter, so that week was a peak, not a steady rate. Throughput is the measure here, not quality."
       ]
     },
     {
       "heading": "A failure that taught me",
       "paragraphs": [
-        "On 9 September the secrets store sat sealed for 9 hours and 34 minutes. The watcher that unsealed it ran on a laptop that had gone to sleep. The tracker reconcile job, which had gained eleven calling repos the day before, reported success in all eleven while reconciling nothing. Its token step was set to continue, and the next step treated a missing token as a clean exit. A warning annotation does not colour a check.",
-        "Two other things stood out. The sibling reconcile job had hit the same error and failed loudly, because an earlier incident had already fixed it there. And the uptime monitor recorded 1,724 consecutive DOWN heartbeats for the sealed store, then told nobody, because none of its 19 monitors had a notification channel attached.",
+        "One day the secrets store sat sealed for most of a working day. The watcher that unsealed it ran on a laptop that had gone to sleep. The tracker reconcile job, which had gained a batch of calling repos the day before, reported success in every one while reconciling nothing. Its token step was set to continue, and the next step treated a missing token as a clean exit. A warning annotation does not colour a check.",
+        "Two other things stood out. The sibling reconcile job had hit the same error and failed loudly, because an earlier incident had already fixed it there. And the uptime monitor recorded every missed heartbeat for the sealed store, then told nobody, because none of its monitors had a notification channel attached.",
         "The reconcile job now fails when it cannot get a token, and says why. The unseal watcher moved to an always-on machine and re-reads the seal status after it submits the key, so it exits non-zero if the store is still sealed. The recurring bug was a green check over work that never happened. In the status jobs I audited, each now fails non-zero and reports what it examined, not only what it found."
-      ]
-    },
-    {
-      "heading": "Scale",
-      "paragraphs": [
-        "About ten repos and about two dozen containers and VMs on three Proxmox nodes. The platform follows the AWS shape: containers stand in for EC2, MinIO for S3, Postgres for RDS and Vault for Secrets Manager, so it can move to AWS by swapping the provider and variables."
       ]
     },
     {
