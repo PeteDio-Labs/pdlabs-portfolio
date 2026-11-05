@@ -1,10 +1,10 @@
 {
   "slug": "aws-free-plan",
   "date": "2026-11-04",
-  "title": "Using a Free-plan AWS account without a surprise bill",
-  "tag": "Cloud",
+  "title": "Lab operations: a cheap cloud account and a safe state store",
+  "tag": "Operations",
   "accent": "blue",
-  "summary": "An off-site watchdog and this site's hosting on an AWS Free-plan account, built in Terraform with guardrails, one blocked auth method and a dated exit plan.",
+  "summary": "Two operations stories: an off-site watchdog on a Free-plan AWS account without a surprise bill, and making the store that holds my Terraform state safe to rotate and rebuild.",
   "stat": {
     "value": "Pennies",
     "label": "a month for the off-site watchdog: one function, one table and one schedule rule"
@@ -36,7 +36,27 @@
       "paragraphs": [
         "The watchdog is deployed. The lab's heartbeat reaches it, and its daily \"alive\" message arrived in my Discord on 3 November.",
         "The site deploys from a merge to the main branch. The first deploy ran on 3 November: it type-checked, tested and built the site, confirmed which identity it ran as, synced the built files to S3 and invalidated the CloudFront cache. I then read the site back through CloudFront's own address: the home page and the case-study pages return 200 with the HSTS header, and a missing page returns the 404 page. The read-back also found that extensionless URLs such as /work return 404, because the build writes work.html. No link on the site uses that form, so nothing breaks today, but I still have to fix it.",
-        "What is not done: the pdlab.dev domain still points at Cloudflare. The certificate validation record and the DNS cutover wait on my go-ahead, so visitors do not reach the AWS copy yet. The access key for the deploy user is a stopgap, and replacing it with a short-lived credential from Vault is a tracked follow-up."
+        "Two parts are still in progress: the domain cutover to the AWS copy, and replacing the deploy user's long-lived key with a short-lived credential from Vault. I treat the key as a stopgap, not the design."
+      ]
+    },
+    {
+      "heading": "The state store",
+      "paragraphs": [
+        "The same discipline applied at home. The object store that holds every Terraform state had an exposed credential and an Ansible role that no longer matched the running host, so running the role would have repointed the backend."
+      ]
+    },
+    {
+      "heading": "State store: what I did",
+      "paragraphs": [
+        "First, a script rotates the exposed root credential and records the new one in the secrets store. Its first version rolled back every time, because its health check called a tool that the host does not have. A pull request switched the check to a language the host does have, and the rotation now holds.",
+        "Second, I found the vendor download site returns Gone for the pinned binary, so rebuilding the host from scratch would have failed. The role now fetches its binaries from a release in my own mirror.",
+        "Third, I made the role describe the running host exactly: its service account, environment file, service unit layout and firewall setting. A dry run with diffs is how I found each mismatch, and I fixed them one pull request at a time until the diff was clean. Other hosts keep the role's normal defaults."
+      ]
+    },
+    {
+      "heading": "State store: lesson",
+      "paragraphs": [
+        "A configuration role that has drifted from reality is worse than none, because it looks like documentation and acts like a command. Make it match what is running, prove it with a dry run, and then it becomes a safe path to a rebuild."
       ]
     },
     {
@@ -51,13 +71,17 @@
     "Cloud cost control",
     "Terraform",
     "IAM and permission boundaries",
-    "Operating within constraints"
+    "Operating within constraints",
+    "Credential rotation",
+    "Terraform state management"
   ],
   "sources": [
     "petedio-iac environments/offsite-watchdog/README.md (design, account rules, permissions boundary)",
     "petedio-iac modules/portfolio-site/README.md and environments/portfolio/README.md (hosting module, OIDC block, IAM user)",
     "pdlabs-portfolio docs/hosting-and-exit-plan.md (exit plan and dates)",
     "project files aws/credit-spend-plan.md (budgets and anomaly detection)",
-    "project work-item notes: first deploy and CloudFront read-back, 3 November (PET-816); watchdog alive message confirmed 3 November (PET-722)"
+    "project work-item notes: first deploy and CloudFront read-back, 3 November (PET-816); watchdog alive message confirmed 3 November (PET-722)",
+    "petedio-iac pull requests for the MinIO credential rotation, the readiness check, the mirror fetch and the role-matching fixes",
+    "Plane items covering the same work"
   ]
 }
