@@ -6,8 +6,8 @@
   "accent": "yellow",
   "summary": "Per-role SSH through short-lived certificates instead of static keys and shared sudo grants.",
   "stat": {
-    "value": "60 min",
-    "label": "longest a certificate lives; the service role gets 30"
+    "value": "Short-lived",
+    "label": "every certificate expires on its own; revocation is the clock"
   },
   "sections": [
     {
@@ -27,7 +27,7 @@
       "heading": "Result so far",
       "paragraphs": [
         "Phase 1 shipped as one PR, then six follow-up PRs through the normal flow: two that closed review findings before the first canary run, and four that fixed the role and its checks, such as revoking principals files the role does not own and not reloading sshd on hosts that start it by socket.",
-        "Each signing role names one principal and one lifetime: an hour for admin work, thirty minutes for the service that reads the inventory. Revocation is the clock, not a list. Nothing is signed while Vault is sealed, so a scheduled caller fails loudly.",
+        "Each signing role names one principal and one lifetime: an hour at most for admin work, less for the service that reads the inventory. Revocation is the clock, not a list. Nothing is signed while Vault is sealed, so a scheduled caller fails loudly.",
         "The role adds certificate trust beside the keys a host already has and never removes a static key. The rollout goes one canary host at a time, and the canary has not passed its live check yet, so no host has dropped static keys yet."
       ]
     },
