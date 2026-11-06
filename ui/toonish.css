@@ -88,24 +88,26 @@
     @apply inline-block font-display font-bold tracking-tight;
     color: var(--toon-fill, theme(colors.toon.blue));
   }
-  .toon-type > span { display: inline-block; }
+  /* A word never breaks between its letters; the line may break between words. */
+  .toon-word { display: inline-block; white-space: nowrap; }
+  .toon-type .toon-word > span { display: inline-block; }
   .toon-type-comic {
     @apply font-comic font-normal tracking-wide;
     -webkit-text-stroke: .05em theme(colors.toon.ink);
     paint-order: stroke fill;
     text-shadow: .05em .05em 0 var(--toon-shade, theme(colors.toon.yellow));
   }
-  .toon-type-comic > span { transform-origin: 50% 100%; }
-  .toon-type-comic > span:nth-child(odd)  { transform: rotate(-1.5deg); }
-  .toon-type-comic > span:nth-child(even) { transform: rotate(1deg); }
-  .toon-type-flat > span { transform: none !important; }
+  .toon-type-comic .toon-word > span { transform-origin: 50% 100%; }
+  .toon-type-comic .toon-word > span:nth-child(odd)  { transform: rotate(-1.5deg); }
+  .toon-type-comic .toon-word > span:nth-child(even) { transform: rotate(1deg); }
+  .toon-type-flat .toon-word > span { transform: none !important; }
   /* Letters hop in turn, then rest. The delay steps by letter so the wave runs left to right. */
-  .toon-type-comic > span { animation: toon-bob 3.2s cubic-bezier(.34,1.8,.5,1) infinite; animation-delay: calc(var(--n, 0) * 90ms); }
-  .toon-type-comic > span:nth-child(1) { --n: 0; } .toon-type-comic > span:nth-child(2) { --n: 1; }
-  .toon-type-comic > span:nth-child(3) { --n: 2; } .toon-type-comic > span:nth-child(4) { --n: 3; }
-  .toon-type-comic > span:nth-child(5) { --n: 4; } .toon-type-comic > span:nth-child(6) { --n: 5; }
-  .toon-type-comic > span:nth-child(7) { --n: 6; } .toon-type-comic > span:nth-child(8) { --n: 7; }
-  .toon-type-flat > span { animation: none !important; }
+  .toon-type-comic .toon-word > span { animation: toon-bob 3.2s cubic-bezier(.34,1.8,.5,1) infinite; animation-delay: calc(var(--n, 0) * 90ms); }
+  .toon-type-comic .toon-word > span:nth-child(1) { --n: 0; } .toon-type-comic .toon-word > span:nth-child(2) { --n: 1; }
+  .toon-type-comic .toon-word > span:nth-child(3) { --n: 2; } .toon-type-comic .toon-word > span:nth-child(4) { --n: 3; }
+  .toon-type-comic .toon-word > span:nth-child(5) { --n: 4; } .toon-type-comic .toon-word > span:nth-child(6) { --n: 5; }
+  .toon-type-comic .toon-word > span:nth-child(7) { --n: 6; } .toon-type-comic .toon-word > span:nth-child(8) { --n: 7; }
+  .toon-type-flat .toon-word > span { animation: none !important; }
   /* The burst behind the hero pulses, and the page header drops in on load. */
   .toon-burst-hero { animation: toon-pulse 3.6s ease-in-out infinite; }
   header .toon-nav, header > a { animation: toon-drop .7s cubic-bezier(.34,1.8,.5,1) backwards; }
@@ -222,7 +224,7 @@
   .toon-burst { @apply absolute inset-0 h-full w-full; }
   .toon-burst-spin { }
   /* -z-10 inside the hero column's own stacking context (`relative z-0`), so the burst sits behind every line. */
-  .toon-burst-hero { @apply -right-[10%] -top-[28%] left-auto -z-10 h-[150%] w-auto;  }
+  .toon-burst-hero { @apply -right-[30%] -top-[40%] left-auto -z-10 h-[190%] w-auto;  }
 
   /* 13. Speed lines: a fan of yellow strokes behind a panel, drawn in src/pages.ts. */
   .toon-speed { @apply pointer-events-none absolute; }
