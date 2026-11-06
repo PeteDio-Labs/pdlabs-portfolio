@@ -10,7 +10,7 @@ export const motionScript = String.raw`(() => {
 })();
 `;
 
-export const siteScript = String.raw`// Three behaviours, no framework. Pages stay static HTML, so S3 and CloudFront need no rewrite.
+export const siteScript = String.raw`// A few small behaviours, no framework. Pages stay static HTML, so S3 and CloudFront need no rewrite.
 (() => {
   // 1. Scroll spy: on the home page, the main nav marks the section in view, not the page.
   const links = [...document.querySelectorAll('nav[aria-label="Main"] a[data-spy]')];
@@ -33,7 +33,7 @@ export const siteScript = String.raw`// Three behaviours, no framework. Pages st
   const sw = document.querySelector('[data-motion-toggle]');
   const sync = () => {
     const on = root.dataset.motion !== 'off';
-    if (sw) { sw.setAttribute('aria-pressed', String(on)); sw.setAttribute('aria-label', on ? 'Motion on. Turn motion off' : 'Motion off. Turn motion on'); }
+    if (sw) sw.setAttribute('aria-pressed', String(on));
   };
   sync();
   if (sw) sw.addEventListener('click', () => {
@@ -44,10 +44,11 @@ export const siteScript = String.raw`// Three behaviours, no framework. Pages st
   });
   // Scroll reveal: blocks rise into view the first time they appear. Blocks already in view at load stay put.
   if ('IntersectionObserver' in window) {
+    root.classList.add('toon-js');
     const io = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add('toon-in'); io.unobserve(en.target); }
     }), { rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll('main h2, main .toon-callout, main .toon-frame, main .toon-bubble, main .toon-footer, .toon-footer').forEach((n) => {
+    document.querySelectorAll('main h2, main .toon-callout, main .toon-frame, main .toon-bubble, .toon-footer').forEach((n) => {
       if (n.getBoundingClientRect().top < innerHeight) return;
       n.classList.add('toon-reveal');
       io.observe(n);

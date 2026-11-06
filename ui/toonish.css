@@ -104,8 +104,8 @@
   header .toon-nav, header > a { animation: toon-drop .7s cubic-bezier(.34,1.8,.5,1) backwards; }
   header .toon-nav { animation-delay: .12s; }
   /* Scroll reveal: site.js adds toon-reveal to a block, then toon-in once it scrolls into view. */
-  .toon-reveal { opacity: 0; transform: translateY(28px) scale(.92); }
-  .toon-reveal.toon-in { animation: toon-rise .65s cubic-bezier(.34,1.8,.5,1) backwards; opacity: 1; transform: none; }
+  html.toon-js .toon-reveal { opacity: 0; transform: translateY(28px) scale(.92); }
+  html.toon-js .toon-reveal.toon-in { animation: toon-rise .65s cubic-bezier(.34,1.8,.5,1) backwards; opacity: 1; transform: none; }
 
   /* Motion switch (header). Icon only on a phone, with a word beside it from sm up. */
   .toon-motion {
@@ -121,7 +121,7 @@
     @apply font-bold underline decoration-toon-red decoration-4 underline-offset-4 transition-all duration-fast ease-bounce;
   }
   .toon-link:hover { @apply underline-offset-8; }
-  @media (hover: hover) { .toon-link:hover { display: inline-block; animation: toon-nudge .45s cubic-bezier(.34,1.8,.5,1); } }
+  @media (hover: hover) { .toon-footer-links .toon-link:hover { animation: toon-nudge .45s cubic-bezier(.34,1.8,.5,1); } }
 
   /* 5. Badge */
   .toon-badge {
@@ -147,7 +147,7 @@
   @media (hover: hover) {
     .toon-nav a:hover, .toon-nav button:hover { @apply bg-toon-yellow; animation: toon-boing .5s cubic-bezier(.34,1.8,.5,1); }
   }
-  .toon-nav a:active, .toon-nav button:active { transform: scale(.88, .8); }
+  .toon-nav a:active, .toon-nav button:active { animation: none; transform: scale(.88, .8); }
   .toon-nav a[aria-current], .toon-nav button[aria-pressed="true"] { @apply bg-toon-ink text-toon-yellow; }
   /* A nav that wraps: any number of pills flow onto more rows, for a filter whose tag count isn't fixed. The capsule
      becomes a rounded panel so a second row doesn't leave a stretched pill, and it never outgrows its container. */
@@ -252,9 +252,10 @@
    turns it off whatever the system says (data-motion="off"). */
 @media (prefers-reduced-motion: reduce) {
   html:not([data-motion="on"]) *, html:not([data-motion="on"]) *::before, html:not([data-motion="on"]) *::after { animation: none !important; transition: none !important; }
-  html:not([data-motion="on"]) .toon-reveal { opacity: 1; transform: none; }
+  html:not([data-motion="on"]).toon-js .toon-reveal { opacity: 1; transform: none; }
   html:not([data-motion="on"]) { scroll-behavior: auto; }
 }
 html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
-html[data-motion="off"] .toon-reveal { opacity: 1; transform: none; }
+html[data-motion="off"].toon-js .toon-reveal { opacity: 1; transform: none; }
+@media print { html.toon-js .toon-reveal { opacity: 1 !important; transform: none !important; } }
 html[data-motion="off"] { scroll-behavior: auto; }
