@@ -1,7 +1,7 @@
 import { test, expect } from 'bun:test';
 import { home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapXml } from './seo.ts';
-import { siteScript } from './script.ts';
+import { siteScript, motionScript } from './script.ts';
 import { site, studies, featured, latest } from './content.ts';
 
 const all = () => [home(), workIndex(), kit(), notFound(), legal('privacy'), legal('terms'), ...studies.map(study)];
@@ -76,10 +76,13 @@ test('every page ships the main nav with Work pointing at /work', () => {
   expect(workIndex()).toContain('<a href="/work.html" aria-current="page">Work</a>');
 });
 
-test('the privacy page says no cookies, so no page or script sets one or uses web storage', () => {
-  // The privacy page names these APIs to say the site uses none, so it is left out of the scan.
+test('the privacy page says no cookies, so no page or script sets one or uses web storage beyond the motion setting', () => {
+  // The privacy page names these APIs, so it is left out of the scan. The one allowed use is the motion
+  // switch's saved choice, which the privacy page states.
   const text = [home(), kit(), notFound(), ...studies.map(study), siteScript].join('\n');
-  expect(text).not.toMatch(/document\.cookie|localStorage|sessionStorage|indexedDB|Set-Cookie/i);
+  expect(text).not.toMatch(/document\.cookie|sessionStorage|indexedDB|Set-Cookie/i);
+  expect([...(text + motionScript).matchAll(/localStorage\.\w+\('([^']+)'/g)].every((m) => m[1] === 'pd-motion')).toBe(true);
+  expect(legal('privacy')).toContain('pd-motion');
   expect(legal('privacy')).toContain('sets no cookies');
 });
 
