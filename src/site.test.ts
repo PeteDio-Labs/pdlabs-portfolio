@@ -154,3 +154,7 @@ test('the kit page demonstrates an accessible modal', () => {
   expect(html).toContain('data-toon-modal-open="k-modal-demo"');
   expect(html).toContain('data-toon-modal-close');
 });
+
+test('no page loads a font or stylesheet from Google, because the fonts are self-hosted', () => {
+  for (const html of all()) expect(html).not.toMatch(/fonts\.(googleapis|gstatic)\.com/);
+});

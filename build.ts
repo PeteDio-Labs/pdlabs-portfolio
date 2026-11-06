@@ -47,6 +47,16 @@ await Bun.write(`${out}/favicon.svg`, Bun.file('public/favicon.svg'));
 await Bun.write(`${out}/favicon-32.png`, Bun.file('public/favicon-32.png'));
 await Bun.write(`${out}/apple-touch-icon.png`, Bun.file('public/apple-touch-icon.png'));
 
+// Self-hosted fonts, so no request leaves for Google.
+for (const [pkg, file] of [['bangers', 'bangers-latin-400'], ['dm-sans', 'dm-sans-latin-400'], ['dm-sans', 'dm-sans-latin-700'], ['space-grotesk', 'space-grotesk-latin-500'], ['space-grotesk', 'space-grotesk-latin-700']]) {
+  await Bun.write(`${out}/fonts/${file}-normal.woff2`, Bun.file(`node_modules/@fontsource/${pkg}/files/${file}-normal.woff2`));
+}
+await Bun.write(`${out}/site.webmanifest`, JSON.stringify({
+  name: 'pdlab', short_name: 'pdlab', start_url: '/', display: 'standalone', background_color: '#0c1240', theme_color: '#0c1240',
+  icons: [{ src: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }, { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }],
+}) + '\n');
+await Bun.write(`${out}/.well-known/security.txt`, `Contact: mailto:privacy@pdlab.dev\nExpires: ${new Date(Date.now() + 365 * 86400000).toISOString()}\nPreferred-Languages: en\nCanonical: https://pdlab.dev/.well-known/security.txt\n`);
+
 const tw = Bun.spawnSync(['bunx', 'tailwindcss', '-i', 'ui/toonish.css', '-o', `${out}/toonish.css`, '--minify'], {
   stderr: 'pipe',
 });
