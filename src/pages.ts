@@ -28,9 +28,10 @@ const speedLines = (cls = '') =>
  * The text stays real text, so readers and search see it as written.
  */
 const letters = (text: string, accent: Accent = 'blue', opts: { live?: boolean; flat?: boolean; cls?: string } = {}) =>
-  `<span class="toon-type${opts.live ? ' toon-type-comic' : ''}${opts.flat ? ' toon-type-flat' : ''} ${opts.cls ?? ''}" style="--toon-fill:${HEX[accent]}; --toon-shade:${HEX[PAIR[accent]]}">${[...text]
-    .map((c, i) => (c === ' ' ? ' ' : `<span style="--i:${i}">${esc(c)}</span>`))
-    .join('')}</span>`;
+  `<span class="toon-type${opts.live ? ' toon-type-comic' : ''}${opts.flat ? ' toon-type-flat' : ''} ${opts.cls ?? ''}" style="--toon-fill:${HEX[accent]}; --toon-shade:${HEX[PAIR[accent]]}">${text
+    .split(' ')
+    .map((word) => `<span class="toon-word">${[...word].map((c) => `<span>${esc(c)}</span>`).join('')}</span>`)
+    .join(' ')}</span>`;
 
 /** A figure on a paper card: the display type, flat and heavy. */
 const figure = (value: string, accent: Accent, cls: string) => letters(value, accent, { flat: true, cls: `block leading-none ${cls}` });
@@ -135,7 +136,7 @@ const studyCard = (s: CaseStudy, i: number, label = '', h: 'h2' | 'h3' = 'h3') =
 
 export function home(): string {
   const body = `
-    <section class="grid items-center gap-s8 py-s8 md:grid-cols-[1.5fr_1fr]">
+    <section class="grid items-center gap-s8 py-s8 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
       <div class="relative z-0 min-w-0">
         <h1 class="sr-only">${esc(site.name)}. ${esc(site.role)}</h1>
         <div class="grid gap-s2 text-hero leading-[.9]">
