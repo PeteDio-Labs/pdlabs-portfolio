@@ -39,13 +39,13 @@ export const legalPages = (analytics: boolean): LegalPage[] => [
         heading: 'Hosting and server logs',
         paragraphs: [
           'The site is static files on Amazon Web Services (S3 and CloudFront). AWS processes your IP address and request details to deliver pages and protect against abuse. The site owner does not read or keep those logs.',
-          'Fonts load from Google Fonts, so Google receives your IP address and browser details when a page loads.',
+          'The fonts are served from this site, so no font request goes to Google or another outside party.',
         ],
       },
       {
         heading: 'Contact and your rights',
         paragraphs: [
-          'The site has no forms and collects no personal data from you directly. To ask about your data, open an issue or message the owner on [GitHub](https://github.com/petedillo). Where the law gives you rights over data, such as access or deletion, the processors above handle the data they hold.',
+          'The site has no forms and collects no personal data from you directly. To ask about your data, write to privacy@pdlab.dev or message the owner on [GitHub](https://github.com/petedillo). Where the law gives you rights over data, such as access or deletion, the processors above handle the data they hold.',
         ],
       },
     ],
@@ -74,7 +74,7 @@ export const legalPages = (analytics: boolean): LegalPage[] => [
       },
       {
         heading: 'Links and third parties',
-        paragraphs: ['The site links to other sites and loads fonts from Google. The author does not control them and is not responsible for their content or practices.'],
+        paragraphs: ['The site links to other sites. The author does not control them and is not responsible for their content or practices.'],
       },
       {
         heading: 'No warranty and liability',

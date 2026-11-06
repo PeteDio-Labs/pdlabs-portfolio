@@ -84,11 +84,11 @@ export function layout(opts: { title: string; description: string; path: string;
 <meta name="twitter:image" content="https://${site.domain}/og.png">
 ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ? `<script type="application/ld+json">${JSON.stringify(opts.jsonLd).replace(/</g, '\\u003c')}</script>\n` : ''}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any">
+<link rel="manifest" href="/site.webmanifest">
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=DM+Sans:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="preload" href="/fonts/space-grotesk-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/toonish.css">
 <script src="/motion.js"></script>
 </head>
