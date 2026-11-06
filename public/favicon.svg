@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .rays { transform-origin: 32px 32px; animation: spin 8s linear infinite; }
+    .glow { transform-origin: 32px 32px; animation: pulse 2.4s ease-in-out infinite; }
+    .p { transform-origin: 20px 58px; animation: hop 1.8s cubic-bezier(.34,1.8,.5,1) infinite; }
+    .d { transform-origin: 44px 58px; animation: hop 1.8s cubic-bezier(.34,1.8,.5,1) .25s infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%, 100% { transform: scale(.9); opacity: .75; } 50% { transform: scale(1.1); opacity: 1; } }
+    @keyframes hop { 0%, 55%, 100% { transform: none; } 15% { transform: scale(1.12, .86); } 30% { transform: translateY(-6px) scale(.94, 1.1); } 42% { transform: scale(1.06, .94); } }
+    @media (prefers-reduced-motion: reduce) { .rays, .glow, .p, .d { animation: none; } }
+  </style>
+  <defs>
+    <clipPath id="c"><rect x="3" y="3" width="58" height="58" rx="12"/></clipPath>
+    <radialGradient id="g"><stop offset="0" stop-color="#fff6c8"/><stop offset=".45" stop-color="#f2c94c" stop-opacity=".85"/><stop offset="1" stop-color="#f2c94c" stop-opacity="0"/></radialGradient>
+    <g id="pl" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M15 27V55"/><circle cx="23" cy="34" r="7.5"/></g>
+    <g id="dl" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M49 12V42"/><circle cx="41" cy="34" r="7.5"/></g>
+  </defs>
+  <rect x="3" y="3" width="58" height="58" rx="12" fill="#0c1240"/>
+  <g clip-path="url(#c)">
+    <g class="rays" fill="#5f8dff" opacity=".55"><path d="M32 32 L50 -30 L14 -30Z M32 32 L94 50 L94 14Z M32 32 L14 94 L50 94Z M32 32 L-30 14 L-30 50Z"/></g>
+    <circle class="glow" cx="32" cy="32" r="30" fill="url(#g)"/>
+  </g>
+  <g class="p"><use href="#pl" stroke="#0a0a1f" stroke-width="13"/><use href="#pl" stroke="#f3efe6" stroke-width="6"/></g>
+  <g class="d"><use href="#dl" stroke="#0a0a1f" stroke-width="13"/><use href="#dl" stroke="#f3efe6" stroke-width="6"/></g>
+  <rect x="3" y="3" width="58" height="58" rx="12" fill="none" stroke="#0a0a1f" stroke-width="5"/>
+</svg>

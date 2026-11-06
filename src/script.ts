@@ -1,6 +1,16 @@
 // Browser behaviour for every page. build.ts writes it to dist/site.js, so the Content-Security-Policy
 // can allow scripts from 'self' only and needs no inline hash.
-export const siteScript = String.raw`// Three behaviours, no framework. Pages stay static HTML, so S3 and CloudFront need no rewrite.
+// Runs in <head> before first paint, so a visitor who chose motion off never sees it start.
+// Default: off when the device asks for reduced motion, on otherwise. A saved choice wins.
+export const motionScript = String.raw`(() => {
+  let saved = null;
+  try { saved = localStorage.getItem('pd-motion'); } catch (e) {}
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.documentElement.dataset.motion = saved === 'on' || saved === 'off' ? saved : reduced ? 'off' : 'on';
+})();
+`;
+
+export const siteScript = String.raw`// A few small behaviours, no framework. Pages stay static HTML, so S3 and CloudFront need no rewrite.
 (() => {
   // 1. Scroll spy: on the home page, the main nav marks the section in view, not the page.
   const links = [...document.querySelectorAll('nav[aria-label="Main"] a[data-spy]')];
@@ -17,6 +27,32 @@ export const siteScript = String.raw`// Three behaviours, no framework. Pages st
     addEventListener('scroll', pick, { passive: true });
     addEventListener('hashchange', pick);
     pick();
+  }
+  // 0. Motion switch: flips data-motion on <html> and remembers the choice. Without storage it still works for the visit.
+  const root = document.documentElement;
+  const sw = document.querySelector('[data-motion-toggle]');
+  const sync = () => {
+    const on = root.dataset.motion !== 'off';
+    if (sw) sw.setAttribute('aria-pressed', String(on));
+  };
+  sync();
+  if (sw) sw.addEventListener('click', () => {
+    const next = root.dataset.motion === 'off' ? 'on' : 'off';
+    root.dataset.motion = next;
+    try { localStorage.setItem('pd-motion', next); } catch (e) {}
+    sync();
+  });
+  // Scroll reveal: blocks rise into view the first time they appear. Blocks already in view at load stay put.
+  if ('IntersectionObserver' in window) {
+    root.classList.add('toon-js');
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add('toon-in'); io.unobserve(en.target); }
+    }), { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('main h2, main .toon-callout, main .toon-frame, main .toon-bubble, .toon-footer').forEach((n) => {
+      if (n.getBoundingClientRect().top < innerHeight) return;
+      n.classList.add('toon-reveal');
+      io.observe(n);
+    });
   }
   // 2. Toggle groups: one pressed button at a time, with a bounce on the newly pressed one.
   document.querySelectorAll('[data-toon-toggle]').forEach((group) => {
