@@ -1,7 +1,7 @@
 // Privacy and terms text. Every statement here describes what the site does. A test in
 // site.test.ts fails the build if a page sets a cookie or uses web storage, because the
 // privacy page says it does not.
-export const legalUpdated = '2026-11-03';
+export const legalUpdated = '2026-11-06';
 
 export type LegalPage = { slug: 'privacy' | 'terms'; title: string; description: string; sections: { heading: string; paragraphs: string[] }[] };
 
