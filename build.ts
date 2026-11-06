@@ -55,7 +55,7 @@ await Bun.write(`${out}/site.webmanifest`, JSON.stringify({
   name: 'pdlab', short_name: 'pdlab', start_url: '/', display: 'standalone', background_color: '#0c1240', theme_color: '#0c1240',
   icons: [{ src: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }, { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }],
 }) + '\n');
-await Bun.write(`${out}/.well-known/security.txt`, `Contact: mailto:privacy@pdlab.dev\nExpires: 2027-11-06T00:00:00.000Z\nPreferred-Languages: en\nCanonical: https://pdlab.dev/.well-known/security.txt\n`);
+await Bun.write(`${out}/.well-known/security.txt`, `Contact: mailto:privacy@pdlab.dev\nExpires: ${new Date(Date.now() + 365 * 86400000).toISOString()}\nPreferred-Languages: en\nCanonical: https://pdlab.dev/.well-known/security.txt\n`);
 
 const tw = Bun.spawnSync(['bunx', 'tailwindcss', '-i', 'ui/toonish.css', '-o', `${out}/toonish.css`, '--minify'], {
   stderr: 'pipe',
