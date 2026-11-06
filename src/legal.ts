@@ -14,7 +14,7 @@ export const legalPages = (analytics: boolean): LegalPage[] => [
       {
         heading: 'Short version',
         paragraphs: [
-          'This site sets no cookies, has no accounts and runs no advertising. It stores nothing in your browser.',
+          'This site sets no cookies, has no accounts and runs no advertising. It stores one setting in your browser, and only if you use the motion switch.',
           analytics
             ? 'It uses one privacy-friendly analytics service that counts page views without cookies or browser storage.'
             : 'It runs no analytics.',
@@ -23,7 +23,7 @@ export const legalPages = (analytics: boolean): LegalPage[] => [
       {
         heading: 'Cookies and browser storage',
         paragraphs: [
-          'The site sets no cookies and writes nothing to local storage, session storage or IndexedDB. Because nothing is stored on your device, the site shows no cookie banner. If that changes, the site will ask for consent first and this page will say what changed.',
+          'The site sets no cookies and uses no session storage or IndexedDB. When you press the motion switch in the header, the site saves your choice, on or off, in local storage under the key pd-motion, so the next page remembers it. That value stays on your device, is never sent anywhere and holds no personal data. Because it is a setting you asked for, the site shows no cookie banner. If that changes, the site will ask for consent first and this page will say what changed.',
         ],
       },
       {

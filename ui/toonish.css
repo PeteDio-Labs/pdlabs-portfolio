@@ -34,9 +34,10 @@
     box-shadow: 4px 4px 0 var(--toon-shadow);
   }
   @media (hover: hover) {
-    .toon-btn:hover { @apply -translate-y-0.5 shadow-toon-lift; }
+    .toon-btn:hover { @apply -translate-y-0.5 shadow-toon-lift; animation: toon-squash .6s cubic-bezier(.34,1.8,.5,1); }
   }
-  .toon-btn:active { @apply translate-x-1 translate-y-1 shadow-toon-press; }
+  /* Press flattens like rubber; letting go springs back through the transition. */
+  .toon-btn:active { @apply translate-x-1 translate-y-1 shadow-toon-press; animation: toon-press .18s ease-out forwards; }
   .toon-btn-red    { --toon-shadow: theme(colors.toon.yellow); @apply bg-toon-red; }
   .toon-btn-yellow { --toon-shadow: theme(colors.toon.blue); @apply bg-toon-yellow; }
   .toon-btn-paper  { --toon-shadow: theme(colors.toon.blue); @apply bg-toon-paper; }
@@ -55,6 +56,7 @@
   .toon-card:nth-child(even) { --toon-shadow: theme(colors.toon.violet); }
   .toon-card:nth-child(3n) { --toon-shadow: theme(colors.toon.blue); }
   .toon-card:hover { transform: rotate(0) translateY(-3px); }
+  @media (hover: hover) { .toon-card:hover { animation: toon-hop .55s cubic-bezier(.34,1.8,.5,1); } }
   /* Card label or number: a tilted pill tucked into the top right corner. It sizes to its text ("Featured" fits)
      and stays inside the gutter, so the page wrapper never clips it. */
   .toon-corner {
@@ -90,18 +92,43 @@
   .toon-type-comic > span:nth-child(odd)  { transform: rotate(-1.5deg); }
   .toon-type-comic > span:nth-child(even) { transform: rotate(1deg); }
   .toon-type-flat > span { transform: none !important; }
+  /* Letters hop in turn, then rest. The delay steps by letter so the wave runs left to right. */
+  .toon-type-comic > span { animation: toon-bob 3.2s cubic-bezier(.34,1.8,.5,1) infinite; animation-delay: calc(var(--n, 0) * 90ms); }
+  .toon-type-comic > span:nth-child(1) { --n: 0; } .toon-type-comic > span:nth-child(2) { --n: 1; }
+  .toon-type-comic > span:nth-child(3) { --n: 2; } .toon-type-comic > span:nth-child(4) { --n: 3; }
+  .toon-type-comic > span:nth-child(5) { --n: 4; } .toon-type-comic > span:nth-child(6) { --n: 5; }
+  .toon-type-comic > span:nth-child(7) { --n: 6; } .toon-type-comic > span:nth-child(8) { --n: 7; }
+  .toon-type-flat > span { animation: none !important; }
+  /* The burst behind the hero pulses, and the page header drops in on load. */
+  .toon-burst-hero { animation: toon-pulse 3.6s ease-in-out infinite; }
+  header .toon-nav, header > a { animation: toon-drop .7s cubic-bezier(.34,1.8,.5,1) backwards; }
+  header .toon-nav { animation-delay: .12s; }
+  /* Scroll reveal: site.js adds toon-reveal to a block, then toon-in once it scrolls into view. */
+  .toon-reveal { opacity: 0; transform: translateY(28px) scale(.92); }
+  .toon-reveal.toon-in { animation: toon-rise .65s cubic-bezier(.34,1.8,.5,1) backwards; opacity: 1; transform: none; }
+
+  /* Motion switch (header). Icon only on a phone, with a word beside it from sm up. */
+  .toon-motion {
+    @apply inline-flex shrink-0 cursor-pointer items-center gap-s1 rounded-full border-toon border-toon-ink bg-toon-paper px-s2 py-s1
+           font-body text-footnote font-bold text-toon-ink transition duration-fast ease-bounce sm:px-s3;
+    box-shadow: 3px 3px 0 theme(colors.toon.blue);
+  }
+  .toon-motion[aria-pressed="true"] { @apply bg-toon-yellow; }
+  .toon-motion-label { @apply sr-only sm:not-sr-only; }
 
   /* 4. Link: thick red underline that springs on hover. */
   .toon-link {
     @apply font-bold underline decoration-toon-red decoration-4 underline-offset-4 transition-all duration-fast ease-bounce;
   }
   .toon-link:hover { @apply underline-offset-8; }
+  @media (hover: hover) { .toon-link:hover { display: inline-block; animation: toon-nudge .45s cubic-bezier(.34,1.8,.5,1); } }
 
   /* 5. Badge */
   .toon-badge {
     @apply inline-block rounded-full border-[3px] border-toon-ink bg-toon-red px-s3 py-0.5
            text-footnote font-bold uppercase tracking-wider text-toon-ink;
   }
+  @media (hover: hover) { .toon-badge:hover { animation: toon-boing .55s cubic-bezier(.34,1.8,.5,1); } }
   .toon-badge-blue { @apply bg-toon-blue; }
   .toon-badge-yellow { @apply bg-toon-yellow; }
   .toon-badge-violet { @apply bg-toon-violet; }
@@ -118,8 +145,9 @@
   }
   /* Hover only where a pointer can hover: on a phone a tap would leave the pill stuck yellow. */
   @media (hover: hover) {
-    .toon-nav a:hover, .toon-nav button:hover { @apply bg-toon-yellow; }
+    .toon-nav a:hover, .toon-nav button:hover { @apply bg-toon-yellow; animation: toon-boing .5s cubic-bezier(.34,1.8,.5,1); }
   }
+  .toon-nav a:active, .toon-nav button:active { transform: scale(.88, .8); }
   .toon-nav a[aria-current], .toon-nav button[aria-pressed="true"] { @apply bg-toon-ink text-toon-yellow; }
   /* A nav that wraps: any number of pills flow onto more rows, for a filter whose tag count isn't fixed. The capsule
      becomes a rounded panel so a second row doesn't leave a stretched pill, and it never outgrows its container. */
@@ -146,6 +174,7 @@
   .toon-modal { @apply m-auto w-[min(92vw,44rem)] max-w-none border-0 bg-transparent p-0 text-toon-ink; max-height: 86vh; max-height: 86dvh; overflow: visible; }
   .toon-modal[open] { @apply block; animation: toon-modal-in .4s cubic-bezier(.34,1.8,.5,1); }
   .toon-modal::backdrop { background: rgb(10 10 31 / .82); }
+  .toon-modal[open]::backdrop { animation: toon-fade .3s ease-out; }
   .toon-modal-box {
     @apply flex flex-col overflow-hidden rounded-toon border-toon border-toon-ink bg-toon-paper shadow-toon-red;
     max-height: 86vh; max-height: 86dvh;
@@ -205,13 +234,27 @@
   @keyframes toon-pop { 0% { transform: rotate(var(--toon-tilt, 0deg)) scale(.6); opacity: 0; } 70% { transform: rotate(var(--toon-tilt, 0deg)) scale(1.08); } 100% { transform: rotate(var(--toon-tilt, 0deg)) scale(1); opacity: 1; } }
   @keyframes toon-bob { 0%, 55%, 100% { transform: translateY(0) rotate(-1.5deg); } 25% { transform: translateY(-.1em) rotate(-4deg); } 40% { transform: translateY(.02em) rotate(1.5deg); } }
   @keyframes toon-squash { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(1.12, .88); } 60% { transform: translateY(-6px) scale(.96, 1.08); } }
-  @keyframes toon-modal-in { 0% { transform: translateY(24px) scale(.8) rotate(-2deg); opacity: 0; } 100% { transform: none; opacity: 1; } }
+  @keyframes toon-modal-in { 0% { transform: translateY(40px) scale(.7, .6) rotate(-3deg); opacity: 0; } 60% { transform: translateY(-8px) scale(1.04, 1.06) rotate(1deg); opacity: 1; } 100% { transform: none; opacity: 1; } }
+  @keyframes toon-press { to { transform: translate(4px, 4px) scale(1.06, .88); } }
+  @keyframes toon-hop { 0% { transform: rotate(var(--toon-tilt, 0deg)); } 35% { transform: rotate(0) translateY(-12px) scale(.97, 1.04); } 65% { transform: rotate(0) translateY(0) scale(1.04, .95); } 100% { transform: rotate(0) translateY(-3px); } }
+  @keyframes toon-nudge { 0%, 100% { transform: none; } 40% { transform: translateX(6px) scale(1.06, .94); } 70% { transform: translateX(-2px) scale(.98, 1.03); } }
+  @keyframes toon-pulse { 0%, 100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.06) rotate(3deg); } }
+  @keyframes toon-drop { 0% { transform: translateY(-60px) scale(.9, 1.2); opacity: 0; } 60% { transform: translateY(6px) scale(1.08, .9); opacity: 1; } 100% { transform: none; opacity: 1; } }
+  @keyframes toon-rise { 0% { transform: translateY(40px) scale(.85, 1.1); opacity: 0; } 60% { transform: translateY(-8px) scale(1.04, .96); opacity: 1; } 100% { transform: none; opacity: 1; } }
+  @keyframes toon-fade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes toon-spin { to { transform: rotate(360deg); } }
   @keyframes toon-boing { 0% { transform: scale(1); } 30% { transform: scale(1.25, .8) rotate(-4deg); } 60% { transform: scale(.92, 1.1) rotate(2deg); } 100% { transform: scale(1); } }
   @keyframes toon-streak { 0% { stroke-dashoffset: 100; opacity: 0; } 10% { opacity: 1; } 45% { stroke-dashoffset: 0; opacity: 1; } 80% { stroke-dashoffset: 0; opacity: 0; } 100% { stroke-dashoffset: 0; opacity: 0; } }
   @keyframes toon-blink { to { visibility: hidden; } }
 }
 
+/* Motion off. The system preference turns it off unless the visitor switched it on (data-motion="on"), and the switch
+   turns it off whatever the system says (data-motion="off"). */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html:not([data-motion="on"]) *, html:not([data-motion="on"]) *::before, html:not([data-motion="on"]) *::after { animation: none !important; transition: none !important; }
+  html:not([data-motion="on"]) .toon-reveal { opacity: 1; transform: none; }
+  html:not([data-motion="on"]) { scroll-behavior: auto; }
 }
+html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
+html[data-motion="off"] .toon-reveal { opacity: 1; transform: none; }
+html[data-motion="off"] { scroll-behavior: auto; }

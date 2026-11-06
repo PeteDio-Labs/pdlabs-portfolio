@@ -88,6 +88,7 @@ ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ?
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=DM+Sans:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap">
 <link rel="stylesheet" href="/toonish.css">
+<script src="/motion.js"></script>
 </head>
 <body class="toon-dots">
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 toon-btn toon-btn-paper">Skip to content</a>
@@ -95,6 +96,7 @@ ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ?
   <header class="flex items-center justify-between gap-s3 py-s4 sm:py-s5">
     <a href="/" class="block shrink-0 no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { live: true, cls: 'text-[30px] sm:text-[40px]' })}</a>
     ${nav(opts.current ?? '', opts.path)}
+    <button type="button" class="toon-motion" data-motion-toggle aria-pressed="true"><span aria-hidden="true">✦</span><span class="toon-motion-label">Motion</span></button>
   </header>
   <main id="main">
 ${opts.body}

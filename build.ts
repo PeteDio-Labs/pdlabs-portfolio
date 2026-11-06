@@ -3,7 +3,7 @@
 import { mkdir, rm } from 'node:fs/promises';
 import { home, kit, legal, notFound, study, workIndex, workScript } from './src/pages.ts';
 import { site, studies } from './src/content.ts';
-import { siteScript } from './src/script.ts';
+import { siteScript, motionScript } from './src/script.ts';
 import { robotsTxt, sitemapXml, llmsTxt } from './src/seo.ts';
 
 const out = 'dist';
@@ -35,6 +35,7 @@ await Bun.write(
 
 // Static assets and machine-readable files. The sitemap lists every page except the 404.
 await Bun.write(`${out}/site.js`, siteScript);
+await Bun.write(`${out}/motion.js`, motionScript);
 await Bun.write(`${out}/robots.txt`, robotsTxt());
 await Bun.write(`${out}/sitemap.xml`, sitemapXml(Object.keys(pages).filter((p) => p !== '404.html')));
 await Bun.write(`${out}/llms.txt`, llmsTxt());
