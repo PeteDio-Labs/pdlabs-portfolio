@@ -5,7 +5,7 @@
   "title": "A review-gated agent team with a merge gate",
   "tag": "GitOps",
   "accent": "blue",
-  "summary": "Each task gets its own agent session, every pull request gets a review, and a tiered gate decides when it merges.",
+  "summary": "Each task gets its own agent session, every pull request gets a review, and a tiered gate decides when it merges. Over 1,100 pull requests have merged this way.",
   "stat": {
     "value": "Gated",
     "label": "merge volume rose sharply once a deterministic gate, not me, decided what could merge"
@@ -34,10 +34,19 @@
       ]
     },
     {
+      "heading": "Workflows added since",
+      "paragraphs": [
+        "Reviewer chain. Every pull request gets a review before it merges. A hosted reviewer goes first. After two hours of silence from it, a local model running on my own GPU reviews instead. When that model fails twice on the same pull request, a Claude subagent takes the review. The chain has one rule: a review that could not run is not a clean review.",
+        "Gated lab writes. An agent can ask my lab to apply a change, but a write waits on an approval environment where I am the only reviewer. Reads run without a tap. Destructive changes also wait on an approval, in place of the old environment flag.",
+        "A tracker outbox. Many sessions share one tracker key, and the tracker's rate limit stopped all of them once. Now a session never calls the tracker. It adds one small file to a queue repository, a single job applies the queue at about 60 calls a minute, and the session reports the file's id, not \"closed\". An item counts as closed when its file has moved to the done folder and the mirror shows the state.",
+        "A merge desk. One deterministic desk merges pull requests by tier once the review is clean. Trust-boundary changes, such as workflows and secret-store bindings, wait for my word."
+      ]
+    },
+    {
       "heading": "Result",
       "paragraphs": [
-        "In one busy week, merged pull requests rose several-fold over the week before, and almost all carried an agent author or footer. That is a heuristic, because agent PRs can come from my own login.",
-        "The week after was far quieter, so that week was a peak, not a steady rate. Throughput is the measure here, not quality."
+        "Across the eight repositories in scope, 1,136 pull requests had merged by 7 November 2026, out of 1,187 opened. The week of 19 October was the peak: 209 opened and 207 merged. The week after fell to 31 opened and 26 merged, and the week of 2 November reached 205 opened and 189 merged by midday on the 7th, with the week not over. In the 24 hours before that count, 106 opened and 90 merged.",
+        "Weeks run Monday to Sunday in US Eastern time, and I read the counts from GitHub search. Most of these pull requests carry an agent author or footer, but that is a heuristic, because an agent's pull request can come from my own login. The swings show a peak is not a steady rate. Throughput is the measure here, not quality."
       ]
     },
     {
@@ -64,8 +73,9 @@
   ],
   "sources": [
     "petedio-vault Incidents/2026-09-09-vault-sealed-nine-hours.md (9 h 34 min, 1,724 DOWN heartbeats, 19 monitors, eleven repos)",
-    "data/pr-stats.json (scripts/pr-stats.ts)",
     "the rule the repo now carries, written after six items with the same shape",
-    "petedio-vault Systems/claude-loop.md (the 405 and 200 test of 12 September; retirement on 30 September)"
+    "petedio-vault Systems/claude-loop.md (the 405 and 200 test of 12 September; retirement on 30 September)",
+    "GitHub search over the eight in-scope repositories, read 2026-11-07 12:55Z: 1,136 merged and 1,187 opened in total; weekly counts in US Eastern time",
+    "petedio-pm docs/outbox.md and the project's merge and reviewer rules (2026-11-07)"
   ]
 }
