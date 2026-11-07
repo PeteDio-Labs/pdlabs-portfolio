@@ -1,0 +1,56 @@
+{
+  "slug": "mcp-portal",
+  "date": "2026-11-07",
+  "title": "One sign-in for all my MCP servers",
+  "tag": "Security",
+  "accent": "violet",
+  "summary": "I put two MCP servers behind one Cloudflare Zero Trust portal, so one connector and one access policy cover both, and Terraform builds all of it.",
+  "stat": {
+    "value": "1 policy",
+    "label": "one Access policy, limited to me, covers the portal and each server behind it"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "I run two Model Context Protocol servers: one for my work tracker and one for the lab. Each had its own connector in claude.ai and its own route on my domain, and each route needed its own gate. Every new server meant another connector to add, another route to protect and another place for the access rules to drift apart."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A Cloudflare Zero Trust MCP portal. claude.ai has one connector that points at the portal, and the portal fronts both servers. After sign-in it lists the tools of both: 28 from the tracker and 13 from the lab, each name prefixed with its server. One Access policy, limited to me, covers the portal and every server behind it.",
+        "Terraform declares the portal, the two servers, the Access applications and the DNS record. The old per-server routes and the standalone tracker connector are gone. The two servers keep their own hostnames as the portal's upstreams, and each still has its own Access application."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "The apply failed with a 400 from the API. The provider's shared OAuth callback flag was unset, so the plan showed it changing from false to null, and the API rejects null. Setting the flag explicitly fixed it. The lesson is general: a provider can plan a value the API will not accept, and a plan that looks clean does not prove the apply works.",
+        "The next failure was \"Redirect URI not allowed\" while signing in to a server. Each upstream needs an allowlist of redirect addresses, and mine was incomplete. It needs three: the portal's shared outbound callback and one dashboard callback for each server.",
+        "Two smaller surprises. The API creates no DNS record for the portal, so I declared one and made it wait for the Access applications, which means the name never resolves before its gate exists. And a server shows as waiting until an admin completes a connect step in the dashboard. That step signs in as a person, so Terraform cannot do it."
+      ]
+    },
+    {
+      "heading": "The limit I kept",
+      "paragraphs": [
+        "Two other servers, each of which acts as one other person, stay outside the portal. A portal's access policy applies to the whole portal, so putting them behind it would have widened who could reach what. Code mode, a beta feature that runs remote code, is off. Turning it on is a separate change."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "After the connect step, claude.ai reached both servers through the one connector and listed 28 and 13 tools. The login gate answered, and it admits me alone.",
+        "I have no measurement of time saved. The gain I can show is one connector instead of two, one policy instead of several, and an access setup that lives in code and shows up in a pull request."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Put the access decision in one place and declare it in code. Then check that a gate exists before the name it protects can resolve."
+      ]
+    }
+  ],
+  "skills": ["Zero Trust access", "Terraform", "Model Context Protocol", "OAuth debugging"],
+  "sources": ["the vault note for the portal, written from the four infrastructure pull requests and the live check on 2026-11-07"]
+}
