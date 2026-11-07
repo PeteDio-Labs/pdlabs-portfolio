@@ -90,3 +90,19 @@ jobs:
           id=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/*" --query Invalidation.Id --output text)
           aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION_ID" --id "$id"
           echo "invalidation $id completed"
+
+      # A green sync and invalidation prove the upload, not that visitors get the pages. Request the
+      # home page, the study index and every study the build wrote, and fail on any answer but 200.
+      - name: Verify the live site
+        run: |
+          set -eu
+          paths="/ /studies.json $(jq -r '.[].url' dist/studies.json)"
+          checked=0
+          for p in $paths; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --retry 3 --retry-all-errors "https://pdlab.dev$p")
+            echo "$code $p"
+            [ "$code" = 200 ] || { echo "::error::https://pdlab.dev$p answered $code, expected 200"; exit 1; }
+            checked=$((checked + 1))
+          done
+          [ "$checked" -gt 2 ] || { echo "::error::checked only $checked URL(s); studies.json listed none"; exit 1; }
+          echo "verified $checked live URL(s)"
