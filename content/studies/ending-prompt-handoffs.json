@@ -1,0 +1,62 @@
+{
+  "slug": "ending-prompt-handoffs",
+  "date": "2026-11-07",
+  "title": "Ending the prompts I pasted into my own lab",
+  "tag": "Automation",
+  "accent": "yellow",
+  "summary": "AI sessions in the cloud kept handing me prompts to paste into a machine on my network. I added read-only probes they run themselves, and checked the whole path with two real work items.",
+  "stat": {
+    "value": "4 probes",
+    "label": "read-only checks a cloud session now runs itself, where it used to hand me a prompt to paste"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "My AI sessions run in the cloud, and my lab runs on my home network. A session that needed to read something in the lab could not. It wrote a prompt for me, I pasted it into a session on a machine inside the network, and I carried the answer back. Two open items showed the cost: a media assistant that had to be re-tested through its real pipeline, and a lookup that had to be checked against a live service. Each was a prompt for me to carry."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A new action in the workflow that already ran lab checks on a runner inside my network. It runs one of four fixed probes. Two read a service log over a time window and list the callers it saw. One calls a lookup tool as a named caller. One sends a question to the media assistant, through the same pipeline a chat message reaches. A session starts the run with the GitHub tools it already has and reads the log.",
+        "Each probe is read-only and needs no approval. A caller supplies values and never commands: each value must match a strict pattern, and the remote command carries only encoded data or an allowed word. The probes place no credential. They read the service's own token on the host that holds it, and the token never reaches the log."
+      ]
+    },
+    {
+      "heading": "A decision I made on purpose",
+      "paragraphs": [
+        "I had a second machine, a small always-on host I can reach from my phone. It looked like the natural place to run these steps, because it was already scoped and the laptop was not. I kept it out of the loop. It has no access to the nodes, its GitHub login is unauthenticated, and it cannot start a workflow. Making it an executor would have meant adding a trigger and a credential. The runner already had a signed, short-lived login, a fixed allowlist and an approval gate for writes. So the phone-reachable host stays my interactive seat, and the runner runs what sessions trigger."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "The first live run of the lookup probe failed with \"curl: not found\". The media host has no curl. The run exited non-zero and said it had examined nothing, so it did not look like a pass. A second pull request sent the request through the shell's built-in network device instead, and I tested that against a local server before it merged.",
+        "I also found a gap in my own plan. I had asked to convert manual deploys into workflows, and the first one I checked, for the media tool, already deployed itself on every push to main. The change I was waiting on had been live for a minute. I wrote that down as a finding, not as a conversion I had made."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "Both work items closed their checks with no pasted prompt. The log probe read 10 lines from the media tool for the test window, and all 10 named the same caller, which answered the question the item asked. Two media assistant tests that had failed passed: the reply claimed nothing a tool had not returned, and it contained no raw tool-call text. After the media tool deployed, the lookup returned the Plex library entry it had missed before.",
+        "A fifth need showed up the same day: a staleness check for my notes needed the list of running guests. A guests probe returned 22 of them with only an ID, a node and a status, so no names reached the public log.",
+        "I have no measurement of time saved. What I can show is that every one of these checks ran from a cloud session with no step on my side."
+      ]
+    },
+    {
+      "heading": "What is still manual",
+      "paragraphs": [
+        "Two of my repositories deploy on merge. About a dozen host deploys are still scripts that I run, and most of them place a secret, which I keep out of automation on purpose. Converting them needs a scoped login per deploy and my approval at the gate, so that work is not done."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Before you give a machine new reach, check whether an existing one already has it behind a gate. Then make every check say what it examined, because a run that checked nothing must not look like a pass."
+      ]
+    }
+  ],
+  "skills": ["GitHub Actions", "Shell scripting", "Least-privilege access", "Operations automation"],
+  "sources": ["the two pull requests that added the probes, the live runs on 2026-11-07, and the work items they closed"]
+}
