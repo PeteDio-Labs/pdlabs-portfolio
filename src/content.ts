@@ -42,6 +42,7 @@ export const site = {
   background:
     'I hold a degree in web development and a master\'s in computer science, and I worked for one year at Apple as a full-stack engineer.',
   github: 'https://github.com/petedillo',
+  linkedin: 'https://www.linkedin.com/in/petedillo',
   org: 'https://github.com/PeteDio-Labs',
 };
 
@@ -63,6 +64,9 @@ function check(file: string, s: any): CaseStudy {
   return s as CaseStudy;
 }
 
+/** Per-study note on which kinds of role the work speaks to, keyed by slug. Rendered on the study page. */
+export const fit: Record<string, string> = JSON.parse(readFileSync(`${import.meta.dir}/../content/fit.json`, 'utf8'));
+
 const dir = `${import.meta.dir}/../content/studies`;
 
 /** Every study, newest first. Ties break on slug so the order never depends on the file system. */
@@ -71,6 +75,7 @@ export const studies: CaseStudy[] = readdirSync(dir)
   .map((f) => check(f, JSON.parse(readFileSync(`${dir}/${f}`, 'utf8'))))
   .sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug));
 
+for (const k of Object.keys(fit)) if (!studies.some((s) => s.slug === k)) throw new Error(`content/fit.json: no study with slug "${k}"`);
 if (new Set(studies.map((s) => s.slug)).size !== studies.length) throw new Error('content/studies: duplicate slug');
 if (studies.filter((s) => s.featured).length > 1) throw new Error('content/studies: more than one featured study');
 
