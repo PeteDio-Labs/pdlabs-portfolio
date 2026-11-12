@@ -292,7 +292,7 @@ export function workIndex(): string {
 const hireCta = () => `
       <aside class="toon-callout toon-callout-yellow mt-s8 max-w-[68ch]" aria-labelledby="hire-h">
         <h2 id="hire-h" class="mb-s3 mt-0 text-title2 font-bold">Hiring for AI automation or forward-deployed engineering?</h2>
-        <p class="mb-s4 mt-0">I build agents and automations that run in production, with the limits and checks that keep them safe. Send me the role and I will tell you how my work fits it.</p>
+        <p class="mb-s4 mt-0">I build agents and automations with the limits and checks that keep them safe, and I run them on my own platform every day. Send me the role and I will tell you how my work fits it.</p>
         <p class="m-0 flex flex-wrap gap-s4"><a class="toon-btn toon-btn-yellow" href="${site.linkedin}">Message me on LinkedIn</a><a class="toon-btn toon-btn-paper" href="${site.github}">See my code on GitHub</a></p>
       </aside>`;
 

@@ -2,7 +2,7 @@ import { test, expect } from 'bun:test';
 import { home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
-import { site, studies, featured, latest } from './content.ts';
+import { site, studies, featured, latest, fit } from './content.ts';
 
 const all = () => [home(), workIndex(), kit(), notFound(), legal('privacy'), legal('terms'), ...studies.map(study)];
 
@@ -165,6 +165,8 @@ test('every case study ends with a hiring call to action, and the fit notes name
     expect(html).toContain('id="hire-h"');
     expect(html).toContain(`href="${site.linkedin}"`);
   }
-  expect(study(studies.find((s) => s.slug === 'lab-mcp')!)).toContain('Why it matters for hiring teams');
+  for (const slug of Object.keys(fit)) expect(study(studies.find((s) => s.slug === slug)!)).toContain('Why it matters for hiring teams');
+  expect(Object.keys(fit).length).toBeGreaterThan(0);
+  expect(study(studies[0])).toContain('Hiring for AI automation or forward-deployed engineering?');
   expect(home()).toContain(site.linkedin);
 });
