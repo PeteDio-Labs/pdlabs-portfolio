@@ -1,0 +1,58 @@
+{
+  "slug": "review-fallback-chain",
+  "date": "2026-11-07",
+  "title": "When the AI reviewer goes quiet, a local model reviews the small changes",
+  "tag": "GitOps",
+  "accent": "yellow",
+  "summary": "When Codex review is out, my merge desk waits two hours and then lets a local Qwen model review the low-risk tiers. The highest-risk tier never falls back.",
+  "stat": {
+    "value": "2 hours",
+    "label": "how long Codex must be silent, by default, before the desk uses the local reviewer"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "Every pull request in my infrastructure repo gets an independent review before it merges. Ahead of a planned move to a cheaper AI plan, I expected the review quota to run out often, and the merge desk would wait with nothing to do. I did not want to buy a paid review lane, and I did not want the gate to loosen when the main reviewer was away."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A fallback in the merge desk with three rules. Tier 0, which is prose and docs, merges on green checks. Tier 1, code that runs nothing on merge, needs a clean review from a local Qwen model. Tier 2, which covers infrastructure and workflows, never falls back. Every other gate still applies: checks, open threads, hold labels and conflicts.",
+        "The fallback starts after Codex is silent for two hours, or 30 minutes after a failed queue call. Only a reply whose first line is exactly `VERDICT: CLEAN` counts. Any other reply, a failed call, or a diff that is too large holds the pull request. The verdict is stored against the exact commit, so a push voids it. Outside the desk, I follow a rule of my own: if Qwen fails on a pull request twice, a Claude subagent reviews it instead.",
+        "Because I trust Qwen only until it shows otherwise, the desk keeps a ledger of every verdict, whether the change merged, and whether a later commit reverted it. The desk's dashboard has a section for counts by verdict, merges on Qwen and on checks alone, and the last ten rows. I did not render it in a browser."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "Deploying the first version restarted the desk while it was queueing a Codex review, which failed the queue for two pull requests. I would not leave that as a hand step. A restart that interrupts the call no longer fails the commit. A failed call retries after 15 minutes, up to three calls per commit, and only a commit that exhausts them is reported.",
+        "The model's context was my second mistake. The desk asked for a 16,384-token context, but the model that the lab agent uses runs at 8,192 on an 8 GB card. A different context makes Ollama reload the model with a larger cache, which can evict the other runner. I matched the lab agent's context and cut the diff limit to 12,000 characters."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "The fallback merged on 7 November 2026 and was verified by tests, not live: the vault note for the work records that no live fallback had run when I closed it. The ledger counts reverts because a revert is the only outcome the desk can see, and the dashboard says so."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "When the primary reviewer is out, narrow what the backup may approve instead of loosening the gate. Record every verdict, so trust in the backup comes from outcomes you can count."
+      ]
+    }
+  ],
+  "skills": [
+    "Guardrails for AI agents",
+    "CI/CD design",
+    "Local LLMs",
+    "Risk tiering"
+  ],
+  "sources": [
+    "pete-bot pull requests 95, 96 and 97",
+    "petedio-iac pull request 663",
+    "petedio-vault thread note 2026-11-07, plan PR reviews and API spend cap"
+  ]
+}
