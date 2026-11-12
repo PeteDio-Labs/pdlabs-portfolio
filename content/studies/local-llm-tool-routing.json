@@ -1,0 +1,55 @@
+{
+  "slug": "local-llm-tool-routing",
+  "date": "2026-11-12",
+  "title": "Measuring when more tools hurt a local model's routing",
+  "tag": "AI infra",
+  "accent": "blue",
+  "summary": "I gave a small local model a metric for every tool call, a switch to offer fewer tools, and a fixed set of questions that names the tool each one needs, so I can see when adding tools makes routing worse.",
+  "stat": {
+    "value": "13 questions",
+    "label": "a fixed set, each naming the tool it needs, and the eval exits non-zero on any miss"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "My media assistant runs on a small local model, an 8B Qwen on one 8 GB GPU. Each tool I add gives it another choice. I wanted to add tools without guessing whether it would start calling the wrong one."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "Three pieces. First, metrics on every question: the number of tools offered, tool calls by tool and result, invalid-input refusals, retries after a failure, answers that called no tool, and turns per question. One query can then compare the model with 10 tools against 13.",
+        "Second, toolkits. An environment setting lists which groups of tools the model sees: core, health, audit, subtitles and search. Unset offers all of them. An unknown name stops startup, so a typo cannot leave a smaller set running unnoticed, and a test fails if any tool belongs to no group. Every metric carries a toolkits label.",
+        "Third, a routing eval. It asks 13 fixed questions, compares the tools the model called with the tool each question needs, and prints a wrong-tool rate. A question answered without any tool counts as a miss, an unexpected extra call is reported but not failed, and the exit code is non-zero on any miss or error. The last line says how many questions ran, so a run that asked nothing cannot look clean."
+      ]
+    },
+    {
+      "heading": "What the metrics cannot see",
+      "paragraphs": [
+        "The counters record what the model did, not whether it was right. A wrong tool that succeeds looks healthy. That is why the eval exists. The metrics endpoint listens on loopback only, so I added a second listener that serves only the metrics path and answers 403 to every address except the monitoring host. It reads no token, so the source address is the only guard, and the metrics hold counts and tool names, never question text."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "The instrumentation shipped on 12 November 2026. The scrape job for the monitoring server is a separate infrastructure change. I do not yet have a routing result that shows where the tool count starts to hurt, and I am not claiming one. The next step is to run the eval at each toolkit size and compare."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Measure a model's tool routing before you widen its tool list. Pair the counters that show behavior with a fixed eval that shows correctness, because a wrong answer can look like success in a log."
+      ]
+    }
+  ],
+  "skills": [
+    "LLM evaluation",
+    "Observability",
+    "Tool design for local models",
+    "Prometheus"
+  ],
+  "sources": [
+    "pete-bot pull requests 112, 113 and 114 and scripts/media-routing-eval.ts"
+  ]
+}

@@ -3,5 +3,9 @@
   "lab-mcp": "This is Model Context Protocol server design with least privilege: typed tools, no shell, and a work-item allowlist I proved with a test. It fits roles that connect systems to Claude or other models, such as AI solutions and integration engineering.",
   "finance-agent": "This is automation of finance and operations work across email, calendar, spreadsheets and bank data, with read-back checks and approval for anything hard to undo. It fits AI automation roles in finance and operations.",
   "media-assistant": "This is an assistant built on a model tool loop, where the model reads through approved tools and asks a person before any write. I built it for my household, and it shows the same pattern a customer-facing assistant needs. It fits solutions and forward-deployed roles.",
-  "mcp-portal": "This is two MCP servers behind one sign-in and one access policy, declared in Terraform. It shows the access and review thinking that rolling MCP tooling out to a team needs."
+  "mcp-portal": "This is two MCP servers behind one sign-in and one access policy, declared in Terraform. It shows the access and review thinking that rolling MCP tooling out to a team needs.",
+  "agent-service-keys": "This is credential management for AI agents: one owner, one expiry and one approval path per agent, with a seed script that refuses an over-broad token. It fits AI platform and security-minded agent roles.",
+  "fleet-patching": "This is routine operations work turned into reviewed automation: security patching and ordered, health-checked restarts across a fleet. It fits platform, DevOps and automation roles.",
+  "review-fallback-chain": "This is a design for keeping a human-style review gate working when the main AI reviewer is out, by narrowing what the backup may approve. It fits agentic engineering and platform roles that put AI into code review.",
+  "local-llm-tool-routing": "This is evaluation work for an agent with many tools: metrics, switchable toolkits and a fixed eval. It fits AI engineering roles that tune tool use and measure it."
 }
