@@ -1,0 +1,61 @@
+{
+  "slug": "fleet-patching",
+  "date": "2026-11-12",
+  "title": "Patching a homelab fleet in one gated run",
+  "tag": "Operations",
+  "accent": "red",
+  "summary": "An audit found about two thousand pending package updates and no unattended updates. I wrote two playbooks that patched security fixes in 21 guests, then restarted them in order with a health check after each.",
+  "stat": {
+    "value": "~594",
+    "label": "packages patched across 21 guests, with service restarts blocked while the patch runs"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "A 12 November 2026 audit found 2,046 upgradable packages across the lab and no unattended updates. Patching by hand meant logging in to each guest, and the one guest I patched by hand showed that the repository had no role for it. I wanted security patching to be a reviewed playbook that an agent can plan and I can approve, not a session of typing."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "Two playbooks behind the lab's approval-gated action path. The patch playbook applies security-only upgrades in every running container, one node at a time. It holds back Vault, Postgres, Docker, MinIO, GPU, kernel and Proxmox packages, blocks service restarts while it runs, never reboots anything, and prints counts, not package lists.",
+        "The restart playbook covers the gap the patch leaves: patched libraries stay loaded until a service restarts. It restarts the guests that nothing else restarts, one at a time, with one guest deliberately last. Each restart writes a marker that proves it happened, then checks an optional URL or unit, looks for any new failed unit, and looks for unhealthy containers. The first guest that does not come back healthy stops the run, so no later guest restarts. The runner that executes the job is left out, because restarting it would end the job."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "The patch run applied about 594 packages across 21 guests. I did not measure time saved, and the pull requests record no clean restart run, so I do not claim one."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "The first live restart run stopped on one guest. After the restart, a failed IPMI service appeared that had not been failed before, and the gate read it as a new failure. The guest itself answered. That service needs a hardware device no container has, and another guest showed it failed both before and after. I added an ignore list for known units to the role. Every other new failed unit still stops the run.",
+        "An independent review by a separate AI agent, before the patch playbook merged, found two high and four medium issues. I fixed all of them. The Authentik upgrade playbook from the same pull request had no independent review when it merged."
+      ]
+    },
+    {
+      "heading": "What is not built",
+      "paragraphs": [
+        "The goal is to turn a published CVE for something I run into a version-bump pull request and a queued apply, so I only approve it. That chain is not built. The patch and restart steps are the part that exists."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Patching is two jobs: install the fix, then restart what loads it. A gate that compares before and after state, and stops at the first change it cannot explain, is safer than one that assumes every guest looks the same."
+      ]
+    }
+  ],
+  "skills": [
+    "Ansible",
+    "Change management",
+    "Fleet operations",
+    "Gated automation"
+  ],
+  "sources": [
+    "petedio-iac pull requests 688, 691 and 692 and their descriptions"
+  ]
+}

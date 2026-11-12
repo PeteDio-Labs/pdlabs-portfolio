@@ -1,0 +1,65 @@
+{
+  "slug": "agent-service-keys",
+  "date": "2026-11-12",
+  "title": "One tapped workflow to give each AI agent an expiring key",
+  "tag": "Security",
+  "accent": "violet",
+  "summary": "I gave two household AI agents their own Cloudflare Access service tokens, minted from one approval-gated workflow, and a seed script that refuses a token with more permission than it needs.",
+  "stat": {
+    "value": "90 days",
+    "label": "a renew sets an agent token's expiry 90 days out, and the play reads it back"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "Two personal AI agents, mine and a second household member's, needed to call a lab service over HTTPS without a person signing in. The usual shortcut is a long-lived key pasted into the agent's settings. I wanted each agent to hold its own key, with an owner, an expiry and a way to revoke it, and I wanted one place to do that."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A single workflow that lists, creates, rotates, renews and revokes the service tokens for each agent, driven by a file that names every agent, the person who owns it and what it may do. Listing needs no approval. Anything that changes a token prints a plan with a digest, waits for my approval, and refuses to run if the plan changed after I looked at it.",
+        "Each token lands in Vault, and the agent sends it in one request header. Rotation is designed to keep the old secret valid for 24 hours so an agent is not cut off mid-change. Renewal sets the expiry to 90 days from now, reads it back, and refuses if Cloudflare ignored the change. A sync step revokes any token whose agent left the list, and it refuses, changing nothing, when Cloudflare and Vault disagree about what exists.",
+        "The nightly secrets check warns 21 days before an agent token's real expiry, read from Cloudflare, so a rotation does not reset the warning. Terraform routes take a list of agents, and a route with no agents plans exactly as before. The credential that talks to Cloudflare is a separate token limited to Access service tokens, and a seed script that I run places it."
+      ]
+    },
+    {
+      "heading": "The control that checks the control",
+      "paragraphs": [
+        "The seed script refuses a token that can do more than manage service tokens. It probes whether the token can read zones, tunnels and Access applications, and stops if any answer shows data. A test drives that probe against ten fake answers. The first version treated any HTTP 200 as \"can read\". Cloudflare answers 200 with an empty list for a token with no such permission, so the script refused my correct token. The probe now sorts every answer into refused, not readable, readable or unclear, and stops on unclear. Against the first version the new test fails four of ten cases, so it catches the null and non-list answers a reviewer had flagged."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "Cloudflare refused my first route change with a 400: the header that carries the service token must be Authorization, and I had chosen a custom name because one agent can send only one custom header. I renamed it. The Vault value did not change, so no token was reissued.",
+        "The seed script also stopped on its first live run. It listed accounts to find the account id, and a token limited to service tokens sees no accounts. The script now reads the id from Vault, where Terraform already reads it, and still proves the token works by listing service tokens on that account.",
+        "Several behaviors were not proven when I merged: whether Cloudflare's rotate endpoint behaves as the SDK says, and whether each agent sends the header byte for byte. I listed them in the PR as unproven and left the live check for the agents themselves."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "The workflow created a token for each agent on 12 November 2026, and one read-only tool service is configured to accept them. When I wrote this, I had not seen an agent call the service through its token. People still sign in through the identity provider as before. I have no measure of time saved, and I am not claiming one. An agent's access is now a line in a file, a plan I approved and an expiry I can see."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Give each agent its own credential with an owner and an expiry. Then test the check that keeps the credential narrow against the answers the real API gives, including the one that looks like success."
+      ]
+    }
+  ],
+  "skills": [
+    "Least privilege",
+    "Secrets management",
+    "Cloudflare Zero Trust",
+    "Terraform and Vault",
+    "Human-in-the-loop approval"
+  ],
+  "sources": [
+    "petedio-iac pull requests 685, 693, 694, 695 and 696 and their descriptions",
+    "petedio-iac docs/runbooks/keys.md"
+  ]
+}
