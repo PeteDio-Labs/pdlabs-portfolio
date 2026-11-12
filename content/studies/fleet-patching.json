@@ -7,7 +7,7 @@
   "summary": "An audit found about two thousand pending package updates and no unattended updates. I wrote two playbooks that patched security fixes in 21 guests, then restarted them in order with a health check after each.",
   "stat": {
     "value": "~594",
-    "label": "security packages patched across 21 guests in one approved run, with no service restarted by the patch"
+    "label": "packages patched across 21 guests, with service restarts blocked while the patch runs"
   },
   "sections": [
     {
@@ -20,20 +20,20 @@
       "heading": "What I built",
       "paragraphs": [
         "Two playbooks behind the lab's approval-gated action path. The patch playbook applies security-only upgrades in every running container, one node at a time. It holds back Vault, Postgres, Docker, MinIO, GPU, kernel and Proxmox packages, blocks service restarts while it runs, never reboots anything, and prints counts, not package lists.",
-        "The restart playbook covers the gap the patch leaves: patched libraries stay loaded until a service restarts. It restarts the guests that nothing else restarts, one at a time, with the most critical last. Each restart writes a marker that proves it happened, then checks an optional URL or unit, looks for any new failed unit, and looks for unhealthy containers. The first guest that does not come back healthy stops the run, so no later guest restarts. The runner that executes the job is left out, because restarting it would end the job."
+        "The restart playbook covers the gap the patch leaves: patched libraries stay loaded until a service restarts. It restarts the guests that nothing else restarts, one at a time, with one guest deliberately last. Each restart writes a marker that proves it happened, then checks an optional URL or unit, looks for any new failed unit, and looks for unhealthy containers. The first guest that does not come back healthy stops the run, so no later guest restarts. The runner that executes the job is left out, because restarting it would end the job."
       ]
     },
     {
       "heading": "Result",
       "paragraphs": [
-        "The patch run applied about 594 security packages across 21 guests. The restart run then covered the guests that do not restart on a schedule. The guests that a nightly backup stops and starts were already restarted by that job. I did not measure time saved."
+        "The patch run applied about 594 packages across 21 guests. I did not measure time saved, and the pull requests record no clean restart run, so I do not claim one."
       ]
     },
     {
       "heading": "What went wrong",
       "paragraphs": [
-        "The first live restart stopped on one guest. After the restart, a failed IPMI service appeared that had not been failed before, and the gate read it as a new failure. The guest itself answered. That service needs a hardware device no container has, and another guest showed it failed both before and after. I added an ignore list for known units to the role. Every other new failed unit still stops the run.",
-        "An independent review of the patch playbook, before it merged, found two high and four medium issues. I fixed all of them. The Authentik upgrade playbook from the same pull request had no independent review when it merged."
+        "The first live restart run stopped on one guest. After the restart, a failed IPMI service appeared that had not been failed before, and the gate read it as a new failure. The guest itself answered. That service needs a hardware device no container has, and another guest showed it failed both before and after. I added an ignore list for known units to the role. Every other new failed unit still stops the run.",
+        "An independent review by a separate AI agent, before the patch playbook merged, found two high and four medium issues. I fixed all of them. The Authentik upgrade playbook from the same pull request had no independent review when it merged."
       ]
     },
     {
