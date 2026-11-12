@@ -158,3 +158,13 @@ test('the kit page demonstrates an accessible modal', () => {
 test('no page loads a font or stylesheet from Google, because the fonts are self-hosted', () => {
   for (const html of all()) expect(html).not.toMatch(/fonts\.(googleapis|gstatic)\.com/);
 });
+
+test('every case study ends with a hiring call to action, and the fit notes name real studies', () => {
+  for (const s of studies) {
+    const html = study(s);
+    expect(html).toContain('id="hire-h"');
+    expect(html).toContain(`href="${site.linkedin}"`);
+  }
+  expect(study(studies.find((s) => s.slug === 'lab-mcp')!)).toContain('Why it matters for hiring teams');
+  expect(home()).toContain(site.linkedin);
+});

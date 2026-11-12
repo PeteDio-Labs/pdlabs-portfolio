@@ -1,0 +1,7 @@
+{
+  "agent-merge-gate": "Teams that put agents into production ask what stops an agent from doing damage. This study answers with a tested control, a tiered gate that fails closed, and the failures I found in my own automation. It fits forward-deployed, platform and agentic engineering roles.",
+  "lab-mcp": "This is Model Context Protocol server design with least privilege: typed tools, a hard allowlist and a refusal I proved with a test. It fits roles that connect company systems to Claude or other models, such as AI solutions and integration engineering.",
+  "finance-agent": "This is automation of finance and operations work across email, calendar, spreadsheets and bank data, with read-back checks and approval for anything hard to undo. It fits AI automation roles in finance and operations.",
+  "media-assistant": "This is a customer-style assistant built on a tool loop, where the model reads through approved tools and asks a person before any write. It fits solutions and forward-deployed roles that ship assistants for non-technical users.",
+  "mcp-portal": "This is a rollout of several MCP servers behind one sign-in and one access policy, declared in Terraform. It fits roles that deploy MCP and agent tooling for teams, where access and review matter."
+}

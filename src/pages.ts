@@ -1,6 +1,6 @@
 import { esc, md } from './html.ts';
 import { legalPages, legalUpdated } from './legal.ts';
-import { site, studies, featured, latest, tags, type Accent, type CaseStudy } from './content.ts';
+import { site, studies, featured, latest, tags, fit, type Accent, type CaseStudy } from './content.ts';
 
 const HEX: Record<Accent, string> = { blue: '#5f8dff', red: '#f2706a', yellow: '#f2c94c', violet: '#a995f0' };
 // Shadow paired with each accent: never a complementary clash, never the fill's own colour.
@@ -201,8 +201,9 @@ export function home(): string {
 
     <section class="py-s8" aria-labelledby="contact-h">
       <div class="flex flex-wrap items-center gap-s8">
-        <div class="toon-bubble toon-pop"><h2 id="contact-h" class="m-0 text-title2 font-bold">Want to talk systems?</h2></div>
-        <a class="toon-btn toon-btn-yellow toon-wiggle" href="${site.github}">Find me on GitHub</a>
+        <div class="toon-bubble toon-pop"><h2 id="contact-h" class="m-0 text-title2 font-bold">Hiring for AI automation or agent work?</h2></div>
+        <a class="toon-btn toon-btn-yellow toon-wiggle" href="${site.linkedin}">Hire me: message on LinkedIn</a>
+        <a class="toon-btn toon-btn-paper" href="${site.github}">Find me on GitHub</a>
       </div>
     </section>`;
   return layout({ title: 'Home', path: '/', current: 'Work', description: `${site.name}. ${site.role} ${site.intro}`, body, jsonLd: personJsonLd() });
@@ -287,6 +288,14 @@ export function workIndex(): string {
   });
 }
 
+/** The call to action that closes every case study: a hiring team reads the work, then needs a next step. */
+const hireCta = () => `
+      <aside class="toon-callout toon-callout-yellow mt-s8 max-w-[68ch]" aria-labelledby="hire-h">
+        <h2 id="hire-h" class="mb-s3 mt-0 text-title2 font-bold">Hiring for AI automation or forward-deployed engineering?</h2>
+        <p class="mb-s4 mt-0">I build agents and automations that run in production, with the limits and checks that keep them safe. Send me the role and I will tell you how my work fits it.</p>
+        <p class="m-0 flex flex-wrap gap-s4"><a class="toon-btn toon-btn-yellow" href="${site.linkedin}">Message me on LinkedIn</a><a class="toon-btn toon-btn-paper" href="${site.github}">See my code on GitHub</a></p>
+      </aside>`;
+
 export function study(s: CaseStudy): string {
   const i = studies.indexOf(s);
   const next = studies[(i + 1) % studies.length];
@@ -314,11 +323,16 @@ export function study(s: CaseStudy): string {
         </section>`,
         )
         .join('')}
+        ${fit[s.slug] ? `<section>
+          <h2 class="mb-s3 mt-0 font-display text-title1 font-normal" style="color:${HEX[s.accent]}">Why it matters for hiring teams</h2>
+          <p class="mb-s3 mt-0">${md(fit[s.slug])}</p>
+        </section>` : ''}
         <section>
           <h2 class="mb-s3 mt-0 font-display text-title1 font-normal" style="color:${HEX[s.accent]}">Skills shown</h2>
           <ul class="m-0 flex list-none flex-wrap gap-s2 p-0">${s.skills.map((k) => `<li class="toon-badge toon-badge-violet">${esc(k)}</li>`).join('')}</ul>
         </section>
       </div>
+      ${hireCta()}
       <nav class="mt-16 grid gap-s6 sm:grid-cols-2" aria-label="Case studies">
         <a class="toon-btn toon-btn-paper justify-self-start" href="/work/${prev.slug}.html"><span class="block text-footnote font-normal">Previous</span>${esc(prev.title)}</a>
         <a class="toon-btn justify-self-start sm:justify-self-end sm:text-right" href="/work/${next.slug}.html"><span class="block text-footnote font-normal">Next</span>${esc(next.title)}</a>
