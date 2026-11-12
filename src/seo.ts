@@ -33,6 +33,7 @@ ${studies.map((s) => `- [${s.title}](${origin}/work/${s.slug}.html): ${s.summary
 
 ## Links
 
+- [LinkedIn](${site.linkedin}): the way to reach Pedro about a role
 - [GitHub](${site.github})
 - [PeteDio-Labs on GitHub](${site.org})
 - [Privacy](${origin}/privacy.html)
