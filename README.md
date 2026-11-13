@@ -55,6 +55,18 @@ draft left open are filled only from a named source (the PR statistics in `data/
 the agent's own spec, the Vault SSH roles or the model audit), and a study's `sources` field names that
 source.
 
+## Mobile first
+
+Design, build and check every page at 390 px before any wider width. Most visitors open the site on a phone.
+
+- **Write the phone layout as the base styles.** Add `sm:`, `md:` and `lg:` classes for wider screens.
+- **Check 390 px first, then 1280 px.** The page must not scroll sideways: `scrollWidth` equals the viewport width.
+- **Never trap a scroll.** Don't put a sideways scroll container on a phone page. A swipe target sets
+  `touch-action: pan-y`, so a vertical drag always scrolls the page.
+- **Make touch targets at least 44 px.** Don't rely on hover to show anything.
+- **Show decoration on a phone.** Sound effects, tilts and bursts appear at every width. Scale or move
+  one for a phone; don't hide it below `md`. A test fails when a sound effect hides on a phone.
+
 ## Branches
 
 - **Case studies and content go to `main` by pull request.** They skip `staging`.

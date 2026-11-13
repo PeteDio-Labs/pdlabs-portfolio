@@ -20,6 +20,7 @@ cream, red and yellow set, and hand-drawn lettering. Don't reopen those choices.
 6. Keep case-study text still. Motion belongs to the chrome: hover, load-in and the hero.
 7. Draw original assets only. Use no Cuphead art, fonts or traced shapes.
 8. No mascot. The `toon-frame` and `toon-bubble` components hold an image or a line of speech when a page needs one.
+9. Design for a phone first: 390 px before any wider width. Decoration shows on a phone, and nothing traps a vertical scroll. `README.md`, "Mobile first", has the checks.
 
 ## Color
 
