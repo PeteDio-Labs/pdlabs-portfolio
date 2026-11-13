@@ -1,0 +1,113 @@
+{
+  "slug": "media-assistant-discovery-to-demo",
+  "date": "2026-11-13",
+  "title": "From a household's question to a tested demo: the media assistant",
+  "tag": "Delivery",
+  "accent": "red",
+  "summary": "How a vague complaint became a scoped, read-first assistant: who asked, what they asked, what I left out, the demo script and the acceptance checklist I tested it against.",
+  "stat": {
+    "value": "57/57",
+    "label": "fixed questions routed to the expected tool by a keyword router that calls no model, checked offline in CI"
+  },
+  "sections": [
+    {
+      "heading": "Who asked, and what they asked",
+      "paragraphs": [
+        "The users are the people in my household and the AI agents that answer for them. The complaint was one sentence: why is this show not in Plex? Answering it meant opening four apps and comparing what each one claimed.",
+        "I did not run formal interviews. The requirements below come from questions people asked in chat and from the incidents I logged, and each one became a test case. That makes them real, and it also means I have no adoption figures, so I do not claim any."
+      ]
+    },
+    {
+      "heading": "Discovery: the answer was in the data, not the question",
+      "paragraphs": [
+        "Two findings shaped the scope. First, the request tool kept its own copy of availability, and it disagreed with the apps that hold the files on 41 of 65 requests after a hardware loss. The apps that hold the files are the ground truth, so the assistant had to read from them and treat the request tool's status as a hint.",
+        "Second, the obvious fix is often wrong. In the worked example, the request tool said partially available, Sonarr had all 91 files, and Plex had lost the item. A refresh of the request tool would change nothing. Only a Plex library refresh would, and the only way to know is to check all three systems in order. The assistant had to show that reasoning, not only an answer."
+      ]
+    },
+    {
+      "heading": "Scope decisions",
+      "paragraphs": [
+        "I wrote the fence down before I built anything: it answers where a request is stuck, and it updates the stack. It is not a homelab dashboard. Two earlier attempts had died of generic scope with no data layer underneath.",
+        "Reads come first. Every diagnosis is deterministic code, so the same inputs always give the same verdict and a wrong answer is a bug I can fix. Four write tools exist, each limited to one title, one library section or one app, each able to run as a dry run, and each available only to callers I name. A caller that is not named does not see them, and a direct call returns 403. The plain-language path never writes. In chat, the bot never runs a write by itself: it proposes the action with Confirm and Cancel buttons and runs it only after the owner taps Confirm.",
+        "I also removed the model from routing. A keyword router matched the model's choice on all 21 prompts in the first test set, so the model held a GPU for a decision the keywords already made. Dropping it made routing instant, free and testable offline."
+      ]
+    },
+    {
+      "heading": "The demo script",
+      "paragraphs": [
+        "A non-engineer can run this in a direct message to the bot in about three minutes. These are real exchanges from the live bot, with names and titles blurred. The transcript under each picture holds the exact text. On a phone, tap a picture to open it full size.",
+        "1. Ask whether a title is in the library. The answer says what exists and names the tool it read.",
+        "2. Ask for the server status. The answer says who is watching Plex, from one read tool.",
+        "3. Ask for a subtitle search. The bot proposes the action and waits. After the owner taps Confirm, it reports what Bazarr said.",
+        "4. Ask something it should not answer. It says it cannot, and it reads no tool."
+      ],
+      "shots": [
+        {
+          "file": "shot-1-library.png",
+          "alt": "A Discord direct message. The owner asks whether the library has Night of the Living Dead. The bot, Lab-Agent, answers that it does not, and the footer says it read the library tool.",
+          "width": 1840,
+          "height": 360,
+          "caption": "Step 1: a library question. The answer is no, and the footer names the tool it read.",
+          "transcript": "Owner: Do we have Night of the Living Dead?\nLab-Agent: We don't have \"Night of the Living Dead\" in the library.\nread: library"
+        },
+        {
+          "file": "shot-2-status.png",
+          "alt": "A Discord direct message. The owner asks for the server status. The bot answers that Plex is active with one session, with the viewer and the title blurred, and the footer says it read the now-playing tool.",
+          "width": 1840,
+          "height": 360,
+          "caption": "Step 2: server status. The viewer's name and the title are blurred.",
+          "transcript": "Owner: What's the server status?\nLab-Agent: Plex is active with 1 session: [Plex user] is watching \"[title]\".\nread: now_playing"
+        },
+        {
+          "file": "shot-3-write.png",
+          "alt": "A Discord direct message. The owner asks the bot to search for missing subtitles for a blurred title. The bot proposes the action, then reports that it is running, then reports that Bazarr accepted the search with HTTP 204. The title is blurred in every line.",
+          "width": 1840,
+          "height": 740,
+          "caption": "Step 3: a write, after a confirmation. The owner tapped Confirm, so the buttons are gone. The result says Bazarr accepted the search, not that a subtitle arrived. I did not check for one.",
+          "transcript": "Owner: Search for missing subtitles for [title]\nLab-Agent: Confirm to search for subtitles for \"[title]\".\nread: propose_action\n(The owner taps Confirm.)\nLab-Agent: Running: Search subtitles for [title] (0 missing) (edited)\nLab-Agent: Bazarr accepted the search (HTTP 204). It runs in Bazarr's task queue; new subtitles land beside the media and Bazarr refreshes Plex after each one."
+        },
+        {
+          "file": "shot-4-decline.png",
+          "alt": "A Discord direct message. The owner asks what the weather is. The bot answers that it cannot check the weather and offers to help with something else. The footer says it read no tool.",
+          "width": 1840,
+          "height": 350,
+          "caption": "Step 4: an off-topic question. The bot declines and reads no tool. This shows what it does when no tool fits, not a refusal of the owner.",
+          "transcript": "Owner: What's the weather?\nLab-Agent: I cannot check the weather. Would you like me to help with something else?\nread: none"
+        }
+      ]
+    },
+    {
+      "heading": "Acceptance checklist",
+      "paragraphs": [
+        "I tested each item before I called it done. Most are automated, so they run on every change.",
+        "Each tool answers for a title I know is stuck or missing. A failing backend produces a finding, such as sonarr is not answering, never an empty answer or a server error. A wrong, partial, missing or non-bearer credential is refused, and the logs never contain a token. A caller that is not a writer sees only the read tools and gets 403 on a write tool. A write does nothing when the title matches more than one item, and it refuses a partial-name guess. A question about possession and a question about progress stay separate.",
+        "That last item comes from a real failure. On 9 September a question about how many seasons of a show I owned was answered with a statement about an unrelated tool, because no tool covered possession and the nearest one answered confidently. I added a library tool, and a pair of test rows now holds the two questions apart."
+      ]
+    },
+    {
+      "heading": "Outcome",
+      "paragraphs": [
+        "The fixed question set holds 57 cases, including questions that must route to no tool, and the keyword router matches all 57. The first version of the set scored 21 of 21 under both the keyword router and the model, which is what justified removing the model. The whole suite runs 192 tests offline and passes.",
+        "The same service logs the caller, the tool and the outcome without logging the question's text, so I can measure use. I have not measured it, so adoption is not yet measured and I claim none. The result I can stand behind is 57 of 57 routing, with 192 tests passing."
+      ]
+    },
+    {
+      "heading": "What I would do differently",
+      "paragraphs": [
+        "Interview the people first, even for a household. I scoped from incidents, and a short list of the questions people want to ask, written before the build, would have caught the missing possession question six weeks sooner."
+      ]
+    }
+  ],
+  "skills": [
+    "Requirements and scoping",
+    "Acceptance testing",
+    "Stakeholder communication",
+    "Demo design"
+  ],
+  "sources": [
+    "petedio-media-control README.md and test/cases.ts (57 cases; bun test: 192 pass, run 2026-11-13)",
+    "petedio-vault Systems/mtrace.md (21 of 21 first set, PET-376 and PET-525, 9 September incident)",
+    "petedio-media-control README.md (41 of 65 seerr disagreement, write tier and caller scoping)",
+    "demo-screenshots branch of pdlabs-portfolio, commit 6ff5e55: four screenshots and transcripts.md, captured from the live bot on 2026-11-13 and checked by eye for redaction"
+  ]
+}

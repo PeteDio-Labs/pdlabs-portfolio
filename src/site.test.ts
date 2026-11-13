@@ -1,4 +1,5 @@
 import { test, expect } from 'bun:test';
+import { esc } from './html.ts';
 import { home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
@@ -261,4 +262,18 @@ test('the JSON API lists every study and carries one file per study, without pri
 
 test('the CSP stays tight: the API adds no inline script and no new origin to the pages', () => {
   for (const html of all()) expect(html).not.toMatch(/<script(?![^>]*\bsrc=)(?![^>]*type="application\/ld\+json")[^>]*>/);
+});
+
+test('study screenshots render with alt text, size, caption and transcript, and ship in the build', () => {
+  const s = studies.find((x) => x.slug === 'media-assistant-discovery-to-demo')!;
+  const shots = s.sections.flatMap((sec) => sec.shots ?? []);
+  expect(shots.length).toBeGreaterThan(0);
+  const html = study(s);
+  for (const h of shots) {
+    expect(html).toContain(`src="/studies/${s.slug}/${h.file}"`);
+    expect(html).toMatch(new RegExp(`<img class="[^"]*" src="/studies/${s.slug}/${h.file}" alt="[^"]+" width="${h.width}" height="${h.height}"`));
+    expect(html).toContain(esc(h.caption));
+  }
+  expect(html).toContain('toon-shot-text');
+  expect(html.match(/aria-label="Open the full-size picture"/g)?.length).toBe(shots.length);
 });
