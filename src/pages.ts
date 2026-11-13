@@ -57,8 +57,8 @@ ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ?
 <link rel="manifest" href="/site.webmanifest">
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/fonts/space-grotesk-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/clash-display-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/cabinet-grotesk-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/toonish.css">
 <script src="/motion.js"></script>
 </head>
@@ -380,7 +380,7 @@ export function kit(): string {
     </section>
 
     <section class="py-s6" aria-labelledby="k-let"><h2 id="k-let" class="toon-heading mb-s6 text-display2">Display type</h2>
-      <p class="mb-s6 max-w-[60ch]">Headings and figures are set in Space Grotesk, a heavy sans, in the accent colour. <code>toon-type-comic</code> switches to Bangers with an ink outline and a short shadow in the paired colour, for the logo and the hero, and tilts every other letter a little. <code>toon-type-flat</code> sets them straight.</p>
+      <p class="mb-s6 max-w-[60ch]">Headings and figures are set in Clash Display, a heavy sans, in the accent colour. <code>toon-type-comic</code> switches to Bangers with an ink outline and a short shadow in the paired colour, for the logo and the hero, and tilts every other letter a little. <code>toon-type-flat</code> sets them straight.</p>
       <div class="grid gap-s3 text-display2 leading-none">
         <div>${letters('ABCDEFGHIJKLM', 'blue', { live: true })}</div>
         <div>${letters('NOPQRSTUVWXYZ', 'yellow')}</div>
