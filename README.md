@@ -1,7 +1,7 @@
 # pdlabs-portfolio
 
 Pedro Delgadillo's portfolio for `pdlab.dev`: case studies about building systems with AI,
-on toonish-ui, an original cartoon component kit (`PET-809`, under the `PET-773` epic).
+on [toonish-ui](https://github.com/PeteDio-Labs/toonish-ui), an original cartoon component kit (`PET-809`, under the `PET-773` epic). The kit's tokens, CSS, script and fonts install from a tagged release (`bun add github:PeteDio-Labs/toonish-ui#vX.Y.Z`). The kit page, `/ui.html`, stays in this repo.
 The site is static HTML rendered by TypeScript under Bun and styled with Tailwind CSS.
 
 ## Commands
@@ -25,8 +25,7 @@ You need Bun 1.4.4 or later, because `bun.lock` uses lockfile version 2. CI pins
 | `src/pages.ts` | Page templates: home, `/work`, case study, kit and 404 |
 | `build.ts` | Writes `dist/` and fails when a page or the CSS is missing |
 | `serve.ts` | Local preview server |
-| `ui/` | toonish-ui: the component CSS. See `ui/README.md` |
-| `tailwind.config.js` | The design tokens |
+| `tailwind.config.js` | This site's Tailwind config: the toonish-ui preset plus the content globs |
 
 The home page shows the featured study and the newest other one. `/work.html` lists every study
 newest first and, with JavaScript, sorts by date or title and filters by topic. The query string
