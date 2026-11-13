@@ -157,8 +157,15 @@ export function home(): string {
         ${lettered('about-h', 'How I work', 'blue', 'mb-s6 max-w-sm')}
         <p class="mb-s4 mt-0 max-w-[60ch]">I treat AI agents like a team, not a tool. Each task gets its own session and its own branch. Nothing merges without a review, and no session approves its own work.</p>
         <p class="mb-s4 m-0 max-w-[60ch]">The infrastructure is declared, not hand-run: Terraform builds it, Ansible configures it, and a repair is a config change before it is ever a script. When a check reports success, it also says what it examined.</p>
-        <h3 class="mb-s3 mt-s6 text-title2 font-bold">Background</h3>
-        <p class="m-0 max-w-[60ch]">${esc(site.background)}</p>
+        <div class="mt-s6 flex flex-col gap-s4 sm:flex-row sm:items-start sm:gap-s6">
+          <figure class="toon-frame m-0 w-36 shrink-0 overflow-hidden p-0">
+            <img src="/pedro-headshot.webp" width="320" height="320" loading="lazy" decoding="async" class="block h-auto w-full" alt="Pedro Delgadillo, in a navy blazer and white open-collar shirt, against a slate grey background">
+          </figure>
+          <div class="min-w-0">
+            <h3 class="mb-s3 mt-0 text-title2 font-bold">Background</h3>
+            <p class="m-0 max-w-[60ch]">${esc(site.background)}</p>
+          </div>
+        </div>
       </div>
       <div class="flex min-w-0 flex-col gap-s8">
         <figure class="toon-frame relative m-0 bg-toon-ground">
