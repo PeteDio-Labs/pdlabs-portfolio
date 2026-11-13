@@ -26,6 +26,13 @@
       ]
     },
     {
+      "heading": "The UI kit",
+      "paragraphs": [
+        "The look comes from toonish-ui, a comic-book component kit I wrote for this site: thin ink outlines, short hard shadows and a gentle lift on hover, in blue, red, yellow and violet on deep navy. It ships design tokens in the W3C format, component CSS that needs no Tailwind, a small script for modals and toggle groups, and self-hosted fonts. [See every component running on the kit page](https://pdlab.dev/ui.html).",
+        "The kit started inside this repository and moved to [its own public repository](https://github.com/PeteDio-Labs/toonish-ui), with its own tests, changelog and releases. This site installs it from a pinned git tag, not from a registry and not from `main`, so a kit change reaches the site only when I move the tag. The kit commits its built files, because Bun does not run a dependency's build scripts, and its CI fails when they are stale. The build copies the kit's fonts and script into the site, so no page loads either from a third party."
+      ]
+    },
+    {
       "heading": "What went wrong",
       "paragraphs": [
         "I planned to deploy with short-lived GitHub OIDC credentials, so no AWS key would exist. The AWS account sits under an organization policy that denies creating the OIDC provider, and I could not change that. The module now supports both paths. The site uses a deploy-only IAM user whose policy covers one bucket and one distribution, with the key stored in a protected `production` environment and passed to the AWS steps only, never to install or build. Terraform creates the user but never its key, so no secret reaches state. A static key is weaker than OIDC, and I document it as a known trade-off.",
@@ -55,6 +62,7 @@
   "sources": [
     "pdlabs-portfolio: .github/workflows/deploy.yml, .github/workflows/ci.yml, src/site.test.ts, build.ts, docs/hosting-and-exit-plan.md",
     "petedio-iac: modules/portfolio-site (cloudfront.tf, headers.tf, s3.tf, iam.tf, README.md) and environments/portfolio",
-    "Portfolio production audit, 2026-11-13"
+    "Portfolio production audit, 2026-11-13",
+    "toonish-ui: README.md, CHANGELOG.md, CLAUDE.md at v0.2.0"
   ]
 }
