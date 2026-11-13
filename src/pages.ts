@@ -67,7 +67,6 @@ export function layout(opts: { title: string; description: string; path: string;
 <meta name="twitter:image" content="https://${site.domain}/og.png">
 ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ? `<script type="application/ld+json">${JSON.stringify(opts.jsonLd).replace(/</g, '\\u003c')}</script>\n` : ''}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any">
-<meta name="staging-check" content="pet-913-hs1">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
