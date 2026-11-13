@@ -37,9 +37,9 @@ jobs:
           done
           [ "$HAS_KEY_ID" = true ] && [ "$HAS_KEY_SECRET" = true ] || { echo "::error::the production environment secrets AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are not both set"; exit 1; }
 
-      # TODO before first use: pin each action to a full commit SHA, as petedio-iac does.
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      # Each action is pinned to a full commit SHA. Dependabot proposes the bumps.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.4
 
@@ -79,7 +79,14 @@ jobs:
         run: |
           count=$(find dist -type f | wc -l)
           [ "$count" -gt 0 ] || { echo "::error::dist/ is empty, refusing to sync with --delete"; exit 1; }
+          # Pass 1: everything revalidates after five minutes. CSS and JS keep unhashed names, so they stay here.
           aws s3 sync dist "s3://$BUCKET" --delete --cache-control "public, max-age=300"
+          # Pass 2: font files keep the same bytes under the same name, so browsers keep them a year.
+          # Images and icons keep unhashed names, so they get one day, not a year.
+          aws s3 cp dist "s3://$BUCKET" --recursive --exclude "*" --include "fonts/*" \
+            --cache-control "public, max-age=31536000, immutable"
+          aws s3 cp dist "s3://$BUCKET" --recursive --exclude "*" --include "*.png" --include "*.svg" \
+            --cache-control "public, max-age=86400"
           echo "synced $count file(s) to $BUCKET"
 
       - name: Invalidate CloudFront

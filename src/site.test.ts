@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
 import { home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
-import { llmsTxt, robotsTxt, sitemapXml } from './seo.ts';
+import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
 import { site, studies, featured, latest, fit } from './content.ts';
 
@@ -184,4 +184,44 @@ test('a stat figure shrinks as its value gets longer, so it fits its card', () =
   expect(long).toBeDefined();
   expect(long.size).toBeLessThan(short.size);
   expect(sizes(home()).length).toBe(2);
+});
+
+test('sitemap dates a page by its own date and leaves the noindex kit page out', () => {
+  const xml = sitemapXml(['work/a.html', 'index.html'], '2026-01-01', { 'work/a.html': '2025-05-05' });
+  expect(xml).toContain('<loc>https://pdlab.dev/work/a.html</loc><lastmod>2025-05-05</lastmod>');
+  expect(xml).toContain('<loc>https://pdlab.dev/</loc><lastmod>2026-01-01</lastmod>');
+  expect(kit()).toContain('<meta name="robots" content="noindex">');
+  expect(sitemapFiles(['index.html', 'ui.html', '404.html', 'work.html'])).toEqual(['index.html', 'work.html']);
+});
+
+test('home JSON-LD links GitHub and LinkedIn as the same person', () => {
+  expect(personJsonLd().mainEntity.sameAs).toEqual(expect.arrayContaining([site.github, site.linkedin]));
+});
+
+test('headings never skip a level on any page', () => {
+  for (const html of all()) {
+    let prev = 0;
+    for (const m of html.matchAll(/<h([1-6])[ >]/g)) {
+      const level = Number(m[1]);
+      expect(level - prev).toBeLessThanOrEqual(1);
+      prev = level;
+    }
+  }
+});
+
+test('every <img> has an alt attribute', () => {
+  for (const html of all()) for (const m of html.matchAll(/<img\b[^>]*>/g)) expect(m[0]).toMatch(/\balt=/);
+});
+
+// WCAG contrast of the palette pairs the site uses for text: paper on ground, and ink on every fill.
+test('palette text pairs meet WCAG AA contrast (4.5:1)', async () => {
+  const cfg = await Bun.file(new URL('../tailwind.config.js', import.meta.url)).text();
+  const color = (n: string) => cfg.match(new RegExp(`${n}: '(#[0-9a-f]{6})'`, 'i'))![1];
+  const lum = (hex: string) => {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const ratio = (a: string, b: string) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+  const pairs: [string, string][] = [['paper', 'ground'], ['ink', 'paper'], ['ink', 'blue'], ['ink', 'red'], ['ink', 'yellow'], ['ink', 'violet']];
+  for (const [fg, bg] of pairs) expect(ratio(color(fg), color(bg))).toBeGreaterThanOrEqual(4.5);
 });
