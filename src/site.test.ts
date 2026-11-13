@@ -362,3 +362,14 @@ test('the kit page documents the data components with made-up figures', () => {
   expect(html).toContain('made-up sample data');
   expect(html).toContain('aria-label="Sample orders by day');
 });
+
+test('the home page shows the headshot with alt text, and the build ships the file', () => {
+  const { existsSync, statSync } = require('node:fs');
+  const html = home();
+  const m = html.match(/<img src="\/pedro-headshot\.webp"[^>]*>/);
+  expect(m).not.toBeNull();
+  expect(m![0]).toMatch(/alt="[^"]{20,}"/);
+  expect(m![0]).toMatch(/width="320" height="320"/);
+  expect(existsSync('public/pedro-headshot.webp')).toBe(true);
+  expect(statSync('public/pedro-headshot.webp').size).toBeLessThan(50_000);
+});
