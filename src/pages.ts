@@ -243,13 +243,9 @@ export function home(): string {
         </figure>
         <div class="min-w-0">
           <h3 class="mb-s3 mt-0 text-title2 font-bold text-toon-yellow">The stack</h3>
-          <ul class="m-0 grid list-disc gap-s3 pl-s5 marker:text-toon-yellow">
-            <li>Proxmox, three nodes, built to the shape of AWS</li>
-            <li>Terraform and Ansible, deployed by GitOps</li>
-            <li>Vault for secrets, reached from CI by OIDC</li>
-            <li>Bun and TypeScript for services and bots</li>
-            <li>Claude and local Qwen models for the agents</li>
-          </ul>
+          <div class="toon-list toon-list-stack" role="list" data-home="stack">
+            ${STACK.map((r) => row(r).replace('<div class="toon-row">', '<div class="toon-row" role="listitem">')).join('\n            ')}
+          </div>
         </div>
       </div>
     </section>
@@ -402,6 +398,15 @@ const contents = (items: { id: string; heading: string }[], onPaper: boolean) =>
   `<ol class="m-0 grid list-none gap-s3 p-0">${items
     .map((x, i) => `<li class="flex items-baseline gap-s3"><span class="font-mono text-footnote font-bold ${onPaper ? 'text-toon-muted' : 'text-toon-yellow'}">${partNo(i)}</span><a class="toon-link" href="#${x.id}">${esc(x.heading)}</a></li>`)
     .join('')}</ol>`;
+
+/** The stack on the home page, as rows of the kit's list: a short category, the tool, and what it is for. */
+const STACK = [
+  { lead: 'Compute', title: 'Proxmox, three nodes', sub: 'built to the shape of AWS' },
+  { lead: 'IaC', title: 'Terraform and Ansible', sub: 'deployed by GitOps' },
+  { lead: 'Secrets', title: 'Vault', sub: 'reached from CI by OIDC' },
+  { lead: 'Runtime', title: 'Bun and TypeScript', sub: 'for services and bots' },
+  { lead: 'AI', title: 'Claude and local Qwen models', sub: 'for the agents' },
+];
 
 /** The closing panel: why the work fits a hiring team, the skills, and the call to action. */
 const closing = (s: CaseStudy) => `
