@@ -401,16 +401,16 @@ export function kit(): string {
 
     <section class="py-s6" aria-labelledby="k-data"><h2 id="k-data" class="toon-heading mb-s6 text-display2">Figures, rows, bars and tables</h2>
       <p class="mb-s6 max-w-[60ch]">For dashboards and case studies. Every figure below is made-up sample data. The helpers in <code>toonish-ui/markup</code> escape every string they render.</p>
-      <div class="toon-stats">${stat('Orders', '128', 'this week')}${stat('On time', '94%', 'sample figure')}${stat('Busiest day', 'Thu')}</div>
+      <div class="toon-stats">${stat('Orders', '128', 'this week')}${stat('On time', '94%', 'sample figure')}${stat('Busiest day', 'Tue')}</div>
       <p class="mb-0 mt-s6 flex flex-wrap items-center gap-s2">${badge('Open', 'blue', 12)}${badge('Held', 'yellow', 3)}${badge('Shipped', 'violet', 40)}${badge('Late', 'red', 2)}${badge('Archived', 'mist', 9)}${badge('Draft', 'paper')}${chip('A chip')}</p>
       <div class="toon-list mt-s6">${row({ lead: 'Nov 12', title: 'Order 1042', sub: 'Pending', aside: 'Web', dot: 'blue' })}${row({ lead: 'Nov 11', title: 'Order 1041', aside: 'Phone', dot: 'red' })}${row({ title: 'A row with no lead', aside: 'Store', dot: 'violet' })}</div>
-      <div class="toon-card mt-s8">${bars({ label: 'Sample orders by day, stacked by channel, against a target of 1', target: 1, columns: [
-        { label: 'Mon', sub: '9', segments: [{ value: 0.6, tone: 'blue', label: 'Web' }, { value: 0.2, tone: 'hatch', label: 'Returned' }] },
-        { label: 'Tue', sub: '10', current: true, segments: [{ value: 0.7, tone: 'blue', label: 'Web' }, { value: 0.45, tone: 'red', label: 'Phone' }] },
-        { label: 'Wed', sub: '11', segments: [{ value: 0.3, tone: 'red', label: 'Phone' }] },
+      <div class="toon-card mt-s8">${bars({ label: 'Sample orders by day, stacked by channel, against a target of 5', target: 5, columns: [
+        { label: 'Mon', sub: '9', segments: [{ value: 3, tone: 'blue', label: 'Web' }, { value: 1, tone: 'hatch', label: 'Returned' }] },
+        { label: 'Tue', sub: '10', current: true, segments: [{ value: 4, tone: 'blue', label: 'Web' }, { value: 2, tone: 'red', label: 'Phone' }] },
+        { label: 'Wed', sub: '11', segments: [{ value: 2, tone: 'red', label: 'Phone' }] },
         { label: 'Thu', sub: '12', segments: [] }] })}
         <ul class="toon-bars-key mt-s4"><li><i></i>Web</li><li><i style="--toon-dot:#f2706a"></i>Phone</li><li><i style="background:repeating-linear-gradient(135deg,#0a0a1f 0 2px,#f3efe6 2px 6px)"></i>Returned</li></ul></div>
-      <div class="toon-table-wrap mt-s8"><table class="toon-table"><caption class="sr-only">Sample orders by channel</caption><thead><tr><th scope="col">Day</th><th scope="col">Web</th><th scope="col">Phone</th></tr></thead><tbody><tr><td>Mon</td><td>3</td><td>0</td></tr><tr aria-current="date"><td>Tue</td><td>4</td><td>2</td></tr></tbody><tfoot><tr><td>Total</td><td>7</td><td>2</td></tr></tfoot></table></div>
+      <div class="toon-table-wrap mt-s8"><table class="toon-table"><caption class="sr-only">Sample orders by channel</caption><thead><tr><th scope="col">Day</th><th scope="col">Web</th><th scope="col">Phone</th><th scope="col">Returned</th></tr></thead><tbody><tr><td>Mon</td><td>3</td><td>0</td><td>1</td></tr><tr aria-current="date"><td>Tue</td><td>4</td><td>2</td><td>0</td></tr><tr><td>Wed</td><td>0</td><td>2</td><td>0</td></tr><tr><td>Thu</td><td>0</td><td>0</td><td>0</td></tr></tbody><tfoot><tr><td>Total</td><td>7</td><td>4</td><td>1</td></tr></tfoot></table></div>
       <p class="mt-s4 max-w-[60ch]">Add <code>toon-table-text</code> for cells that hold words, as the case studies do.</p>
     </section>
 
