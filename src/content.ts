@@ -90,15 +90,23 @@ function check(file: string, s: any): CaseStudy {
   if (!s.stat?.value || !s.stat?.label) bad('"stat" needs a value and a label');
   if (!Array.isArray(s.sections) || !s.sections.length) bad('"sections" must be a non-empty list');
   if (!Array.isArray(s.skills)) bad('"skills" must be a list');
+  const text = (v: unknown): v is string => typeof v === 'string' && v.trim() !== '';
   if (s.facts !== undefined) {
     if (!Array.isArray(s.facts) || s.facts.length < 2 || s.facts.length > 4) bad('"facts" needs 2 to 4 entries');
-    for (const f of s.facts) if (!f?.label?.trim() || !f?.value?.trim()) bad('each fact needs a label and a value');
+    for (const f of s.facts) {
+      if (!text(f?.label) || !text(f?.value)) bad('each fact needs a text label and a text value');
+      if (f.detail !== undefined && !text(f.detail)) bad(`fact "${f.label}": "detail" must be text when present`);
+    }
   }
   for (const sec of s.sections) {
+    if (!sec || typeof sec !== 'object') bad('every section must be an object');
     const t = sec.table;
-    if (!t) continue;
-    if (!t.caption?.trim() || !Array.isArray(t.columns) || t.columns.length < 2 || !Array.isArray(t.rows) || !t.rows.length) bad(`table in "${sec.heading}" needs a caption, 2 or more columns and rows`);
-    for (const r of t.rows) if (!Array.isArray(r) || r.length !== t.columns.length || r.some((c: unknown) => typeof c !== 'string' || !c.trim())) bad(`every row of the table in "${sec.heading}" needs ${t.columns.length} non-empty cells`);
+    if (t === undefined) continue;
+    const where = `the table in "${sec.heading}"`;
+    if (!text(t?.caption) || !Array.isArray(t.columns) || t.columns.length < 2 || !Array.isArray(t.rows) || !t.rows.length) bad(`${where} needs a caption, 2 or more columns and rows`);
+    // The first column heads each row, so only its header may be empty. The page gives it a hidden label.
+    if (t.columns.some((c: unknown, i: number) => typeof c !== 'string' || (i > 0 && !text(c)))) bad(`${where} needs a text header on every column but the first`);
+    for (const r of t.rows) if (!Array.isArray(r) || r.length !== t.columns.length || !r.every(text)) bad(`every row of ${where} needs ${t.columns.length} non-empty text cells`);
   }
   for (const sec of s.sections) for (const sh of sec.shots ?? []) {
     if (!sh.alt?.trim() || !sh.caption?.trim()) bad(`shot "${sh.file}" needs alt text and a caption`);

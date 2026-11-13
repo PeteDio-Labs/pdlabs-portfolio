@@ -291,24 +291,29 @@ test('every preloaded font is a file this site ships, from its own folder or the
   for (const f of hrefs) expect(existsSync(`public/fonts/${f}`) || existsSync(`node_modules/toonish-ui/dist/fonts/${f}`)).toBe(true);
 });
 
-test('a study with facts shows them as tiles, and every table has a caption, headers and equal rows', () => {
+test('a study with facts shows them as tiles, and every table has a caption, headers and rows', () => {
   const withFacts = studies.filter((s) => s.facts);
   const withTables = studies.flatMap((s) => s.sections.filter((x) => x.table).map((x) => ({ s, t: x.table! })));
   expect(withFacts.length).toBeGreaterThan(0);
   expect(withTables.length).toBeGreaterThan(0);
   for (const s of withFacts) {
     const html = study(s);
-    expect((html.match(/class="toon-stat"/g) ?? []).length).toBe(s.facts!.length);
-    for (const f of s.facts!) expect(html).toContain(esc(f.value));
+    const tiles = [...html.matchAll(/<div class="toon-stat"><span class="toon-stat-label">([^<]*)<\/span><span class="toon-stat-value">([^<]*)<\/span>/g)].map((m) => [m[1], m[2]]);
+    expect(tiles).toEqual(s.facts!.map((f) => [esc(f.label), esc(f.value)]));
   }
   for (const { s, t } of withTables) {
     const html = study(s);
-    expect(html).toContain(`<caption class="sr-only">${esc(t.caption)}</caption>`);
-    expect((html.match(/<th scope="col"/g) ?? []).length).toBeGreaterThanOrEqual(t.columns.length);
-    expect((html.match(/<th scope="row"/g) ?? []).length).toBeGreaterThanOrEqual(t.rows.length);
-    for (const r of t.rows) expect(r).toHaveLength(t.columns.length);
+    const at = html.indexOf(`<caption class="sr-only">${esc(t.caption)}</caption>`);
+    expect(at).toBeGreaterThan(-1);
+    const table = html.slice(at, html.indexOf('</table>', at));
+    expect((table.match(/<th scope="col">/g) ?? []).length).toBe(t.columns.length);
+    expect((table.match(/<th scope="row"/g) ?? []).length).toBe(t.rows.length);
+    expect((table.match(/<td>/g) ?? []).length).toBe(t.rows.length * (t.columns.length - 1));
+    if (!t.columns[0].trim()) expect(table).toContain('<th scope="col"><span class="sr-only">Item</span></th>');
   }
-  expect(study(studies.find((s) => !s.facts && !s.sections.some((x) => x.table))!)).not.toContain('toon-stats');
+  const plain = studies.find((s) => !s.facts && !s.sections.some((x) => x.table));
+  expect(plain).toBeDefined();
+  expect(study(plain!)).not.toContain('toon-stats');
 });
 
 test('the JSON API carries a study\'s facts and its section tables', async () => {
@@ -339,6 +344,16 @@ test('a malformed table or facts list fails the build with the file name', async
   const facts = await run({ facts: [{ label: 'one', value: '1' }] });
   expect(facts.code).not.toBe(0);
   expect(facts.err).toContain('2 to 4');
+  const many = await run({ facts: [1, 2, 3, 4, 5].map((n) => ({ label: `l${n}`, value: `${n}` })) });
+  expect(many.err).toContain('2 to 4');
+  const numeric = await run({ facts: [{ label: 'a', value: 1 }, { label: 'b', value: '2' }] });
+  expect(numeric.err).toContain('zz-bad.json');
+  const blankHead = await run({ sections: [{ heading: 'H', paragraphs: ['p'], table: { caption: 'c', columns: ['', '  '], rows: [['a', 'b']] } }] });
+  expect(blankHead.err).toContain('text header');
+  const noCaption = await run({ sections: [{ heading: 'H', paragraphs: ['p'], table: { caption: '', columns: ['a', 'b'], rows: [['a', 'b']] } }] });
+  expect(noCaption.err).toContain('caption');
+  const numCell = await run({ sections: [{ heading: 'H', paragraphs: ['p'], table: { caption: 'c', columns: ['a', 'b'], rows: [['a', 2]] } }] });
+  expect(numCell.err).toContain('non-empty text cells');
 });
 
 test('the kit page documents the data components with made-up figures', () => {

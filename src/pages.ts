@@ -10,7 +10,7 @@ const lettered = (id: string, text: string, accent: Accent, cls: string) =>
   `<h2 id="${id}" class="m-0 ${cls}">${letters(text, accent, { cls: 'text-display2' })}</h2>`;
 
 /** A table of words in the kit's paper panel. The first column heads each row. */
-const dataTable = (t: DataTable) => `<div class="toon-table-wrap my-s6"><table class="toon-table toon-table-text"><caption class="sr-only">${esc(t.caption)}</caption><thead><tr>${t.columns.map((c) => (c ? `<th scope="col">${esc(c)}</th>` : '<td></td>').replace('<td></td>', '<th scope="col"><span class="sr-only">Item</span></th>')).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th scope="row" class="font-bold">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
+const dataTable = (t: DataTable) => `<div class="toon-table-wrap my-s6"><table class="toon-table toon-table-text"><caption class="sr-only">${esc(t.caption)}</caption><thead><tr>${t.columns.map((c) => `<th scope="col">${c.trim() ? esc(c) : '<span class="sr-only">Item</span>'}</th>`).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th scope="row" class="font-bold">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
 
 const nav = (current: string, path: string) => {
   const items: [string, string, string?][] = [
