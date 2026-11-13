@@ -1,11 +1,13 @@
-// Shared colors and shapes for the illustrations. Colors are the toonish tokens.
+// Shared colors and shapes for the illustrations. Colors come from the toonish kit.
+import { HEX } from 'toonish-ui/markup';
+
 export const INK = '#0a0a1f';
-export const PAPER = '#fff6dc';
+export const PAPER = '#f3efe6';
 export const GROUND = '#0c1240';
-export const BLUE = '#3d7bff';
-export const RED = '#ff3d3d';
-export const YEL = '#ffd60a';
-export const VIO = '#9b7bff';
+export const BLUE = HEX.blue;
+export const RED = HEX.red;
+export const YEL = HEX.yellow;
+export const VIO = HEX.violet;
 
 /** A panel with a hard offset shadow, the kit's basic shape. */
 export const box = (x: number, y: number, w: number, h: number, fill: string, shadow = '', extra = '') =>
