@@ -40,8 +40,8 @@ Paper on the ground measures 15.6:1. Ink on the darkest fill (blue) measures 5.1
 
 | Role | Font | License |
 |---|---|---|
-| Body | Cabinet Grotesk | ITF Free Font License |
-| Headings, figures | Clash Display | ITF Free Font License |
+| Body, headings, figures | IBM Plex Sans | SIL OFL 1.1 |
+| Badges, chips, labels | IBM Plex Mono | SIL OFL 1.1 |
 | Logo, hero | Bangers | SIL OFL 1.1 |
 
 Sizes follow the PeteDio house scale: 11, 12, 13, 15, 17, 20, 22 and 28px, plus three fluid display

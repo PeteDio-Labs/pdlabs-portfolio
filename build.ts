@@ -63,13 +63,9 @@ await Bun.write(`${out}/apple-touch-icon.png`, Bun.file('public/apple-touch-icon
 // Self-hosted fonts from the toonish-ui package, so no request leaves for Google. The package's CSS names them as ./fonts/...
 const fontDir = 'node_modules/toonish-ui/dist/fonts';
 const fontFiles = [...new Bun.Glob('*.woff2').scanSync({ cwd: fontDir })];
-if (fontFiles.length < 5) throw new Error(`expected 5 font files in ${fontDir}, found ${fontFiles.length}`);
+if (fontFiles.length < 4) throw new Error(`expected 4 font files in ${fontDir}, found ${fontFiles.length}`);
 for (const f of fontFiles) await Bun.write(`${out}/fonts/${f}`, Bun.file(`${fontDir}/${f}`));
-// This site's own fonts: Fontshare's WOFF2 files, copied as they are. The license forbids subsetting or converting them.
-const siteFonts = [...new Bun.Glob('*.woff2').scanSync({ cwd: 'public/fonts' })];
-if (siteFonts.length !== 4) throw new Error(`expected 4 font files in public/fonts, found ${siteFonts.length}`);
-for (const f of siteFonts) await Bun.write(`${out}/fonts/${f}`, Bun.file(`public/fonts/${f}`));
-console.log(`copied ${fontFiles.length} kit font(s) and ${siteFonts.length} site font(s)`);
+console.log(`copied ${fontFiles.length} kit font(s)`);
 // The kit's behaviour script (modals, toggle groups, scroll reveal), copied from the package so the CSP needs only 'self'.
 await Bun.write(`${out}/toonish.js`, Bun.file('node_modules/toonish-ui/dist/toonish.js'));
 await Bun.write(`${out}/site.webmanifest`, JSON.stringify({
@@ -86,21 +82,8 @@ if (tw.exitCode !== 0) {
   throw new Error(`tailwindcss exited ${tw.exitCode}`);
 }
 
-// Font faces for the site's own fonts, appended to the compiled kit CSS. Semibold also answers a request for bold, so
-// the browser never draws a synthetic bold. Clash Display has a narrow space, so flat display type gets wider word gaps.
-const face = (family: string, weight: string, file: string) =>
-  `@font-face{font-family:"${family}";font-style:normal;font-weight:${weight};font-display:swap;src:url(./fonts/${file}.woff2) format("woff2")}`;
-const siteCss = [
-  face('Clash Display', '500', 'clash-display-500'),
-  face('Clash Display', '600 700', 'clash-display-600'),
-  face('Cabinet Grotesk', '400', 'cabinet-grotesk-400'),
-  face('Cabinet Grotesk', '700', 'cabinet-grotesk-700'),
-  '.toon-type:not(.toon-type-comic){word-spacing:.2em;letter-spacing:-.01em}',
-].join('');
-await Bun.write(`${out}/toonish.css`, (await Bun.file(`${out}/toonish.css`).text()) + siteCss + '\n');
-
 const css = await Bun.file(`${out}/toonish.css`).text();
-if (!css.includes('font-family:"Clash Display"') || !css.includes('Cabinet Grotesk')) throw new Error('toonish.css does not name the site fonts');
+if (!css.includes('font-family:IBM Plex Sans') || !css.includes('font-family:IBM Plex Mono')) throw new Error('toonish.css does not name the kit fonts');
 if (!css.includes('.toon-btn')) throw new Error('toonish.css has no components: the Tailwind content globs matched nothing');
 
 console.log(`built ${Object.keys(pages).length} pages and toonish.css (${css.length} bytes) into ${out}/`);

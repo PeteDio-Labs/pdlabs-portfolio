@@ -60,8 +60,8 @@ ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ?
 <link rel="manifest" href="/site.webmanifest">
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/fonts/clash-display-600.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/cabinet-grotesk-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/toonish.css">
 <script src="/motion.js"></script>
 </head>
@@ -134,10 +134,10 @@ export function home(): string {
             <circle cx="22" cy="17" r="7" fill="#f2706a"/><circle cx="44" cy="17" r="7" fill="#f2c94c"/><circle cx="66" cy="17" r="7" fill="#5f8dff"/>
             <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15">
               <text x="18" y="70" fill="#5f8dff">$ terraform plan</text>
-              <text x="18" y="96" fill="#f3efe6">No changes. Your infrastructure</text>
-              <text x="18" y="116" fill="#f3efe6">matches the configuration.</text>
+              <text x="18" y="96" fill="#eceff3">No changes. Your infrastructure</text>
+              <text x="18" y="116" fill="#eceff3">matches the configuration.</text>
               <text x="18" y="152" fill="#f2c94c">$ gh pr merge --squash</text>
-              <text x="18" y="178" fill="#f3efe6">Merged after CI and review.</text>
+              <text x="18" y="178" fill="#eceff3">Merged after CI and review.</text>
               <text x="18" y="212" fill="#f2706a" class="toon-blink">$ _</text>
             </g>
           </svg>
@@ -385,7 +385,7 @@ export function kit(): string {
     </section>
 
     <section class="py-s6" aria-labelledby="k-let"><h2 id="k-let" class="toon-heading mb-s6 text-display2">Display type</h2>
-      <p class="mb-s6 max-w-[60ch]">Headings and figures are set in Clash Display, a heavy sans, in the accent colour. <code>toon-type-comic</code> switches to Bangers with an ink outline and a short shadow in the paired colour, for the logo and the hero, and tilts every other letter a little. <code>toon-type-flat</code> sets them straight.</p>
+      <p class="mb-s6 max-w-[60ch]">Headings and figures are set in IBM Plex Sans bold, in the accent colour. Badges, chips and labels use IBM Plex Mono. <code>toon-type-comic</code> switches to Bangers with an ink outline and a short shadow in the paired colour, for the logo and the hero, and tilts every other letter a little. <code>toon-type-flat</code> sets them straight.</p>
       <div class="grid gap-s3 text-display2 leading-none">
         <div>${letters('ABCDEFGHIJKLM', 'blue', { live: true })}</div>
         <div>${letters('NOPQRSTUVWXYZ', 'yellow')}</div>
@@ -409,7 +409,7 @@ export function kit(): string {
         { label: 'Tue', sub: '10', current: true, segments: [{ value: 4, tone: 'blue', label: 'Web' }, { value: 2, tone: 'red', label: 'Phone' }] },
         { label: 'Wed', sub: '11', segments: [{ value: 2, tone: 'red', label: 'Phone' }] },
         { label: 'Thu', sub: '12', segments: [] }] })}
-        <ul class="toon-bars-key mt-s4"><li><i></i>Web</li><li><i style="--toon-dot:#f2706a"></i>Phone</li><li><i style="background:repeating-linear-gradient(135deg,#0a0a1f 0 2px,#f3efe6 2px 6px)"></i>Returned</li></ul></div>
+        <ul class="toon-bars-key mt-s4"><li><i></i>Web</li><li><i style="--toon-dot:#f2706a"></i>Phone</li><li><i style="background:repeating-linear-gradient(135deg,#0a0a1f 0 2px,#eceff3 2px 6px)"></i>Returned</li></ul></div>
       <div class="toon-table-wrap mt-s8"><table class="toon-table"><caption class="sr-only">Sample orders by channel</caption><thead><tr><th scope="col">Day</th><th scope="col">Web</th><th scope="col">Phone</th><th scope="col">Returned</th></tr></thead><tbody><tr><td>Mon</td><td>3</td><td>0</td><td>1</td></tr><tr aria-current="date"><td>Tue</td><td>4</td><td>2</td><td>0</td></tr><tr><td>Wed</td><td>0</td><td>2</td><td>0</td></tr><tr><td>Thu</td><td>0</td><td>0</td><td>0</td></tr></tbody><tfoot><tr><td>Total</td><td>7</td><td>4</td><td>1</td></tr></tfoot></table></div>
       <p class="mt-s4 max-w-[60ch]">Add <code>toon-table-text</code> for cells that hold words, as the case studies do.</p>
     </section>
@@ -418,7 +418,7 @@ export function kit(): string {
       <div class="grid grid-cols-3 gap-s3 sm:grid-cols-5 lg:grid-cols-10">
         ${swatch('ground', 'bg-toon-ground', 'text-toon-paper')}${swatch('blue', 'bg-toon-blue')}${swatch('red', 'bg-toon-red')}${swatch('yellow', 'bg-toon-yellow')}${swatch('violet', 'bg-toon-violet')}${swatch('paper', 'bg-toon-paper')}${swatch('muted', 'bg-toon-muted', 'text-toon-paper')}${swatch('mist', 'bg-toon-mist')}${swatch('rule', 'bg-toon-rule')}
       </div>
-      <p class="mt-s4 max-w-[60ch]">Text on every fill is ink, at 5.1:1 or better. Paper text on the ground is 15.6:1. <code>muted</code> is secondary text on paper, <code>mist</code> is secondary text on the ground and the quiet fill for a closed state, and <code>rule</code> draws grid lines on paper.</p>
+      <p class="mt-s4 max-w-[60ch]">Text on every fill is ink, at 5.1:1 or better. Paper text on the ground is 15.5:1. <code>muted</code> is secondary text on paper, <code>mist</code> is secondary text on the ground and the quiet fill for a closed state, and <code>rule</code> draws grid lines on paper.</p>
     </section>`;
   return layout({ title: 'toonish-ui', path: '/ui.html', current: 'UI kit', noindex: true, description: 'toonish-ui, the original cartoon component kit behind this site.', body });
 }
