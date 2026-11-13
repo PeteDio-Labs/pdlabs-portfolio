@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
 import { esc } from './html.ts';
-import { LOST, bySlug, home, isResultHeading, kit, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
+import { LOST, LOST_LOOKS, bySlug, home, isResultHeading, kit, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
 
@@ -603,12 +603,17 @@ test('every study ends with a pager to the previous and the next study, by title
   });
 });
 
-test('the 404 card holds every line, shows only the first with scripts off, and links home', () => {
+test('the 404 card holds every line in one of four looks, shows only the first with scripts off, and links home', () => {
   const page = notFound();
-  const lines = [...page.matchAll(/<div class="[^"]*" data-lost-line( hidden)?>/g)];
+  const lines = [...page.matchAll(/<div data-lost-line data-lost-look="([a-z]+)"( hidden)?>/g)];
   expect(LOST.length).toBeGreaterThanOrEqual(6);
   expect(lines.length).toBe(LOST.length);
-  expect(lines.map((m) => Boolean(m[1]))).toEqual(LOST.map((_, i) => i > 0));
+  expect(lines.map((m) => Boolean(m[2]))).toEqual(LOST.map((_, i) => i > 0));
+  // Every look is used, and each the same number of times, so a random line gives a random look.
+  const uses = LOST_LOOKS.map((k) => lines.filter((m) => m[1] === k).length);
+  expect(LOST_LOOKS.length).toBe(4);
+  expect(new Set(uses).size).toBe(1);
+  expect(uses[0]).toBeGreaterThan(0);
   for (const l of LOST) {
     expect(l.word).toMatch(/^[A-Z0-9!?]+$/);
     expect(page).toContain(esc(l.line));
