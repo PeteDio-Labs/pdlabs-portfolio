@@ -41,7 +41,7 @@ cut over. The repository holds everything else: `content/studies/` is the data, 
 ## Deploy key and merge gate
 
 - **Deploy key.** The account's service control policy denies the GitHub OIDC provider
-  (`PET-816`), so the deploy uses the access key of `deploy-user`, held in the
+  (`PET-816`), so the deploy uses the access key of the deploy IAM user, held in the
   `production` environment secrets. Rotate it every 90 days with
   `petedio-iac/scripts/portfolio-deploy-key.sh`, and keep the user's policy to one bucket and
   one distribution.

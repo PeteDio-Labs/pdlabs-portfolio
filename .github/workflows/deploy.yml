@@ -25,6 +25,8 @@ jobs:
       AWS_DEFAULT_REGION: us-east-2
       BUCKET: ${{ vars.BUCKET }}
       DISTRIBUTION_ID: ${{ vars.DISTRIBUTION_ID }}
+      # The expected ARN of the deploy IAM user, kept in a repository variable so the account ID stays out of the repo.
+      DEPLOY_IDENTITY_ARN: ${{ vars.DEPLOY_IDENTITY_ARN }}
     steps:
       # An empty value would surface as an opaque AWS error, or as a sync to nowhere.
       - name: Require deploy variables and secrets
@@ -32,7 +34,7 @@ jobs:
           HAS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
           HAS_KEY_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY != '' }}
         run: |
-          for v in BUCKET DISTRIBUTION_ID; do
+          for v in BUCKET DISTRIBUTION_ID DEPLOY_IDENTITY_ARN; do
             [ -n "${!v}" ] || { echo "::error::repository variable $v is empty"; exit 1; }
           done
           [ "$HAS_KEY_ID" = true ] && [ "$HAS_KEY_SECRET" = true ] || { echo "::error::the production environment secrets AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are not both set"; exit 1; }
@@ -67,10 +69,7 @@ jobs:
         run: |
           arn=$(aws sts get-caller-identity --query Arn --output text)
           echo "$arn"
-          case "$arn" in
-            arn:aws:iam::000000000000:user/deploy-user) ;;
-            *) echo "::error::the deploy key is not deploy-user in account 000000000000"; exit 1 ;;
-          esac
+          [ "$arn" = "$DEPLOY_IDENTITY_ARN" ] || { echo "::error::the deploy key is not the identity named in the DEPLOY_IDENTITY_ARN variable"; exit 1; }
 
       - name: Sync to S3
         env:
