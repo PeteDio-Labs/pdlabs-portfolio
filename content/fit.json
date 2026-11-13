@@ -11,5 +11,6 @@
   "how-this-site-is-built": "This is production hosting done carefully: a private bucket, a tested security policy, Terraform and a deploy that checks the live site before it reports success. It fits platform, cloud and AI automation roles that ship and run real services.",
   "sql-reporting-sample": "This is SQL for measuring a process change: medians and tails, mix-shift checks, rework and a zero-row data-quality query. It fits analyst, operations and AI-operations roles that ask for SQL.",
   "ai-adoption-playbook": "This is how I would roll an AI workflow out to a team: intake, limits, a pilot with a control, champions and a go or no-go gate with numbers. It fits implementation, enablement, operations and program roles.",
-  "media-assistant-discovery-to-demo": "This is the work before and around the build: discovery from real questions, scope decisions, a demo script and an acceptance checklist. It fits implementation, solutions, business-analyst and program roles."
+  "media-assistant-discovery-to-demo": "This is the work before and around the build: discovery from real questions, scope decisions, a demo script and an acceptance checklist. It fits implementation, solutions, business-analyst and program roles.",
+  "toonish-ui-design-system": "This is a design system built the way a platform team builds one: tokens as the single source, generated outputs, tests for contrast and overflow, and a release process. It fits front-end platform, design-systems and AI-assisted product engineering roles."
 }
