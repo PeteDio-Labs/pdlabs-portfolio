@@ -11,15 +11,14 @@ export function hybridDiagram(): string {
 ${box(46, 62, 206, 196, BLUE, YEL)}<g fill="${PAPER}"><rect x="64" y="82" width="170" height="40"/><rect x="64" y="134" width="170" height="40"/><rect x="64" y="186" width="170" height="40"/></g>
 <g stroke="none">${circ(82, 102, 6, BLUE)}${circ(102, 102, 6, RED)}${circ(82, 154, 6, BLUE)}${circ(102, 154, 6, YEL)}${circ(82, 206, 6, BLUE)}${circ(102, 206, 6, VIO)}</g>
 <path d="${cloud}" fill="${RED}" transform="translate(8 8)" stroke="none"/><path d="${cloud}" fill="${PAPER}"/>
-<rect x="500" y="204" width="60" height="44" fill="${VIO}"/><rect x="574" y="204" width="96" height="44" fill="${YEL}"/>
+<rect x="500" y="204" width="60" height="44" fill="${VIO}"/><rect x="568" y="204" width="106" height="44" fill="${YEL}"/>
 <path d="M270 150h130v-24l50 40l-50 40v-24H270z" fill="${YEL}"/></g>
-<g class="s" font-size="15" fill="${INK}"><text x="130" y="108">pve01</text><text x="130" y="160">pve02</text><text x="130" y="212">pve03</text></g>
-<g class="s" font-size="14" fill="${INK}" text-anchor="middle"><text x="530" y="232">S3</text><text x="622" y="232">CloudFront</text></g>
+<g class="s" font-size="22" fill="${INK}"><text x="124" y="110">pve01</text><text x="124" y="162">pve02</text><text x="124" y="214">pve03</text></g>
+<g class="s" font-size="17" fill="${INK}" text-anchor="middle"><text x="530" y="232">S3</text><text x="621" y="232">CloudFront</text></g>
 <text class="t" x="50" y="44" font-size="32" fill="${YEL}" stroke="${INK}" stroke-width="6" paint-order="stroke">THE LAB</text>
 <text class="t" x="560" y="44" font-size="32" fill="${RED}" stroke="${INK}" stroke-width="6" paint-order="stroke">THE CLOUD</text>
 <text class="t" x="520" y="164" font-size="38" fill="${INK}" text-anchor="middle">AWS</text>
-<text class="t" x="338" y="170" font-size="22" fill="${INK}" text-anchor="middle">GITOPS</text>
-<text class="s" x="355" y="226" font-size="13" fill="${PAPER}" text-anchor="middle">Terraform + Ansible</text>
-<text class="s" x="355" y="244" font-size="13" fill="${PAPER}" text-anchor="middle">same code, swap the provider</text>
+<text class="t" x="338" y="171" font-size="26" fill="${INK}" text-anchor="middle">GITOPS</text>
+<g class="s" font-size="19" fill="${PAPER}" text-anchor="middle"><text x="360" y="224">Terraform + Ansible</text><text x="360" y="248">same code,</text><text x="360" y="272">swap the provider</text></g>
 </svg>`;
 }

@@ -145,7 +145,7 @@ export function home(): string {
 
     <section class="py-s8" aria-label="How the lab and the cloud fit together">
       <figure class="toon-frame relative m-0 mx-auto max-w-3xl bg-toon-ground">
-        <span class="toon-caption absolute bottom-s3 right-s3 top-auto">Hybrid by design</span>
+        <span class="toon-caption m-s3 inline-block">Hybrid by design</span>
         ${hybridDiagram()}
       </figure>
     </section>
