@@ -453,6 +453,14 @@ test('the home page has four sound effects, all hidden from readers, all shown o
   expect(html).not.toMatch(/class="toon-sfx[^"]*\bhidden\b/);
 });
 
+test('the hybrid diagram sits in a window like the hero terminal: a title bar with three dots, hidden from readers', () => {
+  const html = home();
+  const win = html.slice(html.indexOf('data-home="window"'), html.indexOf('Hybrid by design'));
+  expect(win).toContain('bg-toon-violet');
+  expect(win).toContain('aria-hidden="true"');
+  expect(win.match(/rounded-full/g)).toHaveLength(3);
+});
+
 test('the home row is a deck of the three newest studies that are not featured, and it has no sideways scroller', () => {
   const html = home();
   const at = html.indexOf('class="toon-deck"');
