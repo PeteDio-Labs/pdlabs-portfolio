@@ -1,0 +1,95 @@
+# Keep the `staging` branch current with `main`.
+#
+# Case studies and other changes land on `main` directly. UI work goes through `staging` and
+# reaches `main` by pull request. Without this sync, `staging` would build without the changes
+# that landed on `main`, so the preview would drift from what production serves.
+#
+# On every push to `main`, merge `main` into `staging` with a merge commit (no rebase, no force).
+# The merge keeps staging's own `.github` directory, because the workflow token cannot push
+# changes to workflow files. When the merge conflicts elsewhere, open a pull request from `main`
+# into `staging` as a flag, and fail this run so the problem shows as a red check.
+#
+# The push uses GITHUB_TOKEN, so it starts no workflow. The staging site builds the branch by
+# polling it, not from a push event.
+#
+# Every run prints what it examined: the `main` commit, the `staging` commit before and after.
+name: sync-staging
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-staging
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Merge main into staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if ! git ls-remote --exit-code --heads origin staging >/dev/null; then
+            echo "::error title=sync-staging::origin has no staging branch, so there is nothing to sync."
+            exit 1
+          fi
+          git fetch origin main staging
+          main_sha=$(git rev-parse origin/main)
+          before=$(git rev-parse origin/staging)
+
+          if git merge-base --is-ancestor "$main_sha" "$before"; then
+            echo "staging ($before) already contains main ($main_sha). Nothing to merge."
+            exit 0
+          fi
+
+          git checkout -q -B staging origin/staging
+          # GITHUB_TOKEN cannot push a commit that changes .github/workflows, so the merge keeps
+          # staging's own .github directory. Workflows run from main, and the staging branch needs none.
+          merged=0
+          if git merge --no-commit --no-ff "$main_sha" >/dev/null 2>&1; then
+            merged=1
+          else
+            # A conflict only inside .github is resolved the same way, by keeping staging's side.
+            other=$(git diff --name-only --diff-filter=U | grep -v '^\.github/' || true)
+            if [ -z "$other" ] && git rev-parse -q --verify MERGE_HEAD >/dev/null; then merged=1; fi
+          fi
+          if [ "$merged" = 1 ]; then
+            git rm -rfq --cached .github 2>/dev/null || true
+            rm -rf .github
+            git checkout origin/staging -- .github
+            git commit -q -m "Merge main into staging"
+            git push origin staging
+            after=$(git rev-parse HEAD)
+            echo "Merged main ($main_sha) into staging, keeping staging's .github: $before -> $after."
+            exit 0
+          fi
+
+          git merge --abort || true
+          echo "::warning title=sync-staging::main ($main_sha) conflicts with staging ($before)."
+          existing=$(gh pr list --base staging --head main --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "A pull request from main into staging is already open: #$existing."
+          else
+            gh pr create --base staging --head main \
+              --title "Resolve main into staging conflict" \
+              --body "The automatic sync could not merge \`main\` ($main_sha) into \`staging\` ($before). Resolve it locally: merge \`origin/main\` into \`staging\` and push \`staging\`. Do not use the web conflict editor, which would commit to \`main\`. Close this pull request afterwards. Until then, the staging site does not include the latest \`main\`."
+          fi
+          echo "::error title=sync-staging::main could not be merged into staging. A pull request is open for it."
+          exit 1
