@@ -208,7 +208,7 @@ export function home(): string {
       ${kicker('02', 'The method')}
       ${lettered('how-h', 'How I work', 'blue', 'mb-s6 mt-s4 max-w-sm')}
       <div class="relative">
-      ${sfx('CLICK!', 'yellow', { size: 'sm', cls: 'absolute -top-s8 right-s2 z-10 md:-top-s6 md:right-s6' })}
+      ${sfx('CLICK!', 'yellow', { size: 'sm', corner: true })}
       ${steps(
         [
           { title: 'One task, one session, one branch.', body: 'I treat AI agents like a team, not a tool. Each task gets its own session and its own branch.' },
@@ -220,7 +220,7 @@ export function home(): string {
       </div>
       <div class="mt-s8 grid items-start gap-s8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <figure class="relative m-0 min-w-0">
-          ${sfx('DEPLOY!', 'violet', { size: 'sm', cls: 'absolute -top-s6 right-s3 z-10 md:text-[2.5rem]' })}
+          ${sfx('DEPLOY!', 'violet', { size: 'sm', corner: true, cls: 'md:text-[2.5rem]' })}
           <div class="toon-frame relative bg-toon-ground">
             <span class="toon-caption m-s3 inline-block">Hybrid by design</span>
             <div class="sm:hidden">${hybridDiagramTall()}</div>
@@ -399,7 +399,7 @@ export function study(s: CaseStudy): string {
     const shots = sec.shots ?? [];
     return `
         <section id="${ids[k]}" class="scroll-mt-s8 min-w-0 md:grid md:grid-cols-[3.5rem_minmax(0,1fr)] md:gap-x-s6${panel ? ' relative toon-panel' : ''}"${panel ? ` style="--toon-shadow:${HEX[s.accent]}"` : ''}>${panel ? `
-          ${sfx('SHIP!', 'red', { size: 'sm', cls: 'absolute -top-s5 right-s4 z-10 md:text-[2.5rem]' })}` : ''}
+          ${sfx('SHIP!', 'red', { size: 'sm', corner: true, cls: 'md:text-[2.5rem]' })}` : ''}
           <div class="toon-kicker mb-s3 max-w-[7rem] md:mb-0 md:max-w-none md:self-start md:pt-s2"><span class="toon-kicker-num">${partNo(k)}</span><span class="toon-kicker-rule md:hidden" aria-hidden="true"></span></div>
           <div class="min-w-0 md:col-start-2 md:max-w-[68ch]">
             <h2 class="mb-s4 mt-0 font-display text-title1 font-normal${panel ? ' text-toon-ink' : ''}"${panel ? '' : ` style="color:${HEX[s.accent]}"`}>${esc(sec.heading)}</h2>
@@ -563,7 +563,7 @@ export function kit(): string {
       <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-pager</code> is a pair of previous and next links in the shape of the deck's switcher. The title under each direction says where the link goes.</p>
       ${pager({ label: 'Sample pages', prev: { href: '/ui.html', title: 'A sample page before this one' }, next: { href: '/ui.html', title: 'A sample page after this one, with a longer title that is cut at two lines' } })}
       <h3 class="mb-s3 mt-s8 text-title2 font-bold">Sound effects</h3>
-      <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-sfx</code> is a sound-effect word in the comic face. Each letter has its own turn, rise and size, set from its index by the <code>sfx()</code> helper, and drifts in turn. It is decoration: the helper hides it from readers and it takes no pointer. You position it, usually <code>absolute</code> in a <code>relative</code> parent. <code>toon-sfx-sm</code>, <code>toon-sfx-lg</code> and <code>toon-sfx-ghost</code> change the size or make it an outline for sitting behind content. Latin letters only.</p>
+      <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-sfx</code> is a sound-effect word in the comic face. Each letter has its own turn, rise and size, set from its index by the <code>sfx()</code> helper, and drifts in turn. It is decoration: the helper hides it from readers and it takes no pointer. You position it, usually <code>absolute</code> in a <code>relative</code> parent. <code>toon-sfx-sm</code>, <code>toon-sfx-lg</code> and <code>toon-sfx-ghost</code> change the size or make it an outline for sitting behind content. <code>toon-sfx-corner</code> pins the word to the top right corner of a <code>relative</code> parent at every width. Latin letters only.</p>
       <div class="relative flex min-h-[9rem] flex-wrap items-center gap-x-s8 gap-y-s6 pl-s2">${sfx('POW!', 'red')}${sfx('click', 'yellow', { size: 'sm' })}${sfx('WHAM', 'violet', { size: 'lg' })}${sfx('SHIP!', 'blue', { size: 'lg', ghost: true })}</div>
     </section>
 
