@@ -6,7 +6,7 @@
   "accent": "red",
   "summary": "How a vague complaint became a scoped, read-first assistant: who asked, what they asked, what I left out, the demo script and the acceptance checklist I tested it against.",
   "stat": {
-    "value": "57 of 57",
+    "value": "57/57",
     "label": "fixed questions routed to the expected tool by a keyword router that calls no model, checked offline in CI"
   },
   "sections": [
@@ -47,7 +47,6 @@
           "alt": "A Discord direct message. The owner asks whether the library has Night of the Living Dead. The bot, Lab-Agent, answers that it does not, and the footer says it read the library tool.",
           "width": 1840,
           "height": 360,
-          "badge": "Real",
           "caption": "Step 1: a library question. The answer is no, and the footer names the tool it read.",
           "transcript": "Owner: Do we have Night of the Living Dead?\nLab-Agent: We don't have \"Night of the Living Dead\" in the library.\nread: library"
         },
@@ -56,7 +55,6 @@
           "alt": "A Discord direct message. The owner asks for the server status. The bot answers that Plex is active with one session, with the viewer and the title blurred, and the footer says it read the now-playing tool.",
           "width": 1840,
           "height": 360,
-          "badge": "Real",
           "caption": "Step 2: server status. The viewer's name and the title are blurred.",
           "transcript": "Owner: What's the server status?\nLab-Agent: Plex is active with 1 session: [Plex user] is watching \"[title]\".\nread: now_playing"
         },
@@ -65,7 +63,6 @@
           "alt": "A Discord direct message. The owner asks the bot to search for missing subtitles for a blurred title. The bot proposes the action, then reports that it is running, then reports that Bazarr accepted the search with HTTP 204. The title is blurred in every line.",
           "width": 1840,
           "height": 740,
-          "badge": "Real",
           "caption": "Step 3: a write, after a confirmation. The owner tapped Confirm, so the buttons are gone. The result says Bazarr accepted the search, not that a subtitle arrived. I did not check for one.",
           "transcript": "Owner: Search for missing subtitles for [title]\nLab-Agent: Confirm to search for subtitles for \"[title]\".\nread: propose_action\n(The owner taps Confirm.)\nLab-Agent: Running: Search subtitles for [title] (0 missing) (edited)\nLab-Agent: Bazarr accepted the search (HTTP 204). It runs in Bazarr's task queue; new subtitles land beside the media and Bazarr refreshes Plex after each one."
         },
@@ -74,7 +71,6 @@
           "alt": "A Discord direct message. The owner asks what the weather is. The bot answers that it cannot check the weather and offers to help with something else. The footer says it read no tool.",
           "width": 1840,
           "height": 350,
-          "badge": "Real",
           "caption": "Step 4: an off-topic question. The bot declines and reads no tool. This shows what it does when no tool fits, not a refusal of the owner.",
           "transcript": "Owner: What's the weather?\nLab-Agent: I cannot check the weather. Would you like me to help with something else?\nread: none"
         }
