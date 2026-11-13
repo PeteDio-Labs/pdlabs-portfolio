@@ -1,0 +1,60 @@
+{
+  "slug": "how-this-site-is-built",
+  "date": "2026-11-13",
+  "title": "How this site is built and deployed: a private bucket, a strict policy and a deploy that checks itself",
+  "tag": "Infrastructure",
+  "accent": "blue",
+  "summary": "pdlab.dev is static files in a private S3 bucket behind CloudFront, declared in Terraform and shipped by a workflow that fails unless every page answers 200 afterward.",
+  "stat": {
+    "value": "0",
+    "label": "inline scripts on any page, enforced by a test so the content security policy can stay strict"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "A portfolio for platform and automation roles should be hosted the way I would host a real service. It should cost almost nothing, expose as little as possible, and tell me when a deploy did not do what it claimed. It also had to run on AWS, because I wanted the practice and I had credit to spend."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "The site is a folder of static HTML. A Bun build script reads one JSON file per case study and writes every page, so the deployed site has no server, database or runtime fetch. The files go to a private S3 bucket with public access blocked and server-side encryption on. Only CloudFront reads the bucket, through an origin access control, and the bucket policy names the one distribution that may do so.",
+        "Terraform declares the rest in a module in my infrastructure repository: the distribution, an ACM certificate, a small CloudFront function that turns `/work` into `/work.html`, and a response headers policy. The policy sets a content security policy that allows scripts only from the site itself and the analytics host, forms from nowhere, and framing by no one. It also sets two-year HSTS with preload, no MIME sniffing, a strict referrer policy and a locked-down permissions policy. The distribution forces HTTPS, requires TLS 1.2 or later, speaks HTTP/2 and HTTP/3, and uses the cheapest price class. A missing page returns a real 404 with my own error page.",
+        "A test keeps that policy honest. The policy has no hash or nonce for inline scripts, so a test fails the build if any page gains one. Other tests read the built HTML for one `h1` per page, Open Graph tags, no cookies or web storage beyond a motion setting, no fonts loaded from a third party, a sitemap and an `llms.txt` that name every study, and the hiring call to action at the end of each study.",
+        "The deploy workflow runs on every push to `main`. It typechecks, tests and builds, then confirms the AWS key belongs to the deploy-only user before it syncs anything. It refuses to run `--delete` against an empty build. It invalidates the whole distribution and waits for the invalidation to finish. Then it requests the home page, the study list and every study the build wrote, retries transient errors, and fails on any answer but 200."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "I planned to deploy with short-lived GitHub OIDC credentials, so no AWS key would exist. The AWS account sits under an organization policy that denies creating the OIDC provider, and I could not change that. The module now supports both paths. The site uses a deploy-only IAM user whose policy covers one bucket and one distribution, with the key stored in a protected `production` environment and passed to the AWS steps only, never to install or build. Terraform creates the user but never its key, so no secret reaches state. A static key is weaker than OIDC, and I document it as a known trade-off.",
+        "The first deploy workflow reported success after uploading files. That proved the upload, not that visitors got pages, and I have been burned by that shape of green check before. The live URL check came after that. It exists because a sync and an invalidation can both succeed while a page is missing."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "Pushing to `main` builds, tests, deploys and checks the live site with no hand step. The hosting plan expects a site this size to cost cents a month, though I have not yet confirmed the figure in Cost Explorer. The module's README records why each distribution setting was chosen to stay eligible for CloudFront's free options. The exit plan in the repository covers what to do when the credit ends in April 2027.",
+        "The limits are real. The header values come from the Terraform, and the tests cannot see them, because CloudFront sets them. I have not captured a live response for this write-up. Nothing watches the site between deploys, so a certificate or DNS fault would go unseen until the next one. The Terraform is applied by hand from a trusted machine, not by CI."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Put the check where the claim is made. A deploy should end by asking the live site whether it worked, and a security policy should have a test that fails when the code stops matching it."
+      ]
+    }
+  ],
+  "skills": [
+    "AWS: S3, CloudFront, ACM, IAM",
+    "Terraform",
+    "CI/CD design",
+    "Web security headers"
+  ],
+  "sources": [
+    "pdlabs-portfolio: .github/workflows/deploy.yml, .github/workflows/ci.yml, src/site.test.ts, build.ts, docs/hosting-and-exit-plan.md",
+    "petedio-iac: modules/portfolio-site (cloudfront.tf, headers.tf, s3.tf, iam.tf, README.md) and environments/portfolio",
+    "Portfolio production audit, 2026-11-13"
+  ]
+}
