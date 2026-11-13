@@ -418,7 +418,7 @@ export function kit(): string {
       <div class="grid grid-cols-3 gap-s3 sm:grid-cols-5 lg:grid-cols-10">
         ${swatch('ground', 'bg-toon-ground', 'text-toon-paper')}${swatch('blue', 'bg-toon-blue')}${swatch('red', 'bg-toon-red')}${swatch('yellow', 'bg-toon-yellow')}${swatch('violet', 'bg-toon-violet')}${swatch('paper', 'bg-toon-paper')}${swatch('muted', 'bg-toon-muted', 'text-toon-paper')}${swatch('mist', 'bg-toon-mist')}${swatch('rule', 'bg-toon-rule')}
       </div>
-      <p class="mt-s4 max-w-[60ch]">Text on every fill is ink, at 5.1:1 or better. Paper text on the ground is 15.6:1. <code>muted</code> is secondary text on paper, <code>mist</code> is secondary text on the ground and the quiet fill for a closed state, and <code>rule</code> draws grid lines on paper.</p>
+      <p class="mt-s4 max-w-[60ch]">Text on every fill is ink, at 5.1:1 or better. Paper text on the ground is 15.5:1. <code>muted</code> is secondary text on paper, <code>mist</code> is secondary text on the ground and the quiet fill for a closed state, and <code>rule</code> draws grid lines on paper.</p>
     </section>`;
   return layout({ title: 'toonish-ui', path: '/ui.html', current: 'UI kit', noindex: true, description: 'toonish-ui, the original cartoon component kit behind this site.', body });
 }
