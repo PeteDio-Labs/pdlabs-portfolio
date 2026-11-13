@@ -1,5 +1,5 @@
 import { esc, md } from './html.ts';
-import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure } from 'toonish-ui/markup';
+import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot } from 'toonish-ui/markup';
 import { legalPages, legalUpdated } from './legal.ts';
 import { site, studies, featured, latest, tags, fit, type Accent, type CaseStudy } from './content.ts';
 
@@ -288,6 +288,7 @@ export function study(s: CaseStudy): string {
         <section>
           <h2 class="mb-s3 mt-0 font-display text-title1 font-normal" style="color:${HEX[s.accent]}">${esc(sec.heading)}</h2>
           ${sec.paragraphs.map((p) => `<p class="mb-s3 mt-0">${md(p)}</p>`).join('\n          ')}
+          ${(sec.shots ?? []).map((h) => shot({ src: `/studies/${s.slug}/${h.file}`, alt: h.alt, width: h.width, height: h.height, caption: h.caption, badge: h.badge, transcript: h.transcript, accent: s.accent, cls: "my-s6" })).join('\n          ')}
         </section>`,
         )
         .join('')}
