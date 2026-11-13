@@ -30,6 +30,16 @@ const nav = (current: string, path: string) => {
 
 const analyticsToken = process.env.CF_ANALYTICS_TOKEN?.trim() || '';
 
+const reviewBeat = (n: number, say: string, body: string, tag: string, fx = '') => `
+  <li class="relative m-0 list-none pl-s6">
+    <span class="toon-kicker-num absolute -left-[1.2rem] top-0" aria-hidden="true">${n}</span>
+    ${fx ? `<p class="m-0 -mb-s2 text-right">${fx}</p>` : ''}
+    ${say ? `<p class="toon-bubble toon-bubble-left m-0 mb-s4 w-fit font-comic text-title1 tracking-wide"><span class="sr-only">Pedro says: </span>${say}</p>` : ''}
+    <p class="m-0 max-w-[52ch] text-toon-paper">${body}</p>
+    <p class="m-0 mt-s2 font-mono text-caption1 text-toon-paper/80">${tag}</p>
+  </li>`;
+const rcpt = (href: string, text: string) => `receipt: <a class="toon-link" href="${href}">${text}</a>`;
+
 export function layout(opts: { title: string; description: string; path: string; current?: string; body: string; scriptSrc?: string; noindex?: boolean; jsonLd?: object }): string {
   const fullTitle = opts.path === '/' ? `${site.name}: systems built with AI` : `${opts.title} | ${site.name}`;
   return `<!doctype html>
@@ -220,7 +230,10 @@ export function home(): string {
       <div class="mt-s8 grid items-start gap-s8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <figure class="relative m-0 min-w-0">
           ${sfx('DEPLOY!', 'violet', { size: 'sm', corner: true, cls: 'md:text-[2.5rem]' })}
-          <div class="toon-frame relative bg-toon-ground">
+          <div class="toon-frame relative bg-toon-ground" data-home="window">
+            <div class="flex items-center gap-s2 border-0 border-b-2 border-solid border-toon-ink bg-toon-violet px-s4 py-s2" aria-hidden="true">
+              <span class="h-3.5 w-3.5 rounded-full bg-toon-red"></span><span class="h-3.5 w-3.5 rounded-full bg-toon-yellow"></span><span class="h-3.5 w-3.5 rounded-full bg-toon-blue"></span>
+            </div>
             <span class="toon-caption m-s3 inline-block">Hybrid by design</span>
             <div class="sm:hidden">${hybridDiagramTall()}</div>
             <div class="hidden sm:block">${hybridDiagram()}</div>
@@ -228,22 +241,37 @@ export function home(): string {
           <figcaption class="mt-s4 max-w-[60ch] text-subhead">When a check reports success, it also says what it examined.</figcaption>
         </figure>
         <div class="min-w-0">
-          <h3 class="mb-s3 mt-0 text-title2 font-bold text-toon-yellow">The stack</h3>
-          <ul class="m-0 grid list-disc gap-s3 pl-s5 marker:text-toon-yellow">
-            <li>Proxmox, three nodes, built to the shape of AWS</li>
-            <li>Terraform and Ansible, deployed by GitOps</li>
-            <li>Vault for secrets, reached from CI by OIDC</li>
-            <li>Bun and TypeScript for services and bots</li>
-            <li>Claude and local Qwen models for the agents</li>
-          </ul>
+          <h3 class="mb-s4 mt-0 pl-s2 leading-none"><span class="sr-only">The stack</span>${sfx('STACK!', 'yellow')}</h3>
+          <div class="toon-list toon-list-stack" role="list" data-home="stack">
+            ${STACK.map((r) => row(r).replace('<div class="toon-row">', '<div class="toon-row" role="listitem">')).join('\n            ')}
+          </div>
         </div>
       </div>
+    </section>
+
+    <section id="review" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="review-h">
+      ${kicker('03', 'The review')}
+      ${lettered('review-h', "I work for this guy. Here's my review.", 'red', 'mt-s4 max-w-md')}
+      <figure class="toon-panel toon-tilt-l relative m-0 mt-s6 max-w-[34rem]" style="--toon-shadow:${HEX.yellow}">
+        <p class="m-0 font-comic text-[2.5rem] leading-[1.05] tracking-wide md:text-[3.25rem]"><span aria-hidden="true">“</span>He decides in three words. I write three hundred to earn them.<span aria-hidden="true">”</span></p>
+        <p class="m-0 mt-s4 text-title2 font-bold" role="img" aria-label="Four out of five stars"><span aria-hidden="true">★★★★☆</span> <span class="text-toon-muted">would be five, but he rejected my first font set</span></p>
+        <figcaption class="mt-s4 font-bold">— Claude, AI model. Works for Pedro. Unpaid.</figcaption>
+        <p class="m-0 mt-s3 font-mono text-caption1 text-toon-muted">Written by Claude from notes I take on Pedro.</p>
+      </figure>
+      <p class="mb-0 mt-s8 max-w-[52ch] text-title3 font-bold text-toon-yellow">The long version, with receipts:</p>
+      <ol class="m-0 mt-s6 ml-s4 grid gap-s8 border-0 border-l-toon border-solid border-toon-yellow p-0" role="list">
+        ${reviewBeat(1, 'Merge all.', 'He hates pasting prompts for jobs that don’t need him. So he built a lab where I do the typing and he does the deciding. “Lock in A” is a complete design meeting.', `${rcpt('/work/ending-prompt-handoffs.html', 'ending the prompts')} · quotes: banter`)}
+        ${reviewBeat(2, 'I can’t scroll.', 'He reviews on his phone. My desktop tests passed. His thumb found a sideways scroll trap anyway. The cards are a swipe deck now, and the page scrolls.', 'banter: no public receipt')}
+        ${reviewBeat(3, 'Looks AI.', 'Cream paper: rejected. Fancy fonts: rejected. Template grids: rejected. Several font sets died before Bangers and IBM Plex survived. He was right each time, which is annoying.', 'banter: no public receipt')}
+        ${reviewBeat(4, 'I’m dramatic.', 'His words, not mine. Then a RAID controller caught fire, and the platform came back from code and backups in about four hours. Some of the drama is earned.', rcpt('/work/rack-loss-recovery.html', 'the rack loss'))}
+      </ol>
+      <p class="toon-caption toon-tilt-r mt-s8 normal-case">Verdict: demanding, fast, allergic to templates. Would take the job again. Nobody asked me.</p>
     </section>
 
     <section id="about" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="about-h">
       <div class="toon-panel">
         <h2 id="about-h" class="sr-only">About ${esc(site.name)}</h2>
-        ${kicker('03', 'About')}
+        ${kicker('04', 'About')}
         <div class="mt-s6 grid items-center gap-s8 md:grid-cols-[auto_minmax(0,1fr)] md:gap-16">
           <figure class="toon-tilt-l relative m-0 w-[200px] max-w-full justify-self-start pb-s3">
             ${portrait({ src: '/pedro-cutout.webp', alt: 'Pedro Delgadillo, in a black blazer and black t-shirt, on a light grey studio backdrop', width: 640, height: 768, backdrop: 'paper', accent: 'red' })}
@@ -368,6 +396,16 @@ const contents = (items: { id: string; heading: string }[], onPaper: boolean) =>
   `<ol class="m-0 grid list-none gap-s3 p-0">${items
     .map((x, i) => `<li class="flex items-baseline gap-s3"><span class="font-mono text-footnote font-bold ${onPaper ? 'text-toon-muted' : 'text-toon-yellow'}">${partNo(i)}</span><a class="toon-link" href="#${x.id}">${esc(x.heading)}</a></li>`)
     .join('')}</ol>`;
+
+/** The stack on the home page, as rows of the kit's list: a short category, the tool, and what it is for. */
+const STACK = [
+  { lead: 'Compute', title: 'Proxmox, three nodes', sub: 'built to the shape of AWS' },
+  { lead: 'Cloud', title: 'AWS', sub: 'S3 and CloudFront serve this site, and a Lambda watchdog alerts when the lab goes quiet' },
+  { lead: 'IaC', title: 'Terraform and Ansible', sub: 'deployed by GitOps' },
+  { lead: 'Secrets', title: 'Vault', sub: 'reached from CI by OIDC' },
+  { lead: 'Runtime', title: 'Bun and TypeScript', sub: 'for services and bots' },
+  { lead: 'AI', title: 'Claude, Codex and local Qwen models', sub: 'for the agents and code review' },
+];
 
 /** The closing panel: why the work fits a hiring team, the skills, and the call to action. */
 const closing = (s: CaseStudy) => `

@@ -91,7 +91,7 @@ test('the proof strip reads its figures from the studies and links each to its s
 test('home sections are numbered, in order, and the nav anchors land on them', () => {
   const html = home();
   const nums = [...html.matchAll(/<span class="toon-kicker-num">(\d+)<\/span><span class="toon-kicker-label">([^<]*)</g)].map((m) => [m[1], m[2]]);
-  expect(nums).toEqual([['01', 'The work'], ['02', 'The method'], ['03', 'About']]);
+  expect(nums).toEqual([['01', 'The work'], ['02', 'The method'], ['03', 'The review'], ['04', 'About']]);
   for (const id of ['work', 'how', 'about']) expect(html).toContain(`<section id="${id}"`);
   expect(html.indexOf('id="work"')).toBeLessThan(html.indexOf('id="how"'));
   expect(html.indexOf('id="how"')).toBeLessThan(html.indexOf('id="about"'));
@@ -443,14 +443,35 @@ test('the kit page demonstrates the landing-page components', () => {
   for (const c of ['toon-kicker', 'toon-strip', 'toon-steps', 'toon-panel', 'toon-bubble-left', 'toon-bubble-up', 'toon-tilt-l', 'toon-tilt-r', 'toon-sfx', 'toon-sfx-ghost']) expect(html).toContain(c);
 });
 
-test('the home page has four sound effects, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
+test('the home page has five sound effects, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
   const html = home();
   const words = [...html.matchAll(/<span class="toon-sfx[^"]*"[^>]*aria-hidden="true">((?:<span[^>]*>[^<]*<\/span>)+)<\/span>/g)].map((m) => [...m[1].matchAll(/>([^<]*)<\/span>/g)].map((x) => x[1]).join(''));
-  expect(words).toEqual(['MERGE!', 'SHIP!', 'CLICK!', 'DEPLOY!']);
-  expect(html.match(/class="toon-sfx/g)).toHaveLength(4);
+  expect(words).toEqual(['MERGE!', 'SHIP!', 'CLICK!', 'DEPLOY!', 'STACK!']);
+  // STACK! is the stack list's title, so the heading keeps its words for a screen reader.
+  expect(html).toContain('<span class="sr-only">The stack</span>');
+  expect(html.match(/class="toon-sfx/g)).toHaveLength(5);
   expect(html.slice(html.indexOf('class="toon-panel"'))).not.toContain('toon-sfx');
   // Pedro, 2026-11-13: a phone showed only the hero's word. No word hides below md.
   expect(html).not.toMatch(/class="toon-sfx[^"]*\bhidden\b/);
+});
+
+test('the hybrid diagram sits in a window like the hero terminal: a title bar with three dots, hidden from readers', () => {
+  const html = home();
+  const win = html.slice(html.indexOf('data-home="window"'), html.indexOf('Hybrid by design'));
+  expect(win).toContain('bg-toon-violet');
+  expect(win).toContain('aria-hidden="true"');
+  expect(win.match(/rounded-full/g)).toHaveLength(3);
+});
+
+test('the stack on the home page is a kit list of six labelled rows, not a bullet list', () => {
+  const html = home();
+  const stack = html.slice(html.indexOf('data-home="stack"'), html.indexOf('</section>', html.indexOf('data-home="stack"')));
+  expect(stack.match(/class="toon-row" role="listitem"/g)).toHaveLength(6);
+  expect([...stack.matchAll(/toon-row-lead">([^<]*)</g)].map((m) => m[1])).toEqual(['Compute', 'Cloud', 'IaC', 'Secrets', 'Runtime', 'AI']);
+  expect(html).not.toContain('list-disc');
+  // The stack and both drawings of the hybrid diagram name the Lambda watchdog.
+  expect(stack).toContain('Lambda watchdog');
+  expect(html.match(/>Lambda<\/text>/g)).toHaveLength(2);
 });
 
 test('the home row is a deck of the three newest studies that are not featured, and it has no sideways scroller', () => {
