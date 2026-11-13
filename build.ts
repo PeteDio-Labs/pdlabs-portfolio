@@ -55,17 +55,20 @@ await Bun.write(`${out}/favicon.svg`, Bun.file('public/favicon.svg'));
 await Bun.write(`${out}/favicon-32.png`, Bun.file('public/favicon-32.png'));
 await Bun.write(`${out}/apple-touch-icon.png`, Bun.file('public/apple-touch-icon.png'));
 
-// Self-hosted fonts, so no request leaves for Google.
-for (const [pkg, file] of [['bangers', 'bangers-latin-400'], ['dm-sans', 'dm-sans-latin-400'], ['dm-sans', 'dm-sans-latin-700'], ['space-grotesk', 'space-grotesk-latin-500'], ['space-grotesk', 'space-grotesk-latin-700']]) {
-  await Bun.write(`${out}/fonts/${file}-normal.woff2`, Bun.file(`node_modules/@fontsource/${pkg}/files/${file}-normal.woff2`));
-}
+// Self-hosted fonts from the toonish-ui package, so no request leaves for Google. The package's CSS names them as ./fonts/...
+const fontDir = 'node_modules/toonish-ui/dist/fonts';
+const fontFiles = [...new Bun.Glob('*.woff2').scanSync({ cwd: fontDir })];
+if (fontFiles.length < 5) throw new Error(`expected 5 font files in ${fontDir}, found ${fontFiles.length}`);
+for (const f of fontFiles) await Bun.write(`${out}/fonts/${f}`, Bun.file(`${fontDir}/${f}`));
+// The kit's behaviour script (modals, toggle groups, scroll reveal), copied from the package so the CSP needs only 'self'.
+await Bun.write(`${out}/toonish.js`, Bun.file('node_modules/toonish-ui/dist/toonish.js'));
 await Bun.write(`${out}/site.webmanifest`, JSON.stringify({
   name: 'pdlab', short_name: 'pdlab', start_url: '/', display: 'standalone', background_color: '#0c1240', theme_color: '#0c1240',
   icons: [{ src: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }, { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }],
 }) + '\n');
 await Bun.write(`${out}/.well-known/security.txt`, `Contact: mailto:privacy@pdlab.dev\nExpires: ${new Date(Date.now() + 365 * 86400000).toISOString()}\nPreferred-Languages: en\nCanonical: https://pdlab.dev/.well-known/security.txt\n`);
 
-const tw = Bun.spawnSync(['bunx', 'tailwindcss', '-i', 'ui/toonish.css', '-o', `${out}/toonish.css`, '--minify'], {
+const tw = Bun.spawnSync(['bunx', 'tailwindcss', '-i', 'node_modules/toonish-ui/src/toonish.css', '-o', `${out}/toonish.css`, '--minify'], {
   stderr: 'pipe',
 });
 if (tw.exitCode !== 0) {

@@ -2,6 +2,9 @@ import { test, expect } from 'bun:test';
 import { home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
+
+// The kit's behaviour script ships in the toonish-ui package; build.ts copies it to dist/toonish.js.
+const toonishScript = await Bun.file('node_modules/toonish-ui/dist/toonish.js').text();
 import { site, studies, featured, latest, fit } from './content.ts';
 
 const all = () => [home(), workIndex(), kit(), notFound(), legal('privacy'), legal('terms'), ...studies.map(study)];
@@ -79,11 +82,21 @@ test('every page ships the main nav with Work pointing at /work', () => {
 test('the privacy page says no cookies, so no page or script sets one or uses web storage beyond the motion setting', () => {
   // The privacy page names these APIs, so it is left out of the scan. The one allowed use is the motion
   // switch's saved choice, which the privacy page states.
-  const text = [home(), kit(), notFound(), ...studies.map(study), siteScript].join('\n');
+  const text = [home(), kit(), notFound(), ...studies.map(study), siteScript, toonishScript].join('\n');
   expect(text).not.toMatch(/document\.cookie|sessionStorage|indexedDB|Set-Cookie/i);
   expect([...(text + motionScript).matchAll(/localStorage\.\w+\('([^']+)'/g)].every((m) => m[1] === 'pd-motion')).toBe(true);
   expect(legal('privacy')).toContain('pd-motion');
   expect(legal('privacy')).toContain('sets no cookies');
+});
+
+test('every page loads the kit script before the site script', () => {
+  const pages = all();
+  expect(pages.length).toBeGreaterThan(20);
+  for (const html of pages) {
+    const kit = html.indexOf('<script src="/toonish.js" defer></script>');
+    expect(kit).toBeGreaterThan(-1);
+    expect(kit).toBeLessThan(html.indexOf('<script src="/site.js" defer></script>'));
+  }
 });
 
 test('no page carries an inline script, so the CSP needs no hash', () => {
@@ -144,7 +157,8 @@ test('footer links open Privacy and Terms in a modal and stay real links without
     expect(html).toContain('href="/terms.html" data-toon-modal');
     expect(html).toContain('class="toon-link whitespace-nowrap" href="/ui.html"');
   }
-  expect(siteScript).toContain('showModal');
+  expect(toonishScript).toContain('showModal');
+  expect(toonishScript).not.toMatch(/innerHTML|eval\(|document\.write/);
   expect(siteScript).not.toMatch(/innerHTML|eval\(|document\.write/);
 });
 
@@ -215,8 +229,9 @@ test('every <img> has an alt attribute', () => {
 
 // WCAG contrast of the palette pairs the site uses for text: paper on ground, and ink on every fill.
 test('palette text pairs meet WCAG AA contrast (4.5:1)', async () => {
-  const cfg = await Bun.file(new URL('../tailwind.config.js', import.meta.url)).text();
-  const color = (n: string) => cfg.match(new RegExp(`${n}: '(#[0-9a-f]{6})'`, 'i'))![1];
+  // The palette is the toonish-ui package's: read its token file.
+  const tokens = (await Bun.file('node_modules/toonish-ui/tokens/toonish.tokens.json').json()) as { color: Record<string, { $value: string }> };
+  const color = (n: string) => tokens.color[n]!.$value;
   const lum = (hex: string) => {
     const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
