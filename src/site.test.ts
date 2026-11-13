@@ -283,3 +283,10 @@ test('the site study page links to the kit repository and the kit page', () => {
   expect(html).toContain('href="https://github.com/PeteDio-Labs/toonish-ui"');
   expect(html).toContain('href="https://pdlab.dev/ui.html"');
 });
+
+test('every preloaded font is a file this site ships, from its own folder or the kit', () => {
+  const { existsSync } = require('node:fs');
+  const hrefs = [...home().matchAll(/<link rel="preload" href="\/fonts\/([^"]+)" as="font"/g)].map((m) => m[1]);
+  expect(hrefs.length).toBe(2);
+  for (const f of hrefs) expect(existsSync(`public/fonts/${f}`) || existsSync(`node_modules/toonish-ui/dist/fonts/${f}`)).toBe(true);
+});
