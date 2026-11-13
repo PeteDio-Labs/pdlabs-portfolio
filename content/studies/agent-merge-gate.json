@@ -31,7 +31,32 @@
         "A tiered gate decides who merges. A script scores each PR's blast radius from the files it touches. Tier 0 is prose. Tier 1 is code that runs nothing on merge. Tier 2 is everything else, such as infrastructure code and workflows. A merge bot with deterministic code merges tiers 0 and 1 after CI and a clean review. A separate merger handles tier 2 under the same gate. No model output widens what merges.",
         "A PR waits when its review has a blocking finding, a check is red or skipped, or it has no checks. It also waits when it carries a hold label, asks to wait, or needs a hand step. A push voids the review of the old head, and the merge is pinned to the commit that was reviewed. After each merge, the bot reads the main branch back and expects the change to be there.",
         "An unrecognised file path counts as tier 2, because the rules fail closed. Infrastructure changes run `validate` on PR, then `plan` and `apply` on merge. Credentials and destructive flags stay hand steps that no merge runs."
-      ]
+      ],
+      "table": {
+        "caption": "The three tiers of the merge gate",
+        "columns": [
+          "Tier",
+          "What it covers",
+          "Who merges"
+        ],
+        "rows": [
+          [
+            "0",
+            "Prose",
+            "A merge bot, after CI and a clean review"
+          ],
+          [
+            "1",
+            "Code that runs nothing on merge",
+            "A merge bot, after CI and a clean review"
+          ],
+          [
+            "2",
+            "Everything else, such as infrastructure code and workflows. An unrecognised path counts here.",
+            "A separate merger, under the same gate"
+          ]
+        ]
+      }
     },
     {
       "heading": "Result",
