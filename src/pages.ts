@@ -613,13 +613,77 @@ export function kit(): string {
   return layout({ title: 'toonish-ui', path: '/ui.html', current: 'UI kit', noindex: true, description: 'toonish-ui, the original cartoon component kit behind this site.', body });
 }
 
+/**
+ * The lines the 404 card shows, one per visit. Each has a sound-effect word (Latin letters only) and a joke
+ * about how this site is built. The first is the one a visitor sees with scripts off.
+ */
+export const LOST: { word: string; accent: Accent; line: string }[] = [
+  { word: '404!', accent: 'red', line: 'This page failed review, so it never merged to main.' },
+  { word: 'DRIFT!', accent: 'yellow', line: 'The URL says a page lives here. The repo disagrees, and the repo wins.' },
+  { word: 'POOF!', accent: 'violet', line: 'Plan: 0 to add, 0 to change, 0 to destroy. This page was never in state.' },
+  { word: 'NOPE!', accent: 'blue', line: 'An agent offered to write this page on the spot. The merge gate said no.' },
+  { word: 'WHIFF!', accent: 'red', line: 'You swung at a link and hit air. The link is the one that missed.' },
+  { word: 'ZZZ', accent: 'violet', line: 'The watchdog checked this address. Nothing here has a heartbeat.' },
+  { word: 'HUH?', accent: 'yellow', line: 'Even the local model has no memory of this page, and it makes things up.' },
+  { word: 'OOPS!', accent: 'blue', line: 'The rack fire did not take this page. It was never on the rack.' },
+];
+
+/** The looks the 404 card comes in. Each borrows one comic or manga device, and each line gets the next look in turn. */
+export const LOST_LOOKS = ['panel', 'bubble', 'burst', 'halftone'] as const;
+type LostLook = (typeof LOST_LOOKS)[number];
+type Lost = (typeof LOST)[number];
+
+const LOST_WORD = 'text-[4.5rem] md:text-[7rem]';
+const lostLook: Record<LostLook, (l: Lost) => string> = {
+  // A tilted paper panel with the word lettered on it.
+  panel: (l) => `
+          <div class="toon-panel toon-tilt-l" style="--toon-shadow:${HEX[l.accent]}">
+            <div class="pt-s5">${sfx(l.word, l.accent, { cls: LOST_WORD })}</div>
+            <p class="mb-0 mt-s5 text-title3 font-bold">${esc(l.line)}</p>
+          </div>`,
+  // Manga speed lines streak in behind the word, and the line is spoken in a bubble that points up at it.
+  bubble: (l) => `
+          <div class="relative pt-s6">
+            ${speedLines('inset-x-0 top-0 h-[9rem] w-full md:h-[12rem]')}
+            <div class="relative pl-s3">${sfx(l.word, l.accent, { cls: LOST_WORD })}</div>
+            <div class="toon-bubble toon-bubble-up mt-s8 max-w-none"><p class="m-0 text-title3 font-bold">${esc(l.line)}</p></div>
+          </div>`,
+  // The word sits on a starburst, with the line in a caption box under it.
+  burst: (l) => `
+          <div class="text-center">
+            <div class="relative mx-auto grid aspect-square w-[min(100%,14rem)] place-items-center md:w-[16rem]">${burst(PAIR[l.accent], 'toon-burst-spin')}<div class="relative">${sfx(l.word, l.accent, { cls: 'text-[2.5rem] md:text-[3rem]' })}</div></div>
+            <p class="toon-frame toon-tilt-r mx-auto mb-0 mt-s4 max-w-[28rem] p-s4 text-title3 font-bold text-toon-ink">${esc(l.line)}</p>
+          </div>`,
+  // A panel with a halftone corner, a narrator's caption box and the word as an outline behind the line.
+  halftone: (l) => `
+          <div class="toon-frame toon-tilt-r relative overflow-hidden p-s5 pt-s8 text-toon-ink md:p-s6 md:pt-s8">
+            <div class="pointer-events-none absolute -right-s6 -top-s6 h-[11rem] w-[11rem] rounded-full bg-[radial-gradient(circle,#0a0a1f_1.6px,transparent_2px)] opacity-40 [background-size:9px_9px]" aria-hidden="true"></div>
+            <span class="toon-caption absolute left-s3 top-s3">Meanwhile</span>
+            <div class="relative pt-s4">${sfx(l.word, l.accent, { cls: LOST_WORD })}</div>
+            <p class="relative mb-0 mt-s5 text-title3 font-bold">${esc(l.line)}</p>
+          </div>`,
+};
+
 export function notFound(): string {
+  // Every line is in the page in its own look, and all but the first are hidden. site.js shows one at random and
+  // wires the button, so the page reads the same with scripts off: one card, one line and the way home.
+  const cards = LOST.map((l, i) => {
+    const look = LOST_LOOKS[i % LOST_LOOKS.length]!;
+    return `
+        <div data-lost-line data-lost-look="${look}"${i ? ' hidden' : ''}>${lostLook[look](l)}
+        </div>`;
+  }).join('');
   const body = `
-    <section class="py-16">
+    <section class="mx-auto max-w-[36rem] py-s8 md:py-16" data-lost>
       <h1 class="sr-only">Page not found</h1>
-      <div class="text-hero leading-none">${letters('404!', 'red', { live: true })}</div>
-      <p class="text-title3">There is no page at this address. The link may be mistyped, or the page may have moved when the site was rebuilt.</p>
-      <a class="toon-btn" href="/">Go to the home page</a>
+      <p class="mb-s5 mt-0 font-mono text-small uppercase tracking-wide text-toon-mist">Error 404 · page not found</p>
+      <div class="flex min-h-[23rem] flex-col justify-center md:min-h-[24rem]" aria-live="polite">${cards}
+      </div>
+      <p class="mb-0 mt-s6">There is no page at this address. The link may be mistyped, or the page may have moved.</p>
+      <div class="mt-s5 flex flex-wrap gap-s3">
+        <a class="toon-btn" href="/">Go to the home page</a>
+        <button class="toon-btn toon-btn-paper" type="button" data-lost-next hidden>Show another one</button>
+      </div>
     </section>`;
   return layout({ title: 'Page not found', path: '/404.html', description: 'Page not found.', noindex: true, body });
 }

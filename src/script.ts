@@ -29,6 +29,18 @@ export const siteScript = String.raw`// This site's own behaviours: the scroll s
     addEventListener('hashchange', pick);
     pick();
   }
+  // 2. The 404 card: show one of its lines at random, and let the button step to the next one.
+  const lost = [...document.querySelectorAll('[data-lost-line]')];
+  const more = document.querySelector('[data-lost-next]');
+  if (lost.length > 1) {
+    let at = Math.floor(Math.random() * lost.length);
+    const show = () => lost.forEach((el, i) => (el.hidden = i !== at));
+    show();
+    if (more) {
+      more.hidden = false;
+      more.addEventListener('click', () => { at = (at + 1) % lost.length; show(); });
+    }
+  }
   // 0. Motion switch: flips data-motion on <html> and remembers the choice. Without storage it still works for the visit.
   const root = document.documentElement;
   const sw = document.querySelector('[data-motion-toggle]');
