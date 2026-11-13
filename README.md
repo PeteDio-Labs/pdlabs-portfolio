@@ -55,6 +55,16 @@ draft left open are filled only from a named source (the PR statistics in `data/
 the agent's own spec, the Vault SSH roles or the model audit), and a study's `sources` field names that
 source.
 
+## Branches
+
+- **Case studies and content go to `main` by pull request.** They skip `staging`.
+- **UI changes go to `staging` first.** Push to `staging`, check the result on the staging site, then
+  open a pull request from `staging` into `main`.
+- **`.github/workflows/sync-staging.yml` merges `main` into `staging` on every push to `main`.**
+  It uses a regular merge commit and never force-pushes, so `staging` keeps the content that landed
+  on `main`. When the merge conflicts, the workflow opens a pull request from `main` into `staging`
+  and fails, so the conflict shows as a red check. Resolve it in that pull request.
+
 ## Deploy
 
 Deploy is not set up yet. The plan is S3 and CloudFront, built from `petedio-iac` and
