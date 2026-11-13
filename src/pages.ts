@@ -407,7 +407,7 @@ export function study(s: CaseStudy): string {
             ${sec.table ? dataTable(sec.table) : ''}
           </div>${shots.length ? `
           <div class="mt-s6 grid min-w-0 gap-s8 md:col-start-2 lg:col-span-2 lg:col-start-1">
-            ${shots.map((h, n) => shot({ src: `/studies/${s.slug}/${h.file}`, alt: h.alt, width: h.width, height: h.height, caption: h.caption, badge: h.badge, transcript: h.transcript, accent: s.accent, href: `/studies/${s.slug}/${h.file}`, hrefLabel: 'Open the full-size picture', hint: 'Tap to enlarge', corner: shots.length > 1 ? `${n + 1} / ${shots.length}` : undefined, cls: `min-w-0 max-w-full ${n % 2 ? 'lg:-rotate-1' : 'lg:rotate-1'}` })).join('\n            ')}
+            ${shots.map((h, n) => shot({ src: `/studies/${s.slug}/${h.file}`, alt: h.alt, width: h.width, height: h.height, caption: h.caption, badge: h.badge, transcript: h.transcript, accent: s.accent, href: `/studies/${s.slug}/${h.file}`, hrefLabel: `Open the full-size picture: ${h.alt}`, hint: 'Tap to enlarge', corner: shots.length > 1 ? `${n + 1} / ${shots.length}` : undefined, cls: `min-w-0 max-w-full ${n % 2 ? 'lg:-rotate-1' : 'lg:rotate-1'}` })).join('\n            ')}
           </div>` : ''}
         </section>`;
   };

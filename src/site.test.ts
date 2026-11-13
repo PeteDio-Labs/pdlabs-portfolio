@@ -337,7 +337,7 @@ test('study screenshots render with alt text, size, caption and transcript, and 
     expect(html).toContain(esc(h.caption));
   }
   expect(html).toContain('toon-shot-text');
-  expect(html.match(/aria-label="Open the full-size picture"/g)?.length).toBe(shots.length);
+  expect(html.match(/aria-label="Open the full-size picture: /g)?.length).toBe(shots.length);
 });
 
 test('the site study page links to the kit repository and the kit page', () => {
@@ -538,7 +538,7 @@ test('the study with pictures has no sideways scroller, and each picture links t
   for (const img of html.match(/<img [^>]*>/g)!.filter((i) => i.includes('/studies/'))) expect(img).not.toContain('max-w-none');
   shots.forEach((h, n) => {
     const file = `/studies/${s.slug}/${h.file}`;
-    expect(html).toContain(`<a class="toon-shot-link" href="${file}" target="_blank" rel="noopener" aria-label="Open the full-size picture"><img src="${file}"`);
+    expect(html).toContain(`<a class="toon-shot-link" href="${file}" target="_blank" rel="noopener" aria-label="Open the full-size picture: ${esc(h.alt)}"><img src="${file}"`);
     expect(html).toContain(`toon-shot-badge-end">${n + 1} / ${shots.length}<`);
   });
   expect(html.match(/Tap to enlarge/g)).toHaveLength(shots.length);
