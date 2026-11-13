@@ -1,5 +1,5 @@
 import { esc, md } from './html.ts';
-import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, stat, badge, chip, row, bars, kicker, strip, steps, sfx, deck, pager, portrait } from 'toonish-ui/markup';
+import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, stat, badge, chip, row, list, skipLink, bars, kicker, strip, steps, sfx, deck, pager, portrait } from 'toonish-ui/markup';
 import { thumb } from './illustrations/thumbs.ts';
 import { hybridDiagram, hybridDiagramTall } from './illustrations/hybrid.ts';
 import { legalPages, legalUpdated } from './legal.ts';
@@ -81,7 +81,7 @@ ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ?
 <script src="/motion.js"></script>
 </head>
 <body class="toon-dots">
-<a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 toon-btn toon-btn-paper">Skip to content</a>
+${skipLink('main')}
 <div class="toon-page mx-auto max-w-5xl pl-s4 pb-16">
   <header class="flex items-center justify-between gap-s1 py-s4 min-[360px]:gap-s3 sm:py-s5">
     <a href="/" class="block shrink-0 no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { live: true, cls: 'text-[24px] min-[360px]:text-[30px] sm:text-[40px]' })}</a>
@@ -95,9 +95,9 @@ ${opts.body}
     <span class="block">${letters('pdlab', 'red', { live: true, cls: 'text-title1' })}</span>
     <p class="toon-footer-note text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link whitespace-nowrap" href="/ui.html">toonish-ui</a>, an original kit.</p>
     <nav aria-label="Footer"><ul class="toon-footer-links text-footnote">
-      <li><a class="toon-link" href="${site.github}">GitHub</a></li>
-      <li><a class="toon-link" href="/privacy.html" data-toon-modal>Privacy</a></li>
-      <li><a class="toon-link" href="/terms.html" data-toon-modal>Terms</a></li>
+      <li><a class="toon-link inline-flex min-h-[44px] items-center" href="${site.github}">GitHub</a></li>
+      <li><a class="toon-link inline-flex min-h-[44px] items-center" href="/privacy.html" data-toon-modal>Privacy</a></li>
+      <li><a class="toon-link inline-flex min-h-[44px] items-center" href="/terms.html" data-toon-modal>Terms</a></li>
     </ul></nav>
   </footer>
 </div>
@@ -120,7 +120,7 @@ const studyCard = (s: CaseStudy, i: number, label = '', h: 'h2' | 'h3' = 'h3', f
         <${h} class="mb-s2 mt-s3 text-title2 font-bold leading-snug">${esc(s.title)}</${h}>
         <p class="my-0">${md(s.summary)}</p>
         <p class="mt-s4 mb-s4">${figure(s.stat.value, s.accent, 52, figureWidth)}<span class="mt-s1 block text-footnote">${esc(s.stat.label)}</span></p>
-        <a class="toon-link mt-auto self-start" href="/work/${s.slug}.html">Read the case study<span class="sr-only">: ${esc(s.title)}</span></a>
+        <a class="toon-link inline-flex min-h-[44px] items-center mt-auto self-start" href="/work/${s.slug}.html">Read the case study<span class="sr-only">: ${esc(s.title)}</span></a>
       </article>`;
 
 /** A case study by slug. The proof strip reads its figures from these, so a renamed or deleted study fails the build. */
@@ -142,7 +142,7 @@ const compactCard = (s: CaseStudy, i: number) => `
           <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
           <h3 class="mb-s3 mt-s3 text-title3 font-bold leading-snug">${esc(s.title)}</h3>
           <p class="mb-s4 mt-auto">${figure(s.stat.value, s.accent, 40, 200)}</p>
-          <a class="toon-link self-start" href="/work/${s.slug}.html">Read the case study<span class="sr-only">: ${esc(s.title)}</span></a>
+          <a class="toon-link inline-flex min-h-[44px] items-center self-start" href="/work/${s.slug}.html">Read the case study<span class="sr-only">: ${esc(s.title)}</span></a>
         </article>`;
 
 export function home(): string {
@@ -172,7 +172,7 @@ export function home(): string {
           <p class="mt-s4 max-w-[38ch] text-title3">${esc(site.intro)}</p>
           <div class="mt-s6 flex flex-col gap-s4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-s6">
             <a class="toon-btn w-full text-center sm:w-auto" href="#work">See the work</a>
-            <a class="toon-link" href="${site.org}">Browse the repos</a>
+            <a class="toon-link inline-flex min-h-[44px] items-center" href="${site.org}">Browse the repos</a>
           </div>
         </div>
         <div class="relative z-10 md:-mt-24 lg:-mt-36">
@@ -211,7 +211,7 @@ export function home(): string {
           <h3 class="mb-s3 mt-s3 text-title1 font-bold leading-snug">${esc(featured.title)}</h3>
           <p class="my-0">${md(featured.summary)}</p>
           <p class="mb-s4 mt-s4">${figure(featured.stat.value, featured.accent, 52, 280)}<span class="mt-s1 block text-footnote">${esc(featured.stat.label)}</span></p>
-          <a class="toon-link" href="/work/${featured.slug}.html">Read the case study<span class="sr-only">: ${esc(featured.title)}</span></a>
+          <a class="toon-link inline-flex min-h-[44px] items-center" href="/work/${featured.slug}.html">Read the case study<span class="sr-only">: ${esc(featured.title)}</span></a>
         </div>
       </article>
       <div class="mt-s6 md:mt-s8">${deck(recent.map(compactCard), { label: 'More recent case studies', cols: 3 })}</div>
@@ -247,9 +247,7 @@ export function home(): string {
         </figure>
         <div class="min-w-0">
           <h3 class="mb-s4 mt-0 pl-s2 leading-none"><span class="sr-only">The stack</span>${sfx('STACK!', 'yellow')}</h3>
-          <div class="toon-list toon-list-stack" role="list" data-home="stack">
-            ${STACK.map((r) => row(r).replace('<div class="toon-row">', '<div class="toon-row" role="listitem">')).join('\n            ')}
-          </div>
+          ${list(STACK.map((r) => row(r)), { label: 'The stack', cls: 'toon-list-stack' }).replace('<div class="toon-list', '<div data-home="stack" class="toon-list')}
         </div>
       </div>
     </section>
@@ -288,7 +286,7 @@ export function home(): string {
             <p class="mb-0 mt-s6 max-w-[60ch]">${esc(site.background)}</p>
             <div class="mt-s6 flex flex-col gap-s4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-s6">
               <a class="toon-btn toon-btn-yellow toon-wiggle w-full text-center sm:w-auto" href="${site.linkedin}">Hire me: message on LinkedIn</a>
-              <a class="toon-link" href="${site.github}">Find me on GitHub</a>
+              <a class="toon-link inline-flex min-h-[44px] items-center" href="${site.github}">Find me on GitHub</a>
             </div>
           </div>
         </div>
@@ -425,7 +423,7 @@ const closing = (s: CaseStudy) => `
           <div class="min-w-0 border-t-toon border-toon-ink pt-s6 lg:border-l-toon lg:border-t-0 lg:pl-16 lg:pt-0">
             <h2 id="hire-h" class="mb-s3 mt-0 text-title2 font-bold">Hiring for AI automation or forward-deployed engineering?</h2>
             <p class="mb-s4 mt-0">I build agents and automations with the limits and checks that keep them safe, and I run them on my own platform every day. Send me the role and I will tell you how my work fits it.</p>
-            <p class="m-0 flex flex-col gap-s4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-s6"><a class="toon-btn toon-btn-yellow w-full text-center sm:w-auto" href="${site.linkedin}">Message me on LinkedIn</a><a class="toon-link" href="${site.github}">See my code on GitHub</a></p>
+            <p class="m-0 flex flex-col gap-s4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-s6"><a class="toon-btn toon-btn-yellow w-full text-center sm:w-auto" href="${site.linkedin}">Message me on LinkedIn</a><a class="toon-link inline-flex min-h-[44px] items-center" href="${site.github}">See my code on GitHub</a></p>
           </div>
         </div>
       </aside>`;
@@ -455,7 +453,7 @@ export function study(s: CaseStudy): string {
   };
   const body = `
     <article class="py-s8">
-      <a class="toon-link" href="/work.html">All case studies</a>
+      <a class="toon-link inline-flex min-h-[44px] items-center" href="/work.html">All case studies</a>
       <header class="mt-s6 grid gap-s8 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-end lg:gap-x-12">
         <div class="min-w-0">
           <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
@@ -560,7 +558,7 @@ export function kit(): string {
       <p class="mb-s6 max-w-[60ch]">For dashboards and case studies. Every figure below is made-up sample data. The helpers in <code>toonish-ui/markup</code> escape every string they render.</p>
       <div class="toon-stats">${stat('Orders', '12', 'Monday to Thursday')}${stat('On time', '94%', 'sample figure')}${stat('Busiest day', 'Tue')}</div>
       <p class="mb-0 mt-s6 flex flex-wrap items-center gap-s2">${badge('Open', 'blue', 12)}${badge('Held', 'yellow', 3)}${badge('Shipped', 'violet', 40)}${badge('Late', 'red', 2)}${badge('Archived', 'mist', 9)}${badge('Draft', 'paper')}${chip('A chip')}</p>
-      <div class="toon-list mt-s6">${row({ lead: 'Nov 10', title: 'Order 1042', sub: 'Pending', aside: 'Web', dot: 'blue' })}${row({ lead: 'Nov 11', title: 'Order 1041', aside: 'Phone', dot: 'red' })}${row({ title: 'A row with no lead', aside: 'Store', dot: 'violet' })}</div>
+      ${list([row({ lead: 'Nov 10', title: 'Order 1042', sub: 'Pending', aside: 'Web', dot: 'blue' }), row({ lead: 'Nov 11', title: 'Order 1041', aside: 'Phone', dot: 'red' }), row({ title: 'A row with no lead', aside: 'Store', dot: 'violet' })], { label: 'Sample orders', cls: 'mt-s6' })}
       <div class="toon-card mt-s8">${bars({ label: 'Sample orders by day, stacked by channel, against a target of 5', target: 5, columns: [
         { label: 'Mon', sub: '9', segments: [{ value: 3, tone: 'blue', label: 'Web' }, { value: 1, tone: 'hatch', label: 'Returned' }] },
         { label: 'Tue', sub: '10', current: true, segments: [{ value: 4, tone: 'blue', label: 'Web' }, { value: 2, tone: 'red', label: 'Phone' }] },

@@ -117,7 +117,7 @@ test('home sections are numbered, in order, and the nav anchors land on them', (
 test('the home page keeps one primary button in the hero and a text link for the repos', () => {
   const hero = home().slice(0, home().indexOf('toon-strip'));
   expect(hero.match(/class="toon-btn /g)?.length).toBe(1);
-  expect(hero).toContain(`<a class="toon-link" href="${site.org}">Browse the repos</a>`);
+  expect(hero).toContain(`<a class="toon-link inline-flex min-h-[44px] items-center" href="${site.org}">Browse the repos</a>`);
 });
 
 test('the proof strip fails the build when a study it reads is missing', () => {
@@ -487,8 +487,8 @@ test('the home row is a deck of the three newest studies that are not featured, 
   const deckHtml = html.slice(at, html.indexOf('All ' + studies.length + ' case studies<span', at));
   const rest = studies.filter((s) => s !== featured).slice(0, 3);
   expect(deckHtml.match(/data-home="card"/g)).toHaveLength(3);
-  expect(deckHtml.match(/class="toon-deck-card" role="group" aria-label="\d of 3"/g)).toHaveLength(3);
-  const hrefs = [...deckHtml.matchAll(/<a class="toon-link self-start" href="(\/work\/[^"]+)"/g)].map((m) => m[1]);
+  expect(deckHtml.match(/class="toon-deck-card" role="group" aria-roledescription="slide" aria-label="\d of 3"/g)).toHaveLength(3);
+  const hrefs = [...deckHtml.matchAll(/<a class="toon-link inline-flex min-h-\[44px\] items-center self-start" href="(\/work\/[^"]+)"/g)].map((m) => m[1]);
   expect(hrefs).toEqual(rest.map((s) => `/work/${s.slug}.html`));
   expect(deckHtml).not.toMatch(/overflow-x-auto|snap-x|snap-mandatory|snap-start|w-\[78%\]/);
   expect(html).not.toMatch(/overflow-x-auto/);
