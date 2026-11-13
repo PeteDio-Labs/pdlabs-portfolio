@@ -48,7 +48,7 @@
           [
             "Safety check",
             "Blocks service restarts while it runs and prints counts, not package lists",
-            "Writes a marker, checks a URL or unit, then looks for new failed units and unhealthy containers. The first failure stops the run."
+            "Writes a marker, checks an optional URL or unit, then looks for new failed units and unhealthy containers. The first failure stops the run."
           ]
         ]
       }
@@ -97,12 +97,12 @@
     {
       "label": "Review findings",
       "value": "6",
-      "detail": "2 high, 4 medium, all fixed before merge"
+      "detail": "found in review of the patch playbook, all fixed before it merged"
     },
     {
-      "label": "Guests",
+      "label": "Guests patched",
       "value": "21",
-      "detail": "running containers"
+      "detail": "in the patch run"
     },
     {
       "label": "Playbooks",
