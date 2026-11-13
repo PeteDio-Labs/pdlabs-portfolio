@@ -46,10 +46,14 @@ const SCENES: Record<string, (s: string) => string> = {
   // A friendly robot head.
   Agents: (s) =>
     line('M200 36V54', 6) + circ(200, 30, 9, RED) + box(135, 54, 130, 92, BLUE, s) + circ(172, 92, 16, PAPER) + circ(228, 92, 16, PAPER) + circ(176, 94, 6, INK) + circ(224, 94, 6, INK) + box(172, 120, 56, 14, YEL),
-  // A chip with a core and pins.
-  'AI infra': (s) =>
-    [0, 1, 2, 3].map((i) => line(`M${166 + i * 22} 36v22M${166 + i * 22} 142v22`, 6) + line(`M118 ${70 + i * 18}h24M258 ${70 + i * 18}h24`, 6)).join('') +
-    box(142, 58, 116, 92, VIO, s) + box(172, 80, 56, 48, PAPER) + circ(200, 104, 10, RED),
+  // A small neural network: three layers, one path lit up.
+  'AI infra': (s) => {
+    const cols = [[35, 85, 135], [28, 69, 110, 151], [60, 110]].map((ys, c) => ys.map((y) => [70 + c * 95, y]));
+    const edges = cols[0].flatMap((a) => cols[1].map((b) => line(`M${a[0]} ${a[1]}L${b[0]} ${b[1]}`, 3))).concat(cols[1].flatMap((a) => cols[2].map((b) => line(`M${a[0]} ${a[1]}L${b[0]} ${b[1]}`, 3))));
+    const lit = line(`M${cols[0][1][0]} ${cols[0][1][1]}L${cols[1][2][0]} ${cols[1][2][1]}L${cols[2][0][0]} ${cols[2][0][1]}`, 9, YEL);
+    const nodes = cols.flatMap((c, ci) => c.map(([x, y]) => circ(x, y, 14, ci === 0 ? BLUE : ci === 1 ? VIO : RED)));
+    return edges.join('') + lit + nodes.join('') + box(328, 66, 56, 52, PAPER, s) + line('M342 92l10 10l20-22', 7, BLUE);
+  },
 };
 
 const FALLBACK = (s: string) => box(110, 40, 180, 90, PAPER, s) + line('M130 70h140M130 90h100M130 110h120', 6, BLUE);
