@@ -469,6 +469,9 @@ test('the stack on the home page is a kit list of six labelled rows, not a bulle
   expect(stack.match(/class="toon-row" role="listitem"/g)).toHaveLength(6);
   expect([...stack.matchAll(/toon-row-lead">([^<]*)</g)].map((m) => m[1])).toEqual(['Compute', 'Cloud', 'IaC', 'Secrets', 'Runtime', 'AI']);
   expect(html).not.toContain('list-disc');
+  // The stack and both drawings of the hybrid diagram name the Lambda watchdog.
+  expect(stack).toContain('Lambda watchdog');
+  expect(html.match(/>Lambda<\/text>/g)).toHaveLength(2);
 });
 
 test('the home row is a deck of the three newest studies that are not featured, and it has no sideways scroller', () => {
