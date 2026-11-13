@@ -565,3 +565,16 @@ test('the study closing panel holds the fit text, the skills and the hiring call
     expect(html).not.toContain('toon-sfx');
   }
 });
+
+test('every study ends with a pager to the previous and the next study, by title', () => {
+  studies.forEach((s, i) => {
+    const html = study(s);
+    const prev = studies[(i + studies.length - 1) % studies.length];
+    const next = studies[(i + 1) % studies.length];
+    expect(html).toContain(`<a class="toon-pager-link toon-pager-prev" href="/work/${prev.slug}.html">`);
+    expect(html).toContain(`<a class="toon-pager-link toon-pager-next" href="/work/${next.slug}.html">`);
+    expect(html).toContain(`<span class="toon-pager-title">${esc(prev.title)}</span>`);
+    expect(html).toContain(`<span class="toon-pager-title">${esc(next.title)}</span>`);
+    expect(html.match(/class="toon-pager-arrow"/g)?.length).toBe(2);
+  });
+});

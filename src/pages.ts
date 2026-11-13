@@ -1,5 +1,5 @@
 import { esc, md } from './html.ts';
-import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, stat, badge, chip, row, bars, kicker, strip, steps, sfx, deck, portrait } from 'toonish-ui/markup';
+import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, stat, badge, chip, row, bars, kicker, strip, steps, sfx, deck, pager, portrait } from 'toonish-ui/markup';
 import { thumb } from './illustrations/thumbs.ts';
 import { hybridDiagram, hybridDiagramTall } from './illustrations/hybrid.ts';
 import { legalPages, legalUpdated } from './legal.ts';
@@ -438,10 +438,7 @@ export function study(s: CaseStudy): string {
         </nav>
       </div>
       ${closing(s)}
-      <nav class="mt-16 grid gap-s4 sm:grid-cols-2" aria-label="Case studies">
-        <a class="toon-btn toon-btn-paper w-full rounded-card text-left" href="/work/${prev.slug}.html"><span class="block text-footnote font-normal">Previous</span>${esc(prev.title)}</a>
-        <a class="toon-btn w-full rounded-card text-left sm:text-right" href="/work/${next.slug}.html"><span class="block text-footnote font-normal">Next</span>${esc(next.title)}</a>
-      </nav>
+      ${pager({ label: 'Case studies', cls: 'mt-16', prev: { href: `/work/${prev.slug}.html`, title: prev.title }, next: { href: `/work/${next.slug}.html`, title: next.title } })}
     </article>`;
   return layout({ title: s.title, path: `/work/${s.slug}.html`, current: 'Work', description: s.summary.replace(/`/g, ''), body });
 }
@@ -560,6 +557,9 @@ export function kit(): string {
         ].map((c, k) => `<article class="toon-card flex flex-col" style="--toon-shadow:${[HEX.yellow, HEX.violet, HEX.blue][k]}"><h4 class="m-0 text-title3 font-bold">Sample card ${c.n}</h4><p class="mb-s4 mt-s3">${c.t}</p><a class="toon-link mt-auto self-start" href="/ui.html#k-page">A link in the card</a></article>`),
         { label: 'Sample cards, flip through them' },
       )}
+      <h3 class="mb-s3 mt-s8 text-title2 font-bold">Pager</h3>
+      <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-pager</code> is a pair of previous and next links in the shape of the deck's switcher. The title under each direction says where the link goes.</p>
+      ${pager({ label: 'Sample pages', prev: { href: '/ui.html', title: 'A sample page before this one' }, next: { href: '/ui.html', title: 'A sample page after this one, with a longer title that is cut at two lines' } })}
       <h3 class="mb-s3 mt-s8 text-title2 font-bold">Sound effects</h3>
       <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-sfx</code> is a sound-effect word in the comic face. Each letter has its own turn, rise and size, set from its index by the <code>sfx()</code> helper, and drifts in turn. It is decoration: the helper hides it from readers and it takes no pointer. You position it, usually <code>absolute</code> in a <code>relative</code> parent. <code>toon-sfx-sm</code>, <code>toon-sfx-lg</code> and <code>toon-sfx-ghost</code> change the size or make it an outline for sitting behind content. Latin letters only.</p>
       <div class="relative flex min-h-[9rem] flex-wrap items-center gap-x-s8 gap-y-s6 pl-s2">${sfx('POW!', 'red')}${sfx('click', 'yellow', { size: 'sm' })}${sfx('WHAM', 'violet', { size: 'lg' })}${sfx('SHIP!', 'blue', { size: 'lg', ghost: true })}</div>
