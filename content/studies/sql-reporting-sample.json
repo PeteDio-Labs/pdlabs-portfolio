@@ -1,0 +1,55 @@
+{
+  "slug": "sql-reporting-sample",
+  "date": "2026-11-13",
+  "title": "Measuring whether a review template helped, in SQL",
+  "tag": "Data",
+  "accent": "yellow",
+  "summary": "Twelve documented PostgreSQL queries over a synthetic review queue, built to answer one question: did a template make reviews faster without making them worse?",
+  "stat": {
+    "value": "12 queries",
+    "label": "over 1,800 synthetic reviews, with a data-quality check that must return zero rows"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "A team rolls out a checklist template and wants to know if it worked. Saying reviews feel faster is not enough, and one average can hide a mix shift, a slow tail or a drop in quality. I wanted a worked example of the questions I ask before I report a result like that."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A synthetic review queue in PostgreSQL: 6 reviewers, 1,800 applications and 1,800 reviews from a fixed random seed. The template reaches one reviewer per week, so every reviewer has work before and after it. The repository holds the schema, the seed, twelve commented queries and a script that rebuilds everything and exits non-zero if the row count is wrong.",
+        "The queries cover volume by month, median and 90th-percentile time, the comparison by category, a weekly trend with a rolling mean, adoption by reviewer, rework, outcome mix, channel, hours saved, a window-function ranking, and a check for reviews that start before their application arrives."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "In the synthetic data, median review time fell from 28.1 to 10.8 minutes. Every category fell by at least 60%, so the drop is not a mix shift. Rework fell from 9.6% to 6.5%. The staggered start shows up as a step down across six weeks.",
+        "The data is synthetic and I built the speedup into the generator, so this is a demonstration of method, not evidence that a real template works. The write-up says so at the top."
+      ]
+    },
+    {
+      "heading": "What the data showed that I had to explain",
+      "paragraphs": [
+        "Denials rose from 17.7% to 21.5% after the template. The generator draws outcomes at the same rate in both groups, so the gap is sampling noise, and I wrote that down. On real data, an outcome shift next to a speedup is the first thing to investigate, because a faster review that decides differently is a change in the decision, not only in the speed."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Report the median and the tail, split by category, and check outcomes and rework beside speed. Add a query that must return zero rows, so a broken join cannot pass as a clean result."
+      ]
+    }
+  ],
+  "skills": [
+    "PostgreSQL",
+    "Window functions and CTEs",
+    "Metrics design",
+    "Data-quality checks"
+  ],
+  "sources": [
+    "samples/sql-reporting in this repository: schema.sql, seed.sql, queries.sql and results.txt from a run on PostgreSQL 16"
+  ]
+}

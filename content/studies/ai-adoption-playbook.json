@@ -1,0 +1,79 @@
+{
+  "slug": "ai-adoption-playbook",
+  "date": "2026-11-13",
+  "title": "A playbook for rolling out an AI workflow to a team",
+  "tag": "Adoption",
+  "accent": "violet",
+  "summary": "Five stages from use-case intake to a go or no-go gate, built from the controls I use to run agents on my own platform.",
+  "stat": {
+    "value": "5 stages",
+    "label": "each with an owner, a limit and a number that decides whether the next stage starts"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "Teams adopt an AI workflow in one of two ways. Someone ships it to everyone and finds the failures in production, or it stays a demo that nobody trusts. I wanted a repeatable way to get from a good idea to a workflow a team relies on, with a clear point at which to stop."
+      ]
+    },
+    {
+      "heading": "Where this comes from",
+      "paragraphs": [
+        "I have run this pattern on my own platform: one agent session per task, a review before every merge, a tiered gate that decides what an agent may merge, and approval steps for anything hard to undo. I have not run it across a team of other people. The playbook below is the method I would take to a team, and each stage names the practice from my own work that it comes from."
+      ]
+    },
+    {
+      "heading": "Stage 1: intake",
+      "paragraphs": [
+        "Collect each candidate use case on one page: who does the work today, how long it takes, how often, what a mistake costs and who is told when it goes wrong. Rank by frequency and by how cheap a mistake is, and start with the frequent, low-cost-of-error work. Measure the current process first. In my own work I do not claim an hours-saved figure without a measurement behind it, and the same rule holds here."
+      ]
+    },
+    {
+      "heading": "Stage 2: limit before you tune",
+      "paragraphs": [
+        "Before anyone improves quality, write down what the workflow may and may not do, and name the exceptions. My household finance agent reads bank data and cannot move money, and it asks before it sends outside the household or deletes anything. Teams accept a limited workflow faster than an impressive one with no limits."
+      ]
+    },
+    {
+      "heading": "Stage 3: pilot with a control",
+      "paragraphs": [
+        "Run the workflow with two to four people for a fixed period, and keep a comparison group on the old process. I tested a merge control against a throwaway branch with no protection, because without the control a refusal looks the same as a broken credential. A pilot needs the same: a baseline, so that a change in the numbers means something. Pick pilot users who will report problems, and give them one place to do it."
+      ]
+    },
+    {
+      "heading": "Stage 4: champions and training",
+      "paragraphs": [
+        "Each pilot user who succeeds becomes the person a colleague asks. Give champions a one-page guide with three parts: what the workflow does, what it never does, and what to do when it is wrong. Add real examples of mistakes, because people trust a tool whose failures they have seen. Track who uses the workflow, how often, and who stopped using it and why."
+      ]
+    },
+    {
+      "heading": "Stage 5: the go or no-go gate",
+      "paragraphs": [
+        "Set the gate before the pilot starts, in numbers: a speed measure, a quality measure such as rework or error rate, an adoption measure, and a safety measure such as the number of actions that needed a person to undo. My local model evaluation uses the same shape: a fixed set of questions, each naming the answer it needs, and a check that exits non-zero on any miss. A gate that can only pass is not a gate. If the numbers miss, the decision is to stop or to fix and rerun the pilot, and the team hears which."
+      ]
+    },
+    {
+      "heading": "What keeps it honest",
+      "paragraphs": [
+        "Every stage reports what it examined, not only what it found. A job that checks nothing and reports success was the most common failure in my own automation, across six separate work items. The same holds for adoption: a dashboard that says 90% usage means nothing without the number of people it counted."
+      ]
+    },
+    {
+      "heading": "What I would do differently",
+      "paragraphs": [
+        "Write the gate numbers and the reporting rule before the first pilot user starts. I wrote mine after the sixth bug of the same shape."
+      ]
+    }
+  ],
+  "skills": [
+    "Change management",
+    "Pilot design",
+    "Metrics and go or no-go gates",
+    "AI governance"
+  ],
+  "sources": [
+    "content/studies/finance-agent.json (limits and approval)",
+    "content/studies/agent-merge-gate.json (tested control, reporting rule, six work items)",
+    "content/studies/local-llm-tool-routing.json (fixed evaluation that exits non-zero on a miss)"
+  ]
+}
