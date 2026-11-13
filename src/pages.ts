@@ -426,7 +426,7 @@ export function kit(): string {
       </div>
       <p class="max-w-[60ch]">Text on every fill is ink, at 5.1:1 or better. Paper text on the ground is 16:1.</p>
     </section>`;
-  return layout({ title: 'toonish-ui', path: '/ui.html', current: 'UI kit', description: 'toonish-ui, the original cartoon component kit behind this site.', body });
+  return layout({ title: 'toonish-ui', path: '/ui.html', current: 'UI kit', noindex: true, description: 'toonish-ui, the original cartoon component kit behind this site.', body });
 }
 
 export function notFound(): string {
@@ -451,7 +451,7 @@ export const personJsonLd = () => ({
     url: `https://${site.domain}/`,
     jobTitle: 'Full-stack and infrastructure engineer',
     description: `${site.role} ${site.background}`,
-    sameAs: [site.github, site.org],
+    sameAs: [site.github, site.org, site.linkedin],
     knowsAbout: ['AI agents', 'Terraform', 'Ansible', 'AWS', 'TypeScript', 'Bun', 'GitOps', 'Vault', 'Proxmox', 'Full-stack web development'],
   },
 });

@@ -7,10 +7,11 @@ const urlOf = (file: string) => (file === 'index.html' ? `${origin}/` : `${origi
 export const robotsTxt = () =>
   `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`;
 
-export const sitemapXml = (files: string[], lastmod = new Date().toISOString().slice(0, 10)) =>
+/** `dates` maps a file to its own lastmod (a study's finish date); other files get `lastmod`. */
+export const sitemapXml = (files: string[], lastmod = new Date().toISOString().slice(0, 10), dates: Record<string, string> = {}) =>
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${files
     .sort()
-    .map((f) => `  <url><loc>${urlOf(f)}</loc><lastmod>${lastmod}</lastmod></url>`)
+    .map((f) => `  <url><loc>${urlOf(f)}</loc><lastmod>${dates[f] ?? lastmod}</lastmod></url>`)
     .join('\n')}\n</urlset>\n`;
 
 /** llms.txt: a plain summary for language models, written from the same content as the pages. */
@@ -39,3 +40,6 @@ ${studies.map((s) => `- [${s.title}](${origin}/work/${s.slug}.html): ${s.summary
 - [Privacy](${origin}/privacy.html)
 - [Terms](${origin}/terms.html)
 `;
+
+/** The pages the sitemap lists: every page except the 404 and the noindex kit page. */
+export const sitemapFiles = (pages: string[]) => pages.filter((p) => p !== '404.html' && p !== 'ui.html');

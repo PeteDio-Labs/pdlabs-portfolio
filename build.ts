@@ -4,7 +4,7 @@ import { mkdir, rm } from 'node:fs/promises';
 import { home, kit, legal, notFound, study, workIndex, workScript } from './src/pages.ts';
 import { site, studies } from './src/content.ts';
 import { siteScript, motionScript } from './src/script.ts';
-import { robotsTxt, sitemapXml, llmsTxt } from './src/seo.ts';
+import { robotsTxt, sitemapFiles, sitemapXml, llmsTxt } from './src/seo.ts';
 
 const out = 'dist';
 await rm(out, { recursive: true, force: true });
@@ -33,11 +33,15 @@ await Bun.write(
   JSON.stringify(studies.map(({ slug, date, tag, title, summary, stat }) => ({ slug, date, tag, title, summary, stat, url: `/work/${slug}.html` })), null, 2) + '\n',
 );
 
-// Static assets and machine-readable files. The sitemap lists every page except the 404.
+// Static assets and machine-readable files. The sitemap lists every page except the 404 and the noindex kit page, and dates each study by its own date.
 await Bun.write(`${out}/site.js`, siteScript);
 await Bun.write(`${out}/motion.js`, motionScript);
 await Bun.write(`${out}/robots.txt`, robotsTxt());
-await Bun.write(`${out}/sitemap.xml`, sitemapXml(Object.keys(pages).filter((p) => p !== '404.html')));
+await Bun.write(`${out}/sitemap.xml`, sitemapXml(
+  sitemapFiles(Object.keys(pages)),
+  undefined,
+  Object.fromEntries(studies.map((s) => [`work/${s.slug}.html`, s.date])),
+));
 await Bun.write(`${out}/llms.txt`, llmsTxt());
 await Bun.write(`${out}/og.png`, Bun.file('public/og.png'));
 
@@ -69,3 +73,10 @@ const css = await Bun.file(`${out}/toonish.css`).text();
 if (!css.includes('.toon-btn')) throw new Error('toonish.css has no components: the Tailwind content globs matched nothing');
 
 console.log(`built ${Object.keys(pages).length} pages and toonish.css (${css.length} bytes) into ${out}/`);
+
+// Size guard: a large image or font should fail the build, not ship. dist/ is about 0.7 MB today.
+const MAX_DIST_BYTES = 1_500_000;
+let total = 0;
+for (const f of new Bun.Glob('**/*').scanSync({ cwd: out, dot: true })) total += Bun.file(`${out}/${f}`).size;
+if (total > MAX_DIST_BYTES) throw new Error(`dist/ is ${total} bytes, over the ${MAX_DIST_BYTES} byte budget`);
+console.log(`dist/ is ${total} bytes (budget ${MAX_DIST_BYTES})`);

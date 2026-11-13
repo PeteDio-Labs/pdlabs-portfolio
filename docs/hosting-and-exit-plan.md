@@ -37,3 +37,18 @@ Decide one of the two paths by that date. Both need no change to the content or 
 Either way, run `bun run build` and keep a copy of `dist/` as a release asset on the day you
 cut over. The repository holds everything else: `content/studies/` is the data, and
 `git log` is its history, so there is no export step and no database to back up.
+
+## Deploy key and merge gate
+
+- **Deploy key.** The account's service control policy denies the GitHub OIDC provider
+  (`PET-816`), so the deploy uses the access key of `petedio-portfolio-deploy`, held in the
+  `production` environment secrets. Rotate it every 90 days with
+  `petedio-iac/scripts/portfolio-deploy-key.sh`, and keep the user's policy to one bucket and
+  one distribution.
+- **What gates a deploy.** `deploy.yml` runs typecheck, tests and the build itself, so a red
+  build never syncs. The private repository has no branch protection, so `ci` does not block a
+  merge. The merge gate in the vault's working agreement, section 5, is the control.
+- **Caching.** The deploy syncs everything with `max-age=300`, then re-uploads `fonts/` with a one-year
+  `immutable` header and `.png` and `.svg` files with a one-day header. HTML, CSS and JS keep the short header
+  because their names carry no hash.
+- **Size budget.** `build.ts` fails when `dist/` passes 1.5 MB.
