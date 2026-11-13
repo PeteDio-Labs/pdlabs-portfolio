@@ -443,14 +443,14 @@ test('the kit page demonstrates the landing-page components', () => {
   for (const c of ['toon-kicker', 'toon-strip', 'toon-steps', 'toon-panel', 'toon-bubble-left', 'toon-bubble-up', 'toon-tilt-l', 'toon-tilt-r', 'toon-sfx', 'toon-sfx-ghost']) expect(html).toContain(c);
 });
 
-test('the home page has at most three sound effects, all hidden from readers, and none in the closing panel', () => {
+test('the home page has four sound effects, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
   const html = home();
   const words = [...html.matchAll(/<span class="toon-sfx[^"]*"[^>]*aria-hidden="true">((?:<span[^>]*>[^<]*<\/span>)+)<\/span>/g)].map((m) => [...m[1].matchAll(/>([^<]*)<\/span>/g)].map((x) => x[1]).join(''));
-  expect(words).toEqual(['MERGE!', 'SHIP!', 'CLICK']);
-  expect(html.match(/class="toon-sfx/g)).toHaveLength(3);
+  expect(words).toEqual(['MERGE!', 'SHIP!', 'CLICK!', 'DEPLOY!']);
+  expect(html.match(/class="toon-sfx/g)).toHaveLength(4);
   expect(html.slice(html.indexOf('class="toon-panel"'))).not.toContain('toon-sfx');
-  // Only the hero's word shows on a phone: the other two are hidden below md.
-  expect(html.match(/toon-sfx[^"]*hidden md:block/g)).toHaveLength(2);
+  // Pedro, 2026-11-13: a phone showed only the hero's word. No word hides below md.
+  expect(html).not.toMatch(/class="toon-sfx[^"]*\bhidden\b/);
 });
 
 test('the home row is a deck of the three newest studies that are not featured, and it has no sideways scroller', () => {
@@ -550,7 +550,7 @@ test('the study with pictures has no sideways scroller, and each picture links t
   expect(html).toContain('lg:-rotate-1');
 });
 
-test('the study closing panel holds the fit text, the skills and the hiring call, and the study pages have no sound effects', () => {
+test('the study closing panel holds the fit text, the skills and the hiring call, and a study page has one sound effect, on its result panel', () => {
   for (const s of studies) {
     const html = study(s);
     const at = html.indexOf('<aside class="toon-panel mt-16"');
@@ -562,7 +562,10 @@ test('the study closing panel holds the fit text, the skills and the hiring call
     expect(panel).toContain('Hiring for AI automation or forward-deployed engineering?');
     expect(panel).toContain(`href="${site.linkedin}"`);
     expect(panel).toContain(`href="${site.github}"`);
-    expect(html).not.toContain('toon-sfx');
+    // One sound effect at most, on the result panel, hidden from readers and never hidden on a phone.
+    const fx = html.match(/<span class="toon-sfx[^"]*"[^>]*>/g) ?? [];
+    expect(fx.length).toBe(s.sections.some((x) => isResultHeading(x.heading)) ? 1 : 0);
+    for (const f of fx) { expect(f).toContain('aria-hidden="true"'); expect(f).not.toMatch(/class="[^"]*\bhidden\b/); }
   }
 });
 

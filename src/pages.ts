@@ -186,7 +186,7 @@ export function home(): string {
     <div class="mt-s8">${proof}</div>
 
     <section id="work" class="relative mt-16 scroll-mt-8 md:mt-24" aria-labelledby="work-h">
-      ${sfx('SHIP!', 'blue', { size: 'lg', ghost: true, cls: 'absolute -top-[5.75rem] right-s6 hidden md:block' })}
+      ${sfx('SHIP!', 'blue', { size: 'lg', ghost: true, cls: 'absolute -top-[3.5rem] right-s2 text-[3.25rem] md:-top-[5.75rem] md:right-s6 md:text-[5rem]' })}
       ${kicker('01', 'The work', { link: { href: '/work.html', text: `All ${studies.length} case studies`, cls: 'hidden sm:inline' } })}
       ${lettered('work-h', 'Case studies', 'yellow', 'mb-s6 mt-s4 max-w-md')}
       <article class="toon-card toon-pop relative grid items-center gap-s6 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-s8 md:p-s8" data-home="lead" style="--toon-shadow:${HEX[featured.accent]}">
@@ -208,7 +208,7 @@ export function home(): string {
       ${kicker('02', 'The method')}
       ${lettered('how-h', 'How I work', 'blue', 'mb-s6 mt-s4 max-w-sm')}
       <div class="relative">
-      ${sfx('CLICK', 'yellow', { size: 'sm', cls: 'absolute -top-s6 right-s6 z-10 hidden md:block' })}
+      ${sfx('CLICK!', 'yellow', { size: 'sm', cls: 'absolute -top-s8 right-s2 z-10 md:-top-s6 md:right-s6' })}
       ${steps(
         [
           { title: 'One task, one session, one branch.', body: 'I treat AI agents like a team, not a tool. Each task gets its own session and its own branch.' },
@@ -219,7 +219,8 @@ export function home(): string {
       )}
       </div>
       <div class="mt-s8 grid items-start gap-s8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <figure class="m-0 min-w-0">
+        <figure class="relative m-0 min-w-0">
+          ${sfx('DEPLOY!', 'violet', { size: 'sm', cls: 'absolute -top-s6 right-s3 z-10 md:text-[2.5rem]' })}
           <div class="toon-frame relative bg-toon-ground">
             <span class="toon-caption m-s3 inline-block">Hybrid by design</span>
             <div class="sm:hidden">${hybridDiagramTall()}</div>
@@ -397,7 +398,8 @@ export function study(s: CaseStudy): string {
     const panel = isResultHeading(sec.heading);
     const shots = sec.shots ?? [];
     return `
-        <section id="${ids[k]}" class="scroll-mt-s8 min-w-0 md:grid md:grid-cols-[3.5rem_minmax(0,1fr)] md:gap-x-s6${panel ? ' toon-panel' : ''}"${panel ? ` style="--toon-shadow:${HEX[s.accent]}"` : ''}>
+        <section id="${ids[k]}" class="scroll-mt-s8 min-w-0 md:grid md:grid-cols-[3.5rem_minmax(0,1fr)] md:gap-x-s6${panel ? ' relative toon-panel' : ''}"${panel ? ` style="--toon-shadow:${HEX[s.accent]}"` : ''}>${panel ? `
+          ${sfx('SHIP!', 'red', { size: 'sm', cls: 'absolute -top-s5 right-s4 z-10 md:text-[2.5rem]' })}` : ''}
           <div class="toon-kicker mb-s3 max-w-[7rem] md:mb-0 md:max-w-none md:self-start md:pt-s2"><span class="toon-kicker-num">${partNo(k)}</span><span class="toon-kicker-rule md:hidden" aria-hidden="true"></span></div>
           <div class="min-w-0 md:col-start-2 md:max-w-[68ch]">
             <h2 class="mb-s4 mt-0 font-display text-title1 font-normal${panel ? ' text-toon-ink' : ''}"${panel ? '' : ` style="color:${HEX[s.accent]}"`}>${esc(sec.heading)}</h2>
