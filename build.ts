@@ -2,7 +2,8 @@
 // page sources. Exits non-zero when any step fails or a page is missing from the output.
 import { mkdir, rm } from 'node:fs/promises';
 import { home, kit, legal, notFound, study, workIndex, workScript } from './src/pages.ts';
-import { site, studies } from './src/content.ts';
+import { site, studies, fit } from './src/content.ts';
+import { apiFiles } from './src/api.ts';
 import { siteScript, motionScript } from './src/script.ts';
 import { robotsTxt, sitemapFiles, sitemapXml, llmsTxt } from './src/seo.ts';
 
@@ -32,6 +33,9 @@ await Bun.write(
   `${out}/studies.json`,
   JSON.stringify(studies.map(({ slug, date, tag, title, summary, stat }) => ({ slug, date, tag, title, summary, stat, url: `/work/${slug}.html` })), null, 2) + '\n',
 );
+
+// The JSON API: an index and one file per study under api/. CloudFront adds CORS to /api/* only.
+for (const [path, text] of Object.entries(apiFiles(studies, fit))) await Bun.write(`${out}/${path}`, text);
 
 // Static assets and machine-readable files. The sitemap lists every page except the 404 and the noindex kit page, and dates each study by its own date.
 await Bun.write(`${out}/site.js`, siteScript);

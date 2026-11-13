@@ -55,7 +55,7 @@ jobs:
       - name: Check the build wrote every page
         run: |
           set -eu
-          for f in index.html work.html work.js studies.json ui.html 404.html toonish.css favicon.svg; do test -s "dist/$f" || { echo "missing dist/$f"; exit 1; }; done
+          for f in index.html work.html work.js studies.json api/studies.json ui.html 404.html toonish.css favicon.svg; do test -s "dist/$f" || { echo "missing dist/$f"; exit 1; }; done
           n=$(ls dist/work/*.html | wc -l)
           echo "dist/work holds $n case-study pages"
           test "$n" -ge 4
@@ -103,13 +103,18 @@ jobs:
       - name: Verify the live site
         run: |
           set -eu
-          paths="/ /studies.json $(jq -r '.[].url' dist/studies.json)"
+          paths="/ /studies.json /api/studies.json $(jq -r '.[].url, .[].api' dist/api/studies.json)"
           checked=0
           for p in $paths; do
             code=$(curl -sS -o /dev/null -w '%{http_code}' --retry 3 --retry-all-errors "https://pdlab.dev$p")
             echo "$code $p"
             [ "$code" = 200 ] || { echo "::error::https://pdlab.dev$p answered $code, expected 200"; exit 1; }
+            case "$p" in /api/*)
+              h=$(curl -sSI --retry 3 --retry-all-errors -H 'Origin: https://example.com' "https://pdlab.dev$p" | tr -d '\r')
+              echo "$h" | grep -qi '^content-type: application/json' || { echo "::error::$p is not application/json"; exit 1; }
+              echo "$h" | grep -qi '^access-control-allow-origin: \*' || { echo "::error::$p has no CORS header; the /api/* behavior needs the petedio-iac change"; exit 1; } ;;
+            esac
             checked=$((checked + 1))
           done
-          [ "$checked" -gt 2 ] || { echo "::error::checked only $checked URL(s); studies.json listed none"; exit 1; }
+          [ "$checked" -gt 4 ] || { echo "::error::checked only $checked URL(s); studies.json listed none"; exit 1; }
           echo "verified $checked live URL(s)"
