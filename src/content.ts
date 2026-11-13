@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 // Portfolio content. Site details live here. Each case study is one JSON file in
 // content/studies/, loaded and checked below, so adding a study means adding a file.
 // Source: /mnt/project-files/portfolio/case-studies-draft.md (draft 2, with the
@@ -10,9 +10,21 @@ import { readdirSync, readFileSync } from 'node:fs';
 
 export type Accent = 'blue' | 'red' | 'yellow' | 'violet';
 
+/** A screenshot under a section's paragraphs. `file` names a file in public/studies/<slug>/. */
+export interface Shot {
+  file: string;
+  alt: string;
+  width: number;
+  height: number;
+  caption: string;
+  badge?: string;
+  transcript?: string;
+}
+
 export interface Section {
   heading: string;
   paragraphs: string[];
+  shots?: Shot[];
 }
 
 export interface CaseStudy {
@@ -61,6 +73,10 @@ function check(file: string, s: any): CaseStudy {
   if (!s.stat?.value || !s.stat?.label) bad('"stat" needs a value and a label');
   if (!Array.isArray(s.sections) || !s.sections.length) bad('"sections" must be a non-empty list');
   if (!Array.isArray(s.skills)) bad('"skills" must be a list');
+  for (const sec of s.sections) for (const sh of sec.shots ?? []) {
+    if (!sh.alt?.trim() || !sh.caption?.trim()) bad(`shot "${sh.file}" needs alt text and a caption`);
+    if (!existsSync(`${import.meta.dir}/../public/studies/${s.slug}/${sh.file}`)) bad(`shot "${sh.file}" is missing from public/studies/${s.slug}/`);
+  }
   return s as CaseStudy;
 }
 

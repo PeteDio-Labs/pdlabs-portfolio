@@ -37,6 +37,11 @@ await Bun.write(
 // The JSON API: an index and one file per study under api/. CloudFront adds CORS to /api/* only.
 for (const [path, text] of Object.entries(apiFiles(studies, fit))) await Bun.write(`${out}/${path}`, text);
 
+// Case-study screenshots: every file under public/studies/ is copied to dist/studies/, and the build says how many.
+const shots = [...new Bun.Glob('studies/**/*.png').scanSync('public')];
+for (const f of shots) await Bun.write(`${out}/${f}`, Bun.file(`public/${f}`));
+console.log(`copied ${shots.length} study screenshot(s)`);
+
 // Static assets and machine-readable files. The sitemap lists every page except the 404 and the noindex kit page, and dates each study by its own date.
 await Bun.write(`${out}/site.js`, siteScript);
 await Bun.write(`${out}/motion.js`, motionScript);

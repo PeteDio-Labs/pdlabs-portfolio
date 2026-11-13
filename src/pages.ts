@@ -1,5 +1,5 @@
 import { esc, md } from './html.ts';
-import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure } from 'toonish-ui/markup';
+import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot } from 'toonish-ui/markup';
 import { thumb } from './illustrations/thumbs.ts';
 import { hybridDiagram } from './illustrations/hybrid.ts';
 import { legalPages, legalUpdated } from './legal.ts';
@@ -292,12 +292,13 @@ export function study(s: CaseStudy): string {
           <span class="mt-s2 block text-footnote">${esc(s.stat.label)}</span>
         </div>
       </header>
-      <div class="grid max-w-[68ch] gap-s8">${s.sections
+      <div class="grid max-w-[68ch] grid-cols-1 gap-s8">${s.sections
         .map(
           (sec) => `
-        <section>
+        <section class="min-w-0">
           <h2 class="mb-s3 mt-0 font-display text-title1 font-normal" style="color:${HEX[s.accent]}">${esc(sec.heading)}</h2>
           ${sec.paragraphs.map((p) => `<p class="mb-s3 mt-0">${md(p)}</p>`).join('\n          ')}
+          ${(sec.shots ?? []).map((h) => shot({ src: `/studies/${s.slug}/${h.file}`, alt: h.alt, width: h.width, height: h.height, caption: h.caption, badge: h.badge, transcript: h.transcript, accent: s.accent, cls: "my-s6 min-w-0 max-w-full [&>*]:min-w-0 [&>*]:max-w-full" }).replace(/<img /, '<img class="h-auto w-[760px] max-w-none sm:w-full" ').replace(/<img [^>]*>/, (img) => `<a href="/studies/${s.slug}/${h.file}" target="_blank" rel="noopener" aria-label="Open the full-size picture" class="block overflow-x-auto rounded-[inherit]">${img}</a>`)).join('\n          ')}
         </section>`,
         )
         .join('')}
