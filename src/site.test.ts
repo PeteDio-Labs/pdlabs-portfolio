@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
 import { esc } from './html.ts';
-import { bySlug, home, isResultHeading, kit, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
+import { LOST, bySlug, home, isResultHeading, kit, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
 
@@ -601,4 +601,24 @@ test('every study ends with a pager to the previous and the next study, by title
     expect(html).toContain(`<span class="toon-pager-title">${esc(next.title)}</span>`);
     expect(html.match(/class="toon-pager-arrow"/g)?.length).toBe(2);
   });
+});
+
+test('the 404 card holds every line, shows only the first with scripts off, and links home', () => {
+  const page = notFound();
+  const lines = [...page.matchAll(/<div class="[^"]*" data-lost-line( hidden)?>/g)];
+  expect(LOST.length).toBeGreaterThanOrEqual(6);
+  expect(lines.length).toBe(LOST.length);
+  expect(lines.map((m) => Boolean(m[1]))).toEqual(LOST.map((_, i) => i > 0));
+  for (const l of LOST) {
+    expect(l.word).toMatch(/^[A-Z0-9!?]+$/);
+    expect(page).toContain(esc(l.line));
+  }
+  expect(new Set(LOST.map((l) => l.line)).size).toBe(LOST.length);
+  expect(page).toContain('<h1 class="sr-only">Page not found</h1>');
+  expect(page).toContain('<a class="toon-btn" href="/">Go to the home page</a>');
+  // The button does nothing without the script, so it ships hidden and site.js reveals it.
+  expect(page).toMatch(/<button[^>]*data-lost-next hidden>/);
+  expect(page).toContain('aria-live="polite"');
+  expect(siteScript).toContain('[data-lost-line]');
+  expect(siteScript).toContain('[data-lost-next]');
 });

@@ -613,13 +613,42 @@ export function kit(): string {
   return layout({ title: 'toonish-ui', path: '/ui.html', current: 'UI kit', noindex: true, description: 'toonish-ui, the original cartoon component kit behind this site.', body });
 }
 
+/**
+ * The lines the 404 card shows, one per visit. Each has a sound-effect word (Latin letters only) and a joke
+ * about how this site is built. The first is the one a visitor sees with scripts off.
+ */
+export const LOST: { word: string; accent: Accent; line: string }[] = [
+  { word: '404!', accent: 'red', line: 'This page failed review, so it never merged to main.' },
+  { word: 'DRIFT!', accent: 'yellow', line: 'The URL says a page lives here. The repo disagrees, and the repo wins.' },
+  { word: 'POOF!', accent: 'violet', line: 'Plan: 0 to add, 0 to change, 0 to destroy. This page was never in state.' },
+  { word: 'NOPE!', accent: 'blue', line: 'An agent offered to write this page on the spot. The merge gate said no.' },
+  { word: 'WHIFF!', accent: 'red', line: 'You swung at a link and hit air. The link is the one that missed.' },
+  { word: 'ZZZ', accent: 'violet', line: 'The watchdog checked this address. Nothing here has a heartbeat.' },
+  { word: 'HUH?', accent: 'yellow', line: 'Even the local model has no memory of this page, and it makes things up.' },
+  { word: 'OOPS!', accent: 'blue', line: 'The rack fire did not take this page. It was never on the rack.' },
+];
+
 export function notFound(): string {
+  // Every line is in the page, and all but the first are hidden. site.js shows one at random and wires the
+  // button, so the page reads the same with scripts off: one card, one line and the way home.
+  const cards = LOST.map((l, i) => `
+        <div class="relative pt-s6" data-lost-line${i ? ' hidden' : ''}>
+          ${sfx(l.word, l.accent, { cls: 'text-[4.5rem] md:text-[7rem]' })}
+          <p class="mb-0 mt-s5 text-title3 font-bold">${esc(l.line)}</p>
+        </div>`).join('');
   const body = `
-    <section class="py-16">
+    <section class="py-s8 md:py-16">
       <h1 class="sr-only">Page not found</h1>
-      <div class="text-hero leading-none">${letters('404!', 'red', { live: true })}</div>
-      <p class="text-title3">There is no page at this address. The link may be mistyped, or the page may have moved when the site was rebuilt.</p>
-      <a class="toon-btn" href="/">Go to the home page</a>
+      <div class="toon-panel toon-tilt-l mx-auto max-w-[36rem]" style="--toon-shadow:${HEX.red}" data-lost>
+        <p class="m-0 font-mono text-small uppercase tracking-wide text-toon-muted">Error 404 · page not found</p>
+        <div aria-live="polite">${cards}
+        </div>
+        <p class="mb-0 mt-s4">There is no page at this address. The link may be mistyped, or the page may have moved.</p>
+        <div class="mt-s5 flex flex-wrap gap-s3">
+          <a class="toon-btn" href="/">Go to the home page</a>
+          <button class="toon-btn toon-btn-paper" type="button" data-lost-next hidden>Show another line</button>
+        </div>
+      </div>
     </section>`;
   return layout({ title: 'Page not found', path: '/404.html', description: 'Page not found.', noindex: true, body });
 }
