@@ -7,7 +7,7 @@
       "devDependencies": {
         "@types/bun": "1.2.17",
         "tailwindcss": "3.4.17",
-        "toonish-ui": "github:PeteDio-Labs/toonish-ui#b930de7e37dcd8203cad3abceb938fad1c8c984b",
+        "toonish-ui": "github:PeteDio-Labs/toonish-ui#7c1b4b0e7f827a8d570e4d9ec9db7881b3a17e03",
         "typescript": "5.8.3",
       },
     },
@@ -155,7 +155,7 @@
 
     "to-regex-range": ["to-regex-range@5.0.1", "", { "dependencies": { "is-number": "^7.0.0" } }, "sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ=="],
 
-    "toonish-ui": ["toonish-ui@github:PeteDio-Labs/toonish-ui#b930de7", {}, "PeteDio-Labs-Toonish-ui-b930de7", "sha512-dbdNuv/mjnc3JVv3DYMI9munxJR9CPlBOhuMTUlA8fLARY33mWCo6te7B2w3DIBuZ2c3mWvy18PsqpRidZKLgw=="],
+    "toonish-ui": ["toonish-ui@github:PeteDio-Labs/toonish-ui#7c1b4b0", {}, "PeteDio-Labs-Toonish-ui-7c1b4b0", "sha512-QqgOTmUi8tDZ/I0XHlcBw2pn3sa5g1FCs1tI7ShWOCUqRbjA83b9fLJrxAOgzW7h0S3khX1Ur2pzn1JhuM+POQ=="],
 
     "ts-interface-checker": ["ts-interface-checker@0.1.13", "", {}, "sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA=="],
 

@@ -53,7 +53,7 @@ await Bun.write(`${out}/sitemap.xml`, sitemapXml(
 ));
 await Bun.write(`${out}/llms.txt`, llmsTxt());
 await Bun.write(`${out}/og.png`, Bun.file('public/og.png'));
-await Bun.write(`${out}/pedro-headshot.webp`, Bun.file('public/pedro-headshot.webp'));
+await Bun.write(`${out}/pedro-cutout.webp`, Bun.file('public/pedro-cutout.webp'));
 
 // Favicon: a blue panel with an ink border and a yellow burst, drawn in code.
 // The favicon is an animated SVG (public/favicon.svg). The PNGs are static frames for Safari, iOS and older browsers.
