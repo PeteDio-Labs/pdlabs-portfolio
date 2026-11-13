@@ -38,7 +38,7 @@ const letters = (text: string, accent: Accent = 'blue', opts: { live?: boolean; 
  * Words wrap between spaces, so the longest word sets the width. The display face runs about 0.6em per character.
  */
 const fitSize = (value: string, max: number, avail: number) => {
-  const longest = Math.max(...value.split(/\s+/).map((w) => w.length), 1);
+  const longest = Math.max(...value.split(' ').map((w) => w.length), 1);
   return Math.max(18, Math.min(max, Math.floor(avail / (longest * 0.6))));
 };
 
