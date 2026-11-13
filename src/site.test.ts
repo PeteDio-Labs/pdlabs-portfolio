@@ -100,7 +100,7 @@ test('home sections are numbered, in order, and the nav anchors land on them', (
   expect(html.match(/class="toon-step-arrow" aria-hidden="true"/g)).toHaveLength(2);
   // The closing panel holds the headshot, the bubble (one tail per layout) and the contact links.
   const panel = html.slice(html.indexOf('class="toon-panel"'));
-  expect(panel).toContain('pedro-headshot.webp');
+  expect(panel).toContain('pedro-cutout.webp');
   expect(panel).toContain('toon-bubble-up');
   expect(panel).toContain('toon-bubble-left');
   expect(panel).toContain(`href="${site.linkedin}"`);
@@ -425,15 +425,17 @@ test('the kit page documents the data components with made-up figures', () => {
   expect(html).toContain('aria-label="Sample orders by day');
 });
 
-test('the home page shows the headshot with alt text, and the build ships the file', () => {
+test('the home page shows the cut-out portrait on the kit backdrop, with alt text, and the build ships the file', () => {
   const { existsSync, statSync } = require('node:fs');
   const html = home();
-  const m = html.match(/<img src="\/pedro-headshot\.webp"[^>]*>/);
+  const m = html.match(/<div class="toon-portrait"[^>]*>.*?<img src="\/pedro-cutout\.webp"[^>]*>/s);
   expect(m).not.toBeNull();
+  expect(m![0]).toContain('<svg class="toon-portrait-bg"');
   expect(m![0]).toMatch(/alt="[^"]{20,}"/);
-  expect(m![0]).toMatch(/width="320" height="320"/);
-  expect(existsSync('public/pedro-headshot.webp')).toBe(true);
-  expect(statSync('public/pedro-headshot.webp').size).toBeLessThan(50_000);
+  expect(m![0]).toMatch(/width="640" height="768"/);
+  expect(existsSync('public/pedro-cutout.webp')).toBe(true);
+  expect(statSync('public/pedro-cutout.webp').size).toBeLessThan(60_000);
+  expect(existsSync('public/pedro-headshot.webp')).toBe(false);
 });
 
 test('the kit page demonstrates the landing-page components', () => {

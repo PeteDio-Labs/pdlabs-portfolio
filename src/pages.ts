@@ -1,5 +1,5 @@
 import { esc, md } from './html.ts';
-import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, stat, badge, chip, row, bars, kicker, strip, steps, sfx, deck } from 'toonish-ui/markup';
+import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, stat, badge, chip, row, bars, kicker, strip, steps, sfx, deck, portrait } from 'toonish-ui/markup';
 import { thumb } from './illustrations/thumbs.ts';
 import { hybridDiagram, hybridDiagramTall } from './illustrations/hybrid.ts';
 import { legalPages, legalUpdated } from './legal.ts';
@@ -246,9 +246,7 @@ export function home(): string {
         ${kicker('03', 'About')}
         <div class="mt-s6 grid items-center gap-s8 md:grid-cols-[auto_minmax(0,1fr)] md:gap-16">
           <figure class="toon-tilt-l relative m-0 w-[200px] max-w-full justify-self-start pb-s3">
-            <div class="toon-frame p-0">
-              <img src="/pedro-headshot.webp" width="320" height="320" loading="lazy" decoding="async" class="block h-auto w-full" alt="Pedro Delgadillo, in a navy blazer and white open-collar shirt, against a slate grey background">
-            </div>
+            ${portrait({ src: '/pedro-cutout.webp', alt: 'Pedro Delgadillo, in a black blazer and black t-shirt, on a light grey studio backdrop', width: 640, height: 768, backdrop: 'paper', accent: 'red' })}
             <figcaption class="toon-caption absolute -bottom-s1 left-s3">${esc(site.name)}</figcaption>
           </figure>
           <div class="min-w-0">
