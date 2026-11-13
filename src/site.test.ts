@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
 import { esc } from './html.ts';
-import { home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
+import { bySlug, home, isResultHeading, kit, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
 
@@ -50,12 +50,73 @@ test('kit sample nav switches in place instead of reloading', () => {
   expect(html).not.toMatch(/aria-label="Sample"[^>]*>\s*<a /);
 });
 
-test('home shows the featured and the latest study and links to /work', () => {
+test('home leads with the featured study, then the three newest others, and links to /work', () => {
   const html = home();
+  const rest = studies.filter((s) => s !== featured).slice(0, 3);
+  expect(rest).toHaveLength(3);
+  expect(rest[0]).toBe(latest!);
   expect(html).toContain(`/work/${featured.slug}.html`);
-  expect(html).toContain(`/work/${latest!.slug}.html`);
-  expect(html.match(/<article[^>]* data-study/g)?.length).toBe(2);
+  for (const s of rest) expect(html).toContain(`/work/${s.slug}.html`);
+  expect(html.match(/<article[^>]* data-home="lead"/g)?.length).toBe(1);
+  expect(html.match(/<article[^>]* data-home="card"/g)?.length).toBe(3);
+  // The lead comes first, and the cards are the compact kind: no summary.
+  expect(html.indexOf('data-home="lead"')).toBeLessThan(html.indexOf('data-home="card"'));
+  const cards = html.split('data-home="card"').slice(1).map((c) => c.slice(0, c.indexOf('</article>')));
+  for (const c of cards) expect(c).not.toMatch(/<p class="my-0">/);
   expect(html).toContain('href="/work.html"');
+  // On a phone the row is a pile of cards you flip through, labelled, with real links in every card.
+  expect(html).toMatch(/role="group" aria-roledescription="carousel" aria-label="More recent case studies"/);
+});
+
+test('the proof strip reads its figures from the studies and links each to its source', () => {
+  const html = home();
+  const gate = studies.find((s) => s.slug === 'agent-merge-gate')!;
+  const rack = studies.find((s) => s.slug === 'rack-loss-recovery')!;
+  const patching = studies.find((s) => s.slug === 'fleet-patching')!;
+  // 1,200+ is the one figure with no field of its own, so this guards it against its source.
+  expect(gate.summary).toContain('Over 1,200 pull requests');
+  // The patching label names the guest count, which lives in that study's own stat label.
+  expect(patching.stat.label).toContain('across 21 guests');
+  const cells = [...html.matchAll(/<a class="toon-strip-item" href="([^"]+)"><span class="toon-strip-value"[^>]*>([^<]*)<\/span>/g)].map((m) => [m[1], m[2]]);
+  expect(cells).toEqual([
+    ['/work/agent-merge-gate.html', '1,200+'],
+    ['/work/rack-loss-recovery.html', esc(rack.stat.value)],
+    ['/work/fleet-patching.html', esc(patching.stat.value)],
+    ['/work.html', String(studies.length)],
+  ]);
+  expect(html.indexOf('toon-strip')).toBeGreaterThan(html.indexOf('toon-blink'));
+  expect(html.indexOf('toon-strip')).toBeLessThan(html.indexOf('id="work"'));
+});
+
+test('home sections are numbered, in order, and the nav anchors land on them', () => {
+  const html = home();
+  const nums = [...html.matchAll(/<span class="toon-kicker-num">(\d+)<\/span><span class="toon-kicker-label">([^<]*)</g)].map((m) => [m[1], m[2]]);
+  expect(nums).toEqual([['01', 'The work'], ['02', 'The method'], ['03', 'About']]);
+  for (const id of ['work', 'how', 'about']) expect(html).toContain(`<section id="${id}"`);
+  expect(html.indexOf('id="work"')).toBeLessThan(html.indexOf('id="how"'));
+  expect(html.indexOf('id="how"')).toBeLessThan(html.indexOf('id="about"'));
+  // The three steps carry the spec's words, and the arrows are decoration.
+  for (const t of ['One task, one session, one branch.', 'Nothing merges unreviewed.', 'Declared, not hand-run.']) expect(html).toContain(t);
+  expect(html.match(/class="toon-step-arrow" aria-hidden="true"/g)).toHaveLength(2);
+  // The closing panel holds the headshot, the bubble (one tail per layout) and the contact links.
+  const panel = html.slice(html.indexOf('class="toon-panel"'));
+  expect(panel).toContain('pedro-cutout.webp');
+  expect(panel).toContain('toon-bubble-up');
+  expect(panel).toContain('toon-bubble-left');
+  expect(panel).toContain(`href="${site.linkedin}"`);
+  expect(panel).toContain(`href="${site.github}"`);
+  expect(panel).toContain(esc(site.background));
+});
+
+test('the home page keeps one primary button in the hero and a text link for the repos', () => {
+  const hero = home().slice(0, home().indexOf('toon-strip'));
+  expect(hero.match(/class="toon-btn /g)?.length).toBe(1);
+  expect(hero).toContain(`<a class="toon-link" href="${site.org}">Browse the repos</a>`);
+});
+
+test('the proof strip fails the build when a study it reads is missing', () => {
+  expect(() => bySlug('no-such-study')).toThrow('no-such-study');
+  expect(bySlug('fleet-patching').slug).toBe('fleet-patching');
 });
 
 test('studies are newest first, with unique slugs and real dates', () => {
@@ -198,7 +259,8 @@ test('a stat figure shrinks as its value gets longer, so it fits its card', () =
   expect(short).toBeDefined();
   expect(long).toBeDefined();
   expect(long.size).toBeLessThan(short.size);
-  expect(sizes(home()).length).toBe(2);
+  // The lead story and the three compact cards each carry one sized figure.
+  expect(sizes(home()).length).toBe(4);
 });
 
 test('sitemap dates a page by its own date and leaves the noindex kit page out', () => {
@@ -271,11 +333,11 @@ test('study screenshots render with alt text, size, caption and transcript, and 
   const html = study(s);
   for (const h of shots) {
     expect(html).toContain(`src="/studies/${s.slug}/${h.file}"`);
-    expect(html).toMatch(new RegExp(`<img class="[^"]*" src="/studies/${s.slug}/${h.file}" alt="[^"]+" width="${h.width}" height="${h.height}"`));
+    expect(html).toMatch(new RegExp(`<img src="/studies/${s.slug}/${h.file}" alt="[^"]+" width="${h.width}" height="${h.height}"`));
     expect(html).toContain(esc(h.caption));
   }
   expect(html).toContain('toon-shot-text');
-  expect(html.match(/aria-label="Open the full-size picture"/g)?.length).toBe(shots.length);
+  expect(html.match(/aria-label="Open the full-size picture: /g)?.length).toBe(shots.length);
 });
 
 test('the site study page links to the kit repository and the kit page', () => {
@@ -361,4 +423,158 @@ test('the kit page documents the data components with made-up figures', () => {
   for (const c of ['toon-stats', 'toon-list', 'toon-bars', 'toon-table', 'toon-bar-seg']) expect(html).toContain(c);
   expect(html).toContain('made-up sample data');
   expect(html).toContain('aria-label="Sample orders by day');
+});
+
+test('the home page shows the cut-out portrait on the kit backdrop, with alt text, and the build ships the file', () => {
+  const { existsSync, statSync } = require('node:fs');
+  const html = home();
+  const m = html.match(/<div class="toon-portrait"[^>]*>.*?<img src="\/pedro-cutout\.webp"[^>]*>/s);
+  expect(m).not.toBeNull();
+  expect(m![0]).toContain('<svg class="toon-portrait-bg"');
+  expect(m![0]).toMatch(/alt="[^"]{20,}"/);
+  expect(m![0]).toMatch(/width="640" height="768"/);
+  expect(existsSync('public/pedro-cutout.webp')).toBe(true);
+  expect(statSync('public/pedro-cutout.webp').size).toBeLessThan(60_000);
+  expect(existsSync('public/pedro-headshot.webp')).toBe(false);
+});
+
+test('the kit page demonstrates the landing-page components', () => {
+  const html = kit();
+  for (const c of ['toon-kicker', 'toon-strip', 'toon-steps', 'toon-panel', 'toon-bubble-left', 'toon-bubble-up', 'toon-tilt-l', 'toon-tilt-r', 'toon-sfx', 'toon-sfx-ghost']) expect(html).toContain(c);
+});
+
+test('the home page has at most three sound effects, all hidden from readers, and none in the closing panel', () => {
+  const html = home();
+  const words = [...html.matchAll(/<span class="toon-sfx[^"]*"[^>]*aria-hidden="true">((?:<span[^>]*>[^<]*<\/span>)+)<\/span>/g)].map((m) => [...m[1].matchAll(/>([^<]*)<\/span>/g)].map((x) => x[1]).join(''));
+  expect(words).toEqual(['MERGE!', 'SHIP!', 'CLICK']);
+  expect(html.match(/class="toon-sfx/g)).toHaveLength(3);
+  expect(html.slice(html.indexOf('class="toon-panel"'))).not.toContain('toon-sfx');
+  // Only the hero's word shows on a phone: the other two are hidden below md.
+  expect(html.match(/toon-sfx[^"]*hidden md:block/g)).toHaveLength(2);
+});
+
+test('the home row is a deck of the three newest studies that are not featured, and it has no sideways scroller', () => {
+  const html = home();
+  const at = html.indexOf('class="toon-deck"');
+  expect(at).toBeGreaterThan(-1);
+  const deckHtml = html.slice(at, html.indexOf('All ' + studies.length + ' case studies<span', at));
+  const rest = studies.filter((s) => s !== featured).slice(0, 3);
+  expect(deckHtml.match(/data-home="card"/g)).toHaveLength(3);
+  expect(deckHtml.match(/class="toon-deck-card" role="group" aria-label="\d of 3"/g)).toHaveLength(3);
+  const hrefs = [...deckHtml.matchAll(/<a class="toon-link self-start" href="(\/work\/[^"]+)"/g)].map((m) => m[1]);
+  expect(hrefs).toEqual(rest.map((s) => `/work/${s.slug}.html`));
+  expect(deckHtml).not.toMatch(/overflow-x-auto|snap-x|snap-mandatory|snap-start|w-\[78%\]/);
+  expect(html).not.toMatch(/overflow-x-auto/);
+  expect(html).toContain('data-toon-deck="phone"');
+});
+
+test('the kit page demonstrates the deck', () => {
+  const html = kit();
+  expect(html).toContain('data-toon-deck="phone"');
+  expect(html).toContain('toon-deck-pile');
+  expect(html).toContain('data-toon-deck-next');
+});
+
+test('section ids come from the heading, stay unique, and avoid ids the page already uses', () => {
+  expect(sectionIds(['What I built', 'What I built', 'Result: 57/57!', '???', 'Contents', 'Main'])).toEqual(['what-i-built', 'what-i-built-2', 'result-57-57', 'section', 'contents-2', 'main-2']);
+  expect(isResultHeading('Result so far')).toBe(true);
+  expect(isResultHeading('  outcome')).toBe(true);
+  expect(isResultHeading('Results that matter')).toBe(true);
+  expect(isResultHeading('Why it was not a result')).toBe(false);
+});
+
+test('every study has unique section ids and a contents list that links to each one, on the rail and the phone disclosure', () => {
+  for (const s of studies) {
+    const html = study(s);
+    const ids = [...html.matchAll(/<section id="([^"]+)" class="scroll-mt-s8/g)].map((m) => m[1]);
+    expect(ids).toHaveLength(s.sections.length);
+    expect(new Set(ids).size).toBe(ids.length);
+    const allIds = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+    expect(new Set(allIds).size).toBe(allIds.length);
+    const rail = html.slice(html.indexOf('<nav id="contents"'), html.indexOf('</nav>', html.indexOf('<nav id="contents"')));
+    const phone = html.slice(html.indexOf('<details'), html.indexOf('</details>'));
+    for (const part of [rail, phone]) {
+      const links = [...part.matchAll(/<a class="toon-link" href="#([^"]+)">([^<]*)<\/a>/g)];
+      expect(links.map((m) => m[1])).toEqual(ids);
+      expect(links.map((m) => m[2])).toEqual(s.sections.map((x) => esc(x.heading)));
+    }
+    expect(phone).toContain(`In this study (${s.sections.length} parts)`);
+    expect(html).toContain('aria-label="In this study"');
+  }
+});
+
+test('a study puts its Result or Outcome section in the one paper panel, and a study without one has none in the text', () => {
+  for (const s of studies) {
+    const html = study(s);
+    const results = s.sections.filter((x) => isResultHeading(x.heading));
+    const inText = html.slice(html.indexOf('<section id='), html.indexOf('<aside class="toon-panel mt-16"'));
+    expect(inText.match(/<section [^>]*class="[^"]*toon-panel/g)?.length ?? 0).toBe(results.length);
+  }
+  expect(studies.some((s) => s.sections.some((x) => isResultHeading(x.heading)))).toBe(true);
+  // Text on paper is ink, so the heading inside the panel is not the accent colour.
+  const gate = study(bySlug('agent-merge-gate'));
+  const panel = gate.slice(gate.indexOf('toon-panel" style'), gate.indexOf('</section>', gate.indexOf('toon-panel" style')));
+  expect(panel).toMatch(/<h2 class="[^"]*text-toon-ink"/);
+  expect(panel).not.toMatch(/<h2[^>]*style=/);
+});
+
+test('the study header carries the key figure with "The result", and the facts tiles follow it at full width', () => {
+  for (const s of studies) {
+    const html = study(s);
+    const header = html.slice(html.indexOf('<header class="mt-s6'), html.indexOf('</header>', html.indexOf('<header class="mt-s6')));
+    expect(header).toContain('<h1');
+    expect(header).toContain('aria-label="Key result"');
+    expect(header).toContain('>The result</span>');
+    expect(header).toContain(esc(s.stat.label));
+    expect(html.indexOf('aria-label="Key result"')).toBeGreaterThan(html.indexOf('<h1'));
+    if (s.facts) expect(html.indexOf('toon-stats')).toBeGreaterThan(html.indexOf('</header>', html.indexOf('<header class="mt-s6')));
+  }
+});
+
+test('the study with pictures has no sideways scroller, and each picture links to its full-size file', () => {
+  const s = studies.find((x) => x.slug === 'media-assistant-discovery-to-demo')!;
+  const shots = s.sections.flatMap((sec) => sec.shots ?? []);
+  expect(shots.length).toBeGreaterThan(1);
+  const html = study(s);
+  expect(html).not.toMatch(/overflow-x-auto|w-\[760px\]/);
+  for (const img of html.match(/<img [^>]*>/g)!.filter((i) => i.includes('/studies/'))) expect(img).not.toContain('max-w-none');
+  shots.forEach((h, n) => {
+    const file = `/studies/${s.slug}/${h.file}`;
+    expect(html).toContain(`<a class="toon-shot-link" href="${file}" target="_blank" rel="noopener" aria-label="Open the full-size picture: ${esc(h.alt)}"><img src="${file}"`);
+    expect(html).toContain(`toon-shot-badge-end">${n + 1} / ${shots.length}<`);
+  });
+  expect(html.match(/Tap to enlarge/g)).toHaveLength(shots.length);
+  expect(html.match(/loading="lazy"/g)!.length).toBeGreaterThanOrEqual(shots.length);
+  // Tilt only from lg, alternating.
+  expect(html).toContain('lg:rotate-1');
+  expect(html).toContain('lg:-rotate-1');
+});
+
+test('the study closing panel holds the fit text, the skills and the hiring call, and the study pages have no sound effects', () => {
+  for (const s of studies) {
+    const html = study(s);
+    const at = html.indexOf('<aside class="toon-panel mt-16"');
+    expect(at).toBeGreaterThan(-1);
+    const panel = html.slice(at, html.indexOf('</aside>', at));
+    if (fit[s.slug]) expect(panel).toContain('Why it matters for hiring teams');
+    expect(panel).toContain('Skills shown');
+    for (const k of s.skills) expect(panel).toContain(esc(k));
+    expect(panel).toContain('Hiring for AI automation or forward-deployed engineering?');
+    expect(panel).toContain(`href="${site.linkedin}"`);
+    expect(panel).toContain(`href="${site.github}"`);
+    expect(html).not.toContain('toon-sfx');
+  }
+});
+
+test('every study ends with a pager to the previous and the next study, by title', () => {
+  studies.forEach((s, i) => {
+    const html = study(s);
+    const prev = studies[(i + studies.length - 1) % studies.length];
+    const next = studies[(i + 1) % studies.length];
+    expect(html).toContain(`<a class="toon-pager-link toon-pager-prev" href="/work/${prev.slug}.html">`);
+    expect(html).toContain(`<a class="toon-pager-link toon-pager-next" href="/work/${next.slug}.html">`);
+    expect(html).toContain(`<span class="toon-pager-title">${esc(prev.title)}</span>`);
+    expect(html).toContain(`<span class="toon-pager-title">${esc(next.title)}</span>`);
+    expect(html.match(/class="toon-pager-arrow"/g)?.length).toBe(2);
+  });
 });
