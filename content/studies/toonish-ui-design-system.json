@@ -20,7 +20,8 @@
       "heading": "Problem",
       "paragraphs": [
         "My portfolio is a stack of case studies, and every one has the same parts: figures, tables, screenshots, a pull-request trail. I wanted those parts to look like one product, not like pages that happened to share a stylesheet. I also wanted the look to be mine, so I did not start from a template.",
-        "I do not draw, and I work with AI agents, so the real question was how to get a distinct, consistent design out of a team that has no taste of its own. The answer was to make the taste explicit. Tokens hold the decisions, tests hold the rules, and I hold the veto."
+        "I do not draw, and I work with AI agents, so the real question was how to get a distinct, consistent design out of a team that has no taste of its own. The answer was to make the taste explicit. Tokens hold the decisions, tests hold the rules, and I hold the veto.",
+        "My design coursework at Full Sail University and my year at Apple taught me why this matters. UX and UI are not polish added at the end. They decide whether a person can use the thing, and the faults show on a real device in a real hand. That is why the kit has a mobile-first rule, a contrast test and a veto that I exercise on my phone."
       ]
     },
     {
