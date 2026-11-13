@@ -28,7 +28,7 @@
       "paragraphs": [
         "In my September audit, turning thinking off made the model roughly twice as fast, and the lab agent runs with it off. The model fits on one consumer card with its context.",
         "The chat model is a mid-size Qwen3 and the embedding model is a small one, each on its own consumer GPU.",
-        "Today the lab agent answers questions about the platform from the vault, the tracker and repo docs on this model, with no hosted key behind it."
+        "The lab agent answers questions about the platform from the vault, the tracker and repo docs on this model, with no hosted key behind it."
       ]
     },
     {
