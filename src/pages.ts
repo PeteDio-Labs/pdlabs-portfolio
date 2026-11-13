@@ -1,5 +1,7 @@
 import { esc, md } from './html.ts';
 import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot } from 'toonish-ui/markup';
+import { thumb } from './illustrations/thumbs.ts';
+import { hybridDiagram } from './illustrations/hybrid.ts';
 import { legalPages, legalUpdated } from './legal.ts';
 import { site, studies, featured, latest, tags, fit, type Accent, type CaseStudy } from './content.ts';
 
@@ -95,6 +97,7 @@ const month = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('
 const studyCard = (s: CaseStudy, i: number, label = '', h: 'h2' | 'h3' = 'h3') => `
       <article class="toon-card toon-pop relative flex flex-col" data-study data-date="${s.date}" data-tag="${esc(s.tag)}" data-title="${esc(s.title)}" style="--toon-shadow:${HEX[s.accent]}; animation-delay:${120 * i}ms">
         ${label ? `<span class="toon-corner" style="background:${HEX[s.accent]}">${esc(label)}</span>` : ''}
+        ${thumb(s.tag, s.accent)}
         <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
         <${h} class="mb-s2 mt-s3 text-title2 font-bold leading-snug">${esc(s.title)}</${h}>
         <p class="my-0">${md(s.summary)}</p>
@@ -138,6 +141,13 @@ export function home(): string {
           </svg>
         </figure>
       </div>
+    </section>
+
+    <section class="py-s8" aria-label="How the lab and the cloud fit together">
+      <figure class="toon-frame relative m-0 mx-auto max-w-3xl bg-toon-ground">
+        <span class="toon-caption m-s3 inline-block">Hybrid by design</span>
+        ${hybridDiagram()}
+      </figure>
     </section>
 
     <section id="work" class="scroll-mt-8 py-s8" aria-labelledby="work-h">
