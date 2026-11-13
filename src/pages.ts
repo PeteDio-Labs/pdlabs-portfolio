@@ -242,7 +242,7 @@ export function home(): string {
           <figcaption class="mt-s4 max-w-[60ch] text-subhead">When a check reports success, it also says what it examined.</figcaption>
         </figure>
         <div class="min-w-0">
-          <h3 class="mb-s3 mt-0 text-title2 font-bold text-toon-yellow">The stack</h3>
+          <h3 class="mb-s4 mt-0 pl-s2 leading-none"><span class="sr-only">The stack</span>${sfx('STACK!', 'yellow')}</h3>
           <div class="toon-list toon-list-stack" role="list" data-home="stack">
             ${STACK.map((r) => row(r).replace('<div class="toon-row">', '<div class="toon-row" role="listitem">')).join('\n            ')}
           </div>

@@ -443,11 +443,13 @@ test('the kit page demonstrates the landing-page components', () => {
   for (const c of ['toon-kicker', 'toon-strip', 'toon-steps', 'toon-panel', 'toon-bubble-left', 'toon-bubble-up', 'toon-tilt-l', 'toon-tilt-r', 'toon-sfx', 'toon-sfx-ghost']) expect(html).toContain(c);
 });
 
-test('the home page has four sound effects, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
+test('the home page has five sound effects, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
   const html = home();
   const words = [...html.matchAll(/<span class="toon-sfx[^"]*"[^>]*aria-hidden="true">((?:<span[^>]*>[^<]*<\/span>)+)<\/span>/g)].map((m) => [...m[1].matchAll(/>([^<]*)<\/span>/g)].map((x) => x[1]).join(''));
-  expect(words).toEqual(['MERGE!', 'SHIP!', 'CLICK!', 'DEPLOY!']);
-  expect(html.match(/class="toon-sfx/g)).toHaveLength(4);
+  expect(words).toEqual(['MERGE!', 'SHIP!', 'CLICK!', 'DEPLOY!', 'STACK!']);
+  // STACK! is the stack list's title, so the heading keeps its words for a screen reader.
+  expect(html).toContain('<span class="sr-only">The stack</span>');
+  expect(html.match(/class="toon-sfx/g)).toHaveLength(5);
   expect(html.slice(html.indexOf('class="toon-panel"'))).not.toContain('toon-sfx');
   // Pedro, 2026-11-13: a phone showed only the hero's word. No word hides below md.
   expect(html).not.toMatch(/class="toon-sfx[^"]*\bhidden\b/);
