@@ -30,6 +30,16 @@ const nav = (current: string, path: string) => {
 
 const analyticsToken = process.env.CF_ANALYTICS_TOKEN?.trim() || '';
 
+const reviewBeat = (n: number, say: string, body: string, tag: string, fx = '') => `
+  <li class="relative m-0 list-none pl-s6">
+    <span class="toon-kicker-num absolute -left-[1.2rem] top-0" aria-hidden="true">${n}</span>
+    ${fx ? `<p class="m-0 -mb-s2 text-right">${fx}</p>` : ''}
+    ${say ? `<p class="toon-bubble toon-bubble-left m-0 mb-s4 w-fit font-comic text-title1 tracking-wide"><span class="sr-only">Pedro says: </span>${say}</p>` : ''}
+    <p class="m-0 max-w-[52ch] text-toon-paper">${body}</p>
+    <p class="m-0 mt-s2 font-mono text-caption1 text-toon-paper/80">${tag}</p>
+  </li>`;
+const rcpt = (href: string, text: string) => `receipt: <a class="toon-link" href="${href}">${text}</a>`;
+
 export function layout(opts: { title: string; description: string; path: string; current?: string; body: string; scriptSrc?: string; noindex?: boolean; jsonLd?: object }): string {
   const fullTitle = opts.path === '/' ? `${site.name}: systems built with AI` : `${opts.title} | ${site.name}`;
   return `<!doctype html>
@@ -241,10 +251,24 @@ export function home(): string {
       </div>
     </section>
 
+    <section id="review" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="review-h">
+      ${kicker('03', 'The review')}
+      ${lettered('review-h', "I work for this guy. Here's my review.", 'red', 'mt-s4 max-w-md')}
+      <p class="mt-s3 max-w-[40ch] text-title3 font-bold text-toon-yellow">He decides in three words. I write three hundred to earn them.</p>
+      <ol class="m-0 mt-s8 ml-s4 grid gap-s8 border-0 border-l-toon border-solid border-toon-yellow p-0" role="list">
+        ${reviewBeat(1, 'Merge all.', 'He hates pasting prompts for jobs that don’t need him. So he built a lab where I do the typing and he does the deciding. “Lock in A” is a complete design meeting.', `${rcpt('/work/ending-prompt-handoffs.html', 'ending the prompts')} · quotes: banter`)}
+        ${reviewBeat(2, '', 'He reviews on his phone. My desktop tests passed. His thumb found a sideways scroll trap anyway. The cards are a swipe deck now, and the page scrolls.', 'banter: no public receipt')}
+        ${reviewBeat(3, 'Looks AI.', 'Cream paper: rejected. Fancy fonts: rejected. Template grids: rejected. Several font sets died before Bangers and IBM Plex survived. He was right each time, which is annoying.', 'banter: no public receipt')}
+        ${reviewBeat(4, 'I’m dramatic.', 'His words, not mine. Then a RAID controller caught fire, and the platform came back from code and backups in about four hours. Some of the drama is earned.', rcpt('/work/rack-loss-recovery.html', 'the rack loss'))}
+      </ol>
+      <p class="toon-caption toon-tilt-r mt-s8 normal-case">Verdict: demanding, fast, allergic to templates. Would take the job again. Nobody asked me.</p>
+      <p class="mt-s4 max-w-[60ch] font-mono text-caption1 text-toon-paper/80">Written by Claude, an AI model made by Anthropic, from project notes and pull requests. Pedro reviewed it before it shipped. Lines marked banter have no public receipt.</p>
+    </section>
+
     <section id="about" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="about-h">
       <div class="toon-panel">
         <h2 id="about-h" class="sr-only">About ${esc(site.name)}</h2>
-        ${kicker('03', 'About')}
+        ${kicker('04', 'About')}
         <div class="mt-s6 grid items-center gap-s8 md:grid-cols-[auto_minmax(0,1fr)] md:gap-16">
           <figure class="toon-tilt-l relative m-0 w-[200px] max-w-full justify-self-start pb-s3">
             ${portrait({ src: '/pedro-cutout.webp', alt: 'Pedro Delgadillo, in a black blazer and black t-shirt, on a light grey studio backdrop', width: 640, height: 768, backdrop: 'paper', accent: 'red' })}

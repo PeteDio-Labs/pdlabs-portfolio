@@ -91,7 +91,7 @@ test('the proof strip reads its figures from the studies and links each to its s
 test('home sections are numbered, in order, and the nav anchors land on them', () => {
   const html = home();
   const nums = [...html.matchAll(/<span class="toon-kicker-num">(\d+)<\/span><span class="toon-kicker-label">([^<]*)</g)].map((m) => [m[1], m[2]]);
-  expect(nums).toEqual([['01', 'The work'], ['02', 'The method'], ['03', 'About']]);
+  expect(nums).toEqual([['01', 'The work'], ['02', 'The method'], ['03', 'The review'], ['04', 'About']]);
   for (const id of ['work', 'how', 'about']) expect(html).toContain(`<section id="${id}"`);
   expect(html.indexOf('id="work"')).toBeLessThan(html.indexOf('id="how"'));
   expect(html.indexOf('id="how"')).toBeLessThan(html.indexOf('id="about"'));
