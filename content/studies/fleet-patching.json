@@ -4,7 +4,7 @@
   "title": "Patching a homelab fleet in one gated run",
   "tag": "Operations",
   "accent": "red",
-  "summary": "An audit found about two thousand pending package updates and no unattended updates. I wrote two playbooks that patched security fixes in 21 guests, then restarted them in order with a health check after each.",
+  "summary": "An audit found about two thousand pending package updates and no unattended updates. I wrote two playbooks: one patched security fixes in 21 guests, and one restarts guests in order with a health check after each.",
   "stat": {
     "value": "~594",
     "label": "packages patched across 21 guests, with service restarts blocked while the patch runs"

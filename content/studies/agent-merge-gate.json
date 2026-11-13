@@ -21,7 +21,7 @@
       "heading": "Testing the control",
       "paragraphs": [
         "Before this gate, I built and retired an unattended agent that opened draft pull requests from labelled tickets. Its safety rested on one claim: the GitHub App it used could not merge its own pull request. I tested the claim instead of assuming it. As the real App, against two throwaway branches, the merge call returned 405 on the branch that required one review and 200 on an unprotected control, back to back. The control is what makes the 405 mean something: without it, a refusal looks the same as a broken credential.",
-        "I never enabled that agent's timer and retired it. Independent review, the merge gate above and one project thread per task replaced it. Reviews now come from a Claude review skill, after my Codex quota ran out, and I count them as equivalent. Two rules outlived it: every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo."
+        "I never enabled that agent's timer and retired it. Independent review, the merge gate above and one project thread per task replaced it. Reviews come from Codex first. When Codex stays silent for two hours, a local model reviews the low-risk tiers, and a Claude review agent covers a pull request the local model fails twice. Two rules outlived it: every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo."
       ]
     },
     {

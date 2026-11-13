@@ -4,7 +4,7 @@
   "title": "Recovering a burnt server from backups and config in git",
   "tag": "Resilience",
   "accent": "red",
-  "summary": "A RAID controller caught fire while I was debugging a power supply. Infrastructure as code and off-cluster backups brought the platform back in about four hours, and I wrote down every mistake. This is the incident proof: it has no agent, but it shows how I own a mistake.",
+  "summary": "A RAID controller caught fire while I was debugging a power supply. Infrastructure as code and off-cluster backups brought the platform back in about four hours,, and I wrote down every mistake, including my own.",
   "stat": {
     "value": "Same day",
     "label": "the main platform was rebuilt from code and backups"
@@ -43,7 +43,7 @@
       "heading": "What went wrong during recovery",
       "paragraphs": [
         "Four mistakes, three of them mine. The rescued configs named a storage pool that only existed on the dead node. The network bridge had a different name on the surviving node. My remap loop checked only the first network interface, so one guest with a second interface came up with no network. And an empty result from a privileged command nearly became the report that no backups existed.",
-        "After the hypervisor was back, the applications were not usable. The downloader reported a space error that was a missing directory. The media managers still held records for files that died with the array, and one request app pointed at a server that no longer existed. Nothing warns you that a downstream service moved; the requests just fail."
+        "After the hypervisor was back, the applications were not usable. One app reported a space error that was only a missing directory. The media managers still held records for files that died with the array, and one request app pointed at a server that no longer existed. Nothing warns you that a downstream service moved; the requests just fail."
       ]
     },
     {
@@ -61,7 +61,7 @@
     "Incident write-ups"
   ],
   "sources": [
-    "Pedro's account in the case-study thread, 2026-11-03 (power-supply sequence, about four hours)",
+    "my own account of the power-supply sequence, written 2026-11-03 (power-supply sequence, about four hours)",
     "petedio-vault Incidents/2026-09-03-rack-loss.md (timeline, backups, recovery mistakes)",
     "docs/runbooks/pve03-platform-move.md (36-minute move)"
   ]
