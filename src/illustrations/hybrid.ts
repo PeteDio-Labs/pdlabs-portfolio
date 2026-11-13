@@ -12,7 +12,7 @@ ${box(46, 62, 206, 196, BLUE, YEL)}<g fill="${PAPER}"><rect x="64" y="82" width=
 <g stroke="none">${circ(82, 102, 6, BLUE)}${circ(102, 102, 6, RED)}${circ(82, 154, 6, BLUE)}${circ(102, 154, 6, YEL)}${circ(82, 206, 6, BLUE)}${circ(102, 206, 6, VIO)}</g>
 <g class="hy-cloud"><path d="${cloud}" fill="${RED}" transform="translate(8 8)" stroke="none"/><path d="${cloud}" fill="${PAPER}"/><text class="t" x="520" y="164" font-size="38" fill="${INK}" stroke="none" text-anchor="middle">AWS</text></g>
 <rect x="500" y="204" width="60" height="44" fill="${VIO}"/><rect x="568" y="204" width="106" height="44" fill="${YEL}"/>
-<g class="hy-push-x"><path d="M270 150h130v-24l50 40l-50 40v-24H270z" fill="${YEL}"/><text class="t" x="338" y="171" font-size="26" fill="${INK}" stroke="none" text-anchor="middle">GITOPS</text></g></g>
+<g class="hy-push-x"><path d="M270 144h130v-18l50 40l-50 40v-18H270z" fill="${YEL}"/><text class="t" x="338" y="176" font-size="26" fill="${INK}" stroke="none" text-anchor="middle">GITOPS</text></g></g>
 <g class="s" font-size="22" fill="${INK}"><text x="124" y="110">pve01</text><text x="124" y="162">pve02</text><text x="124" y="214">pve03</text></g>
 <g class="s" font-size="17" fill="${INK}" text-anchor="middle"><text x="530" y="232">S3</text><text x="621" y="232">CloudFront</text></g>
 <text class="t" x="50" y="44" font-size="32" fill="${YEL}" stroke="${INK}" stroke-width="6" paint-order="stroke">THE LAB</text>
