@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
 import { esc } from './html.ts';
-import { bySlug, home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
+import { bySlug, home, isResultHeading, kit, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
 
@@ -64,8 +64,8 @@ test('home leads with the featured study, then the three newest others, and link
   const cards = html.split('data-home="card"').slice(1).map((c) => c.slice(0, c.indexOf('</article>')));
   for (const c of cards) expect(c).not.toMatch(/<p class="my-0">/);
   expect(html).toContain('href="/work.html"');
-  // The row scrolls sideways on a phone, so it is labelled and holds real links.
-  expect(html).toMatch(/role="group" aria-label="More recent case studies"/);
+  // On a phone the row is a pile of cards you flip through, labelled, with real links in every card.
+  expect(html).toMatch(/role="group" aria-roledescription="carousel" aria-label="More recent case studies"/);
 });
 
 test('the proof strip reads its figures from the studies and links each to its source', () => {
@@ -333,11 +333,11 @@ test('study screenshots render with alt text, size, caption and transcript, and 
   const html = study(s);
   for (const h of shots) {
     expect(html).toContain(`src="/studies/${s.slug}/${h.file}"`);
-    expect(html).toMatch(new RegExp(`<img class="[^"]*" src="/studies/${s.slug}/${h.file}" alt="[^"]+" width="${h.width}" height="${h.height}"`));
+    expect(html).toMatch(new RegExp(`<img src="/studies/${s.slug}/${h.file}" alt="[^"]+" width="${h.width}" height="${h.height}"`));
     expect(html).toContain(esc(h.caption));
   }
   expect(html).toContain('toon-shot-text');
-  expect(html.match(/aria-label="Open the full-size picture"/g)?.length).toBe(shots.length);
+  expect(html.match(/aria-label="Open the full-size picture: /g)?.length).toBe(shots.length);
 });
 
 test('the site study page links to the kit repository and the kit page', () => {
@@ -449,4 +449,117 @@ test('the home page has at most three sound effects, all hidden from readers, an
   expect(html.slice(html.indexOf('class="toon-panel"'))).not.toContain('toon-sfx');
   // Only the hero's word shows on a phone: the other two are hidden below md.
   expect(html.match(/toon-sfx[^"]*hidden md:block/g)).toHaveLength(2);
+});
+
+test('the home row is a deck of the three newest studies that are not featured, and it has no sideways scroller', () => {
+  const html = home();
+  const at = html.indexOf('class="toon-deck"');
+  expect(at).toBeGreaterThan(-1);
+  const deckHtml = html.slice(at, html.indexOf('All ' + studies.length + ' case studies<span', at));
+  const rest = studies.filter((s) => s !== featured).slice(0, 3);
+  expect(deckHtml.match(/data-home="card"/g)).toHaveLength(3);
+  expect(deckHtml.match(/class="toon-deck-card" role="group" aria-label="\d of 3"/g)).toHaveLength(3);
+  const hrefs = [...deckHtml.matchAll(/<a class="toon-link self-start" href="(\/work\/[^"]+)"/g)].map((m) => m[1]);
+  expect(hrefs).toEqual(rest.map((s) => `/work/${s.slug}.html`));
+  expect(deckHtml).not.toMatch(/overflow-x-auto|snap-x|snap-mandatory|snap-start|w-\[78%\]/);
+  expect(html).not.toMatch(/overflow-x-auto/);
+  expect(html).toContain('data-toon-deck="phone"');
+});
+
+test('the kit page demonstrates the deck', () => {
+  const html = kit();
+  expect(html).toContain('data-toon-deck="phone"');
+  expect(html).toContain('toon-deck-pile');
+  expect(html).toContain('data-toon-deck-next');
+});
+
+test('section ids come from the heading, stay unique, and avoid ids the page already uses', () => {
+  expect(sectionIds(['What I built', 'What I built', 'Result: 57/57!', '???', 'Contents', 'Main'])).toEqual(['what-i-built', 'what-i-built-2', 'result-57-57', 'section', 'contents-2', 'main-2']);
+  expect(isResultHeading('Result so far')).toBe(true);
+  expect(isResultHeading('  outcome')).toBe(true);
+  expect(isResultHeading('Results that matter')).toBe(true);
+  expect(isResultHeading('Why it was not a result')).toBe(false);
+});
+
+test('every study has unique section ids and a contents list that links to each one, on the rail and the phone disclosure', () => {
+  for (const s of studies) {
+    const html = study(s);
+    const ids = [...html.matchAll(/<section id="([^"]+)" class="scroll-mt-s8/g)].map((m) => m[1]);
+    expect(ids).toHaveLength(s.sections.length);
+    expect(new Set(ids).size).toBe(ids.length);
+    const allIds = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+    expect(new Set(allIds).size).toBe(allIds.length);
+    const rail = html.slice(html.indexOf('<nav id="contents"'), html.indexOf('</nav>', html.indexOf('<nav id="contents"')));
+    const phone = html.slice(html.indexOf('<details'), html.indexOf('</details>'));
+    for (const part of [rail, phone]) {
+      const links = [...part.matchAll(/<a class="toon-link" href="#([^"]+)">([^<]*)<\/a>/g)];
+      expect(links.map((m) => m[1])).toEqual(ids);
+      expect(links.map((m) => m[2])).toEqual(s.sections.map((x) => esc(x.heading)));
+    }
+    expect(phone).toContain(`In this study (${s.sections.length} parts)`);
+    expect(html).toContain('aria-label="In this study"');
+  }
+});
+
+test('a study puts its Result or Outcome section in the one paper panel, and a study without one has none in the text', () => {
+  for (const s of studies) {
+    const html = study(s);
+    const results = s.sections.filter((x) => isResultHeading(x.heading));
+    const inText = html.slice(html.indexOf('<section id='), html.indexOf('<aside class="toon-panel mt-16"'));
+    expect(inText.match(/<section [^>]*class="[^"]*toon-panel/g)?.length ?? 0).toBe(results.length);
+  }
+  expect(studies.some((s) => s.sections.some((x) => isResultHeading(x.heading)))).toBe(true);
+  // Text on paper is ink, so the heading inside the panel is not the accent colour.
+  const gate = study(bySlug('agent-merge-gate'));
+  const panel = gate.slice(gate.indexOf('toon-panel" style'), gate.indexOf('</section>', gate.indexOf('toon-panel" style')));
+  expect(panel).toMatch(/<h2 class="[^"]*text-toon-ink"/);
+  expect(panel).not.toMatch(/<h2[^>]*style=/);
+});
+
+test('the study header carries the key figure with "The result", and the facts tiles follow it at full width', () => {
+  for (const s of studies) {
+    const html = study(s);
+    const header = html.slice(html.indexOf('<header class="mt-s6'), html.indexOf('</header>', html.indexOf('<header class="mt-s6')));
+    expect(header).toContain('<h1');
+    expect(header).toContain('aria-label="Key result"');
+    expect(header).toContain('>The result</span>');
+    expect(header).toContain(esc(s.stat.label));
+    expect(html.indexOf('aria-label="Key result"')).toBeGreaterThan(html.indexOf('<h1'));
+    if (s.facts) expect(html.indexOf('toon-stats')).toBeGreaterThan(html.indexOf('</header>', html.indexOf('<header class="mt-s6')));
+  }
+});
+
+test('the study with pictures has no sideways scroller, and each picture links to its full-size file', () => {
+  const s = studies.find((x) => x.slug === 'media-assistant-discovery-to-demo')!;
+  const shots = s.sections.flatMap((sec) => sec.shots ?? []);
+  expect(shots.length).toBeGreaterThan(1);
+  const html = study(s);
+  expect(html).not.toMatch(/overflow-x-auto|w-\[760px\]/);
+  for (const img of html.match(/<img [^>]*>/g)!.filter((i) => i.includes('/studies/'))) expect(img).not.toContain('max-w-none');
+  shots.forEach((h, n) => {
+    const file = `/studies/${s.slug}/${h.file}`;
+    expect(html).toContain(`<a class="toon-shot-link" href="${file}" target="_blank" rel="noopener" aria-label="Open the full-size picture: ${esc(h.alt)}"><img src="${file}"`);
+    expect(html).toContain(`toon-shot-badge-end">${n + 1} / ${shots.length}<`);
+  });
+  expect(html.match(/Tap to enlarge/g)).toHaveLength(shots.length);
+  expect(html.match(/loading="lazy"/g)!.length).toBeGreaterThanOrEqual(shots.length);
+  // Tilt only from lg, alternating.
+  expect(html).toContain('lg:rotate-1');
+  expect(html).toContain('lg:-rotate-1');
+});
+
+test('the study closing panel holds the fit text, the skills and the hiring call, and the study pages have no sound effects', () => {
+  for (const s of studies) {
+    const html = study(s);
+    const at = html.indexOf('<aside class="toon-panel mt-16"');
+    expect(at).toBeGreaterThan(-1);
+    const panel = html.slice(at, html.indexOf('</aside>', at));
+    if (fit[s.slug]) expect(panel).toContain('Why it matters for hiring teams');
+    expect(panel).toContain('Skills shown');
+    for (const k of s.skills) expect(panel).toContain(esc(k));
+    expect(panel).toContain('Hiring for AI automation or forward-deployed engineering?');
+    expect(panel).toContain(`href="${site.linkedin}"`);
+    expect(panel).toContain(`href="${site.github}"`);
+    expect(html).not.toContain('toon-sfx');
+  }
 });

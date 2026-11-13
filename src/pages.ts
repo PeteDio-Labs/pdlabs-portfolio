@@ -1,5 +1,5 @@
 import { esc, md } from './html.ts';
-import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, stat, badge, chip, row, bars, kicker, strip, steps, sfx } from 'toonish-ui/markup';
+import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, stat, badge, chip, row, bars, kicker, strip, steps, sfx, deck } from 'toonish-ui/markup';
 import { thumb } from './illustrations/thumbs.ts';
 import { hybridDiagram, hybridDiagramTall } from './illustrations/hybrid.ts';
 import { legalPages, legalUpdated } from './legal.ts';
@@ -124,7 +124,7 @@ const hiring = 'Hiring for AI automation or agent work?';
 
 /** A compact case-study card for the row under the lead story: tag, date, title, figure and link. No summary. */
 const compactCard = (s: CaseStudy, i: number) => `
-        <article class="toon-card toon-pop flex w-[78%] shrink-0 snap-start flex-col md:w-auto" data-home="card" style="--toon-shadow:${HEX[s.accent]}; animation-delay:${120 * (i + 1)}ms">
+        <article class="toon-card toon-pop flex flex-col" data-home="card" style="--toon-shadow:${HEX[s.accent]}; animation-delay:${120 * (i + 1)}ms">
           <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
           <h3 class="mb-s3 mt-s3 text-title3 font-bold leading-snug">${esc(s.title)}</h3>
           <p class="mb-s4 mt-auto">${figure(s.stat.value, s.accent, 40, 200)}</p>
@@ -200,8 +200,7 @@ export function home(): string {
           <a class="toon-link" href="/work/${featured.slug}.html">Read the case study<span class="sr-only">: ${esc(featured.title)}</span></a>
         </div>
       </article>
-      <div class="mt-s6 flex snap-x snap-mandatory gap-s4 overflow-x-auto pb-s2 pr-s2 pt-s4 md:mt-s8 md:grid md:grid-cols-3 md:gap-s6 md:overflow-visible md:pb-0" role="group" aria-label="More recent case studies">${recent.map(compactCard).join('')}
-      </div>
+      <div class="mt-s6 md:mt-s8">${deck(recent.map(compactCard), { label: 'More recent case studies', cols: 3 })}</div>
       <p class="mt-s6"><a class="toon-btn toon-btn-yellow" href="/work.html">All ${studies.length} case studies<span class="sr-only">, sortable by date and topic</span></a></p>
     </section>
 
@@ -346,58 +345,101 @@ export function workIndex(): string {
   });
 }
 
-/** The call to action that closes every case study: a hiring team reads the work, then needs a next step. */
-const hireCta = () => `
-      <aside class="toon-callout toon-callout-yellow mt-s8 max-w-[68ch] lg:max-w-none" aria-labelledby="hire-h">
-        <h2 id="hire-h" class="mb-s3 mt-0 text-title2 font-bold">Hiring for AI automation or forward-deployed engineering?</h2>
-        <p class="mb-s4 mt-0">I build agents and automations with the limits and checks that keep them safe, and I run them on my own platform every day. Send me the role and I will tell you how my work fits it.</p>
-        <p class="m-0 flex flex-col gap-s3 sm:flex-row sm:flex-wrap sm:gap-s4"><a class="toon-btn toon-btn-yellow w-full text-center sm:w-auto" href="${site.linkedin}">Message me on LinkedIn</a><a class="toon-btn toon-btn-paper w-full text-center sm:w-auto" href="${site.github}">See my code on GitHub</a></p>
+/** An id from a heading: lower case, hyphens between runs of letters and digits. */
+const slugify = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'section';
+
+/** One id per heading, unique on the page. `reserved` holds ids the page already uses, so a heading never takes one. */
+export const sectionIds = (headings: string[], reserved: string[] = ['main', 'hire-h', 'contents']): string[] => {
+  const used = new Set(reserved);
+  return headings.map((h) => {
+    const base = slugify(h);
+    let id = base;
+    for (let n = 2; used.has(id); n++) id = `${base}-${n}`;
+    used.add(id);
+    return id;
+  });
+};
+
+/** The result section is the one light block in the page's text: a heading that starts with Result or Outcome. */
+export const isResultHeading = (h: string) => /^(result|outcome)/i.test(h.trim());
+
+const partNo = (i: number) => String(i + 1).padStart(2, '0');
+
+/** The contents list, shared by the desktop rail and the phone disclosure. `onPaper` picks the text colours. */
+const contents = (items: { id: string; heading: string }[], onPaper: boolean) =>
+  `<ol class="m-0 grid list-none gap-s3 p-0">${items
+    .map((x, i) => `<li class="flex items-baseline gap-s3"><span class="font-mono text-footnote font-bold ${onPaper ? 'text-toon-muted' : 'text-toon-yellow'}">${partNo(i)}</span><a class="toon-link" href="#${x.id}">${esc(x.heading)}</a></li>`)
+    .join('')}</ol>`;
+
+/** The closing panel: why the work fits a hiring team, the skills, and the call to action. */
+const closing = (s: CaseStudy) => `
+      <aside class="toon-panel mt-16" style="--toon-shadow:${HEX[s.accent]}" aria-label="Why it matters, and the next step">
+        <div class="grid gap-s8 lg:grid-cols-2 lg:gap-16">
+          <div class="min-w-0">
+            ${fit[s.slug] ? `<h2 class="mb-s3 mt-0 text-title2 font-bold">Why it matters for hiring teams</h2>
+            <p class="mb-s6 mt-0">${md(fit[s.slug])}</p>` : ''}
+            <h2 class="mb-s3 mt-0 text-title2 font-bold">Skills shown</h2>
+            <ul class="m-0 flex list-none flex-wrap gap-s2 p-0">${s.skills.map((k) => `<li class="toon-badge toon-badge-violet">${esc(k)}</li>`).join('')}</ul>
+          </div>
+          <div class="min-w-0 border-t-toon border-toon-ink pt-s6 lg:border-l-toon lg:border-t-0 lg:pl-16 lg:pt-0">
+            <h2 id="hire-h" class="mb-s3 mt-0 text-title2 font-bold">Hiring for AI automation or forward-deployed engineering?</h2>
+            <p class="mb-s4 mt-0">I build agents and automations with the limits and checks that keep them safe, and I run them on my own platform every day. Send me the role and I will tell you how my work fits it.</p>
+            <p class="m-0 flex flex-col gap-s4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-s6"><a class="toon-btn toon-btn-yellow w-full text-center sm:w-auto" href="${site.linkedin}">Message me on LinkedIn</a><a class="toon-link" href="${site.github}">See my code on GitHub</a></p>
+          </div>
+        </div>
       </aside>`;
 
 export function study(s: CaseStudy): string {
   const i = studies.indexOf(s);
   const next = studies[(i + 1) % studies.length];
   const prev = studies[(i + studies.length - 1) % studies.length];
+  const ids = sectionIds(s.sections.map((x) => x.heading));
+  const toc = s.sections.map((x, k) => ({ id: ids[k], heading: x.heading }));
+  const section = (sec: CaseStudy['sections'][number], k: number) => {
+    const panel = isResultHeading(sec.heading);
+    const shots = sec.shots ?? [];
+    return `
+        <section id="${ids[k]}" class="scroll-mt-s8 min-w-0 md:grid md:grid-cols-[3.5rem_minmax(0,1fr)] md:gap-x-s6${panel ? ' toon-panel' : ''}"${panel ? ` style="--toon-shadow:${HEX[s.accent]}"` : ''}>
+          <div class="toon-kicker mb-s3 max-w-[7rem] md:mb-0 md:max-w-none md:self-start md:pt-s2"><span class="toon-kicker-num">${partNo(k)}</span><span class="toon-kicker-rule md:hidden" aria-hidden="true"></span></div>
+          <div class="min-w-0 md:col-start-2 md:max-w-[68ch]">
+            <h2 class="mb-s4 mt-0 font-display text-title1 font-normal${panel ? ' text-toon-ink' : ''}"${panel ? '' : ` style="color:${HEX[s.accent]}"`}>${esc(sec.heading)}</h2>
+            ${sec.paragraphs.map((p, n) => `<p class="mb-s3 mt-0${k === 0 && n === 0 ? ' text-title3' : ''}">${md(p)}</p>`).join('\n            ')}
+            ${sec.table ? dataTable(sec.table) : ''}
+          </div>${shots.length ? `
+          <div class="mt-s6 grid min-w-0 gap-s8 md:col-start-2 lg:col-span-2 lg:col-start-1">
+            ${shots.map((h, n) => shot({ src: `/studies/${s.slug}/${h.file}`, alt: h.alt, width: h.width, height: h.height, caption: h.caption, badge: h.badge, transcript: h.transcript, accent: s.accent, href: `/studies/${s.slug}/${h.file}`, hrefLabel: `Open the full-size picture: ${h.alt}`, hint: 'Tap to enlarge', corner: shots.length > 1 ? `${n + 1} / ${shots.length}` : undefined, cls: `min-w-0 max-w-full ${n % 2 ? 'lg:-rotate-1' : 'lg:rotate-1'}` })).join('\n            ')}
+          </div>` : ''}
+        </section>`;
+  };
   const body = `
     <article class="py-s8">
       <a class="toon-link" href="/work.html">All case studies</a>
-      <div class="mt-s6 grid grid-cols-1 gap-s8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-x-16">
-      <header class="min-w-0 lg:col-start-1 lg:row-start-1">
-        <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
-        <h1 class="mt-s4 leading-none">${letters(s.title, s.accent, { flat: true, cls: 'text-display2 leading-[1.05]' })}</h1>
-        <p class="mt-s4 max-w-[60ch] text-title3">${md(s.summary)}</p>
-      </header>
-      <aside class="lg:sticky lg:top-s6 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-start" aria-label="Key result">
-        <div class="toon-card m-0 w-full text-center" style="--toon-shadow:${HEX[PAIR[s.accent]]}">
-          ${figure(s.stat.value, s.accent, 72, 200)}
-          <span class="mt-s2 block text-footnote">${esc(s.stat.label)}</span>
+      <header class="mt-s6 grid gap-s8 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-end lg:gap-x-12">
+        <div class="min-w-0">
+          <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
+          <h1 class="mt-s4 leading-none">${letters(s.title, s.accent, { flat: true, cls: 'text-display2 leading-[1.05]' })}</h1>
+          <p class="mt-s4 max-w-[60ch] text-title3">${md(s.summary)}</p>
         </div>
-      </aside>
-      <div class="min-w-0 lg:col-start-1 lg:row-start-2">
-      ${s.facts ? `<div class="toon-stats mb-s8" role="group" aria-label="Key figures">${s.facts.map((f) => stat(f.label, f.value, f.detail)).join('')}</div>` : ''}
-      <div class="grid max-w-[68ch] grid-cols-1 gap-s8 lg:max-w-none">${s.sections
-        .map(
-          (sec) => `
-        <section class="min-w-0">
-          <h2 class="mb-s3 mt-0 font-display text-title1 font-normal" style="color:${HEX[s.accent]}">${esc(sec.heading)}</h2>
-          ${sec.paragraphs.map((p) => `<p class="mb-s3 mt-0">${md(p)}</p>`).join('\n          ')}
-          ${sec.table ? dataTable(sec.table) : ''}
-          ${(sec.shots ?? []).map((h) => shot({ src: `/studies/${s.slug}/${h.file}`, alt: h.alt, width: h.width, height: h.height, caption: h.caption, badge: h.badge, transcript: h.transcript, accent: s.accent, cls: "my-s6 min-w-0 max-w-full [&>*]:min-w-0 [&>*]:max-w-full" }).replace(/<img /, '<img class="h-auto w-[760px] max-w-none sm:w-full" ').replace(/<img [^>]*>/, (img) => `<a href="/studies/${s.slug}/${h.file}" target="_blank" rel="noopener" aria-label="Open the full-size picture" class="block overflow-x-auto rounded-[inherit]">${img}</a>`)).join('\n          ')}
-        </section>`,
-        )
-        .join('')}
-        ${fit[s.slug] ? `<section>
-          <h2 class="mb-s3 mt-0 font-display text-title1 font-normal" style="color:${HEX[s.accent]}">Why it matters for hiring teams</h2>
-          <p class="mb-s3 mt-0">${md(fit[s.slug])}</p>
-        </section>` : ''}
-        <section>
-          <h2 class="mb-s3 mt-0 font-display text-title1 font-normal" style="color:${HEX[s.accent]}">Skills shown</h2>
-          <ul class="m-0 flex list-none flex-wrap gap-s2 p-0">${s.skills.map((k) => `<li class="toon-badge toon-badge-violet">${esc(k)}</li>`).join('')}</ul>
-        </section>
+        <aside class="toon-panel relative z-10 mt-s3 w-full max-w-sm p-s5 text-center lg:-mb-s6 lg:mt-0 lg:max-w-none lg:rotate-2" style="--toon-shadow:${HEX[PAIR[s.accent]]}" aria-label="Key result">
+          <span class="toon-caption absolute -top-s3 left-s4">The result</span>
+          <div class="pt-s2">${figure(s.stat.value, s.accent, 72, 190)}</div>
+          <span class="mt-s2 block text-footnote">${esc(s.stat.label)}</span>
+        </aside>
+      </header>
+      ${s.facts ? `<div class="toon-stats mt-s8 lg:mt-12" role="group" aria-label="Key figures">${s.facts.map((f) => stat(f.label, f.value, f.detail)).join('')}</div>` : ''}
+      <details class="mt-s8 rounded-toon border-toon border-toon-ink bg-toon-paper px-s4 py-s3 text-toon-ink lg:hidden">
+        <summary class="cursor-pointer font-bold">In this study (${toc.length} parts)</summary>
+        <div class="mt-s3">${contents(toc, true)}</div>
+      </details>
+      <div class="mt-s8 grid gap-s8 lg:mt-16 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-x-12">
+        <div class="grid min-w-0 gap-12 md:gap-16">${s.sections.map(section).join('')}
+        </div>
+        <nav id="contents" class="hidden lg:sticky lg:top-s6 lg:block lg:self-start" aria-label="In this study">
+          <p class="mb-s3 mt-0 font-mono text-footnote font-bold uppercase tracking-wider">In this study</p>
+          <div class="border-l-toon border-toon-mist pl-s4">${contents(toc, false)}</div>
+        </nav>
       </div>
-      ${hireCta()}
-      </div>
-      </div>
+      ${closing(s)}
       <nav class="mt-16 grid gap-s4 sm:grid-cols-2" aria-label="Case studies">
         <a class="toon-btn toon-btn-paper w-full rounded-card text-left" href="/work/${prev.slug}.html"><span class="block text-footnote font-normal">Previous</span>${esc(prev.title)}</a>
         <a class="toon-btn w-full rounded-card text-left sm:text-right" href="/work/${next.slug}.html"><span class="block text-footnote font-normal">Next</span>${esc(next.title)}</a>
@@ -510,6 +552,16 @@ export function kit(): string {
         <div class="toon-frame toon-tilt-l p-s6 text-toon-ink"><span class="toon-caption">toon-tilt-l</span></div>
         <div class="toon-frame toon-tilt-r p-s6 text-toon-ink"><span class="toon-caption">toon-tilt-r</span></div>
       </div>
+      <h3 class="mb-s3 mt-s8 text-title2 font-bold">Deck</h3>
+      <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-deck</code> turns a row of cards into a pile you flip through on a phone, and a grid from <code>md</code>. Narrow the window, or open this page on a phone, to see the pile: swipe sideways, or use the buttons or the arrow keys. A vertical drag still scrolls the page, and a tap on a link in the top card still follows it. Without script the cards are a plain list. <code>data-toon-deck="always"</code> keeps the pile at every width. The <code>deck()</code> helper writes it. It does not escape the card HTML you pass it, so escape any text you put in a card.</p>
+      ${deck(
+        [
+          { n: 'One', t: 'A sample card in the pile.' },
+          { n: 'Two', t: 'The cards under the top one peek out behind it.' },
+          { n: 'Three', t: 'Next on the last card returns to the first.' },
+        ].map((c, k) => `<article class="toon-card flex flex-col" style="--toon-shadow:${[HEX.yellow, HEX.violet, HEX.blue][k]}"><h4 class="m-0 text-title3 font-bold">Sample card ${c.n}</h4><p class="mb-s4 mt-s3">${c.t}</p><a class="toon-link mt-auto self-start" href="/ui.html#k-page">A link in the card</a></article>`),
+        { label: 'Sample cards, flip through them' },
+      )}
       <h3 class="mb-s3 mt-s8 text-title2 font-bold">Sound effects</h3>
       <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-sfx</code> is a sound-effect word in the comic face. Each letter has its own turn, rise and size, set from its index by the <code>sfx()</code> helper, and drifts in turn. It is decoration: the helper hides it from readers and it takes no pointer. You position it, usually <code>absolute</code> in a <code>relative</code> parent. <code>toon-sfx-sm</code>, <code>toon-sfx-lg</code> and <code>toon-sfx-ghost</code> change the size or make it an outline for sitting behind content. Latin letters only.</p>
       <div class="relative flex min-h-[9rem] flex-wrap items-center gap-x-s8 gap-y-s6 pl-s2">${sfx('POW!', 'red')}${sfx('click', 'yellow', { size: 'sm' })}${sfx('WHAM', 'violet', { size: 'lg' })}${sfx('SHIP!', 'blue', { size: 'lg', ghost: true })}</div>
