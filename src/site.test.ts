@@ -225,3 +225,25 @@ test('palette text pairs meet WCAG AA contrast (4.5:1)', async () => {
   const pairs: [string, string][] = [['paper', 'ground'], ['ink', 'paper'], ['ink', 'blue'], ['ink', 'red'], ['ink', 'yellow'], ['ink', 'violet']];
   for (const [fg, bg] of pairs) expect(ratio(color(fg), color(bg))).toBeGreaterThanOrEqual(4.5);
 });
+
+test('the JSON API lists every study and carries one file per study, without private fields', async () => {
+  const { apiFiles } = await import('./api.ts');
+  const files = apiFiles(studies, fit);
+  expect(Object.keys(files)).toHaveLength(studies.length + 1);
+  const index = JSON.parse(files['api/studies.json']);
+  expect(index.map((s: any) => s.slug)).toEqual(studies.map((s) => s.slug));
+  for (const s of studies) {
+    const one = JSON.parse(files[`api/studies/${s.slug}.json`]);
+    expect(one.slug).toBe(s.slug);
+    expect(one.sections.length).toBeGreaterThan(0);
+    expect(one.api).toBe(`/api/studies/${s.slug}.json`);
+    expect(index.find((i: any) => i.slug === s.slug).api).toBe(one.api);
+  }
+  const text = Object.values(files).join('\n');
+  expect(text).not.toContain('"sources"');
+  expect(text).not.toMatch(/192\.168\.|ghp_|hvs\./);
+});
+
+test('the CSP stays tight: the API adds no inline script and no new origin to the pages', () => {
+  for (const html of all()) expect(html).not.toMatch(/<script(?![^>]*\bsrc=)(?![^>]*type="application\/ld\+json")[^>]*>/);
+});
