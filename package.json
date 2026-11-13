@@ -12,7 +12,7 @@
   "devDependencies": {
     "@types/bun": "1.2.17",
     "tailwindcss": "3.4.17",
-    "toonish-ui": "github:PeteDio-Labs/toonish-ui#c9bd6ba341cb17059377ea983990c970cf0eff04",
+    "toonish-ui": "github:PeteDio-Labs/toonish-ui#d130ca0905ab6bd9e667792e23130f037c7ad13e",
     "typescript": "5.8.3"
   }
 }

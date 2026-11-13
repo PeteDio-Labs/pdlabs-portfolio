@@ -2,7 +2,7 @@
 import { HEX } from 'toonish-ui/markup';
 
 export const INK = '#0a0a1f';
-export const PAPER = '#f3efe6';
+export const PAPER = '#eceff3';
 export const GROUND = '#0c1240';
 export const BLUE = HEX.blue;
 export const RED = HEX.red;

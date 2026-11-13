@@ -134,10 +134,10 @@ export function home(): string {
             <circle cx="22" cy="17" r="7" fill="#f2706a"/><circle cx="44" cy="17" r="7" fill="#f2c94c"/><circle cx="66" cy="17" r="7" fill="#5f8dff"/>
             <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15">
               <text x="18" y="70" fill="#5f8dff">$ terraform plan</text>
-              <text x="18" y="96" fill="#f3efe6">No changes. Your infrastructure</text>
-              <text x="18" y="116" fill="#f3efe6">matches the configuration.</text>
+              <text x="18" y="96" fill="#eceff3">No changes. Your infrastructure</text>
+              <text x="18" y="116" fill="#eceff3">matches the configuration.</text>
               <text x="18" y="152" fill="#f2c94c">$ gh pr merge --squash</text>
-              <text x="18" y="178" fill="#f3efe6">Merged after CI and review.</text>
+              <text x="18" y="178" fill="#eceff3">Merged after CI and review.</text>
               <text x="18" y="212" fill="#f2706a" class="toon-blink">$ _</text>
             </g>
           </svg>
@@ -409,7 +409,7 @@ export function kit(): string {
         { label: 'Tue', sub: '10', current: true, segments: [{ value: 4, tone: 'blue', label: 'Web' }, { value: 2, tone: 'red', label: 'Phone' }] },
         { label: 'Wed', sub: '11', segments: [{ value: 2, tone: 'red', label: 'Phone' }] },
         { label: 'Thu', sub: '12', segments: [] }] })}
-        <ul class="toon-bars-key mt-s4"><li><i></i>Web</li><li><i style="--toon-dot:#f2706a"></i>Phone</li><li><i style="background:repeating-linear-gradient(135deg,#0a0a1f 0 2px,#f3efe6 2px 6px)"></i>Returned</li></ul></div>
+        <ul class="toon-bars-key mt-s4"><li><i></i>Web</li><li><i style="--toon-dot:#f2706a"></i>Phone</li><li><i style="background:repeating-linear-gradient(135deg,#0a0a1f 0 2px,#eceff3 2px 6px)"></i>Returned</li></ul></div>
       <div class="toon-table-wrap mt-s8"><table class="toon-table"><caption class="sr-only">Sample orders by channel</caption><thead><tr><th scope="col">Day</th><th scope="col">Web</th><th scope="col">Phone</th><th scope="col">Returned</th></tr></thead><tbody><tr><td>Mon</td><td>3</td><td>0</td><td>1</td></tr><tr aria-current="date"><td>Tue</td><td>4</td><td>2</td><td>0</td></tr><tr><td>Wed</td><td>0</td><td>2</td><td>0</td></tr><tr><td>Thu</td><td>0</td><td>0</td><td>0</td></tr></tbody><tfoot><tr><td>Total</td><td>7</td><td>4</td><td>1</td></tr></tfoot></table></div>
       <p class="mt-s4 max-w-[60ch]">Add <code>toon-table-text</code> for cells that hold words, as the case studies do.</p>
     </section>
