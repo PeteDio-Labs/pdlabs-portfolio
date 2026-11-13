@@ -1,0 +1,78 @@
+{
+  "slug": "media-assistant-discovery-to-demo",
+  "date": "2026-11-13",
+  "title": "From a household's question to a tested demo: the media assistant",
+  "tag": "Delivery",
+  "accent": "red",
+  "summary": "How a vague complaint became a scoped, read-first assistant: who asked, what they asked, what I left out, the demo script and the acceptance checklist I tested it against.",
+  "stat": {
+    "value": "57 of 57",
+    "label": "fixed questions routed to the expected tool by a keyword router that calls no model, checked offline in CI"
+  },
+  "sections": [
+    {
+      "heading": "Who asked, and what they asked",
+      "paragraphs": [
+        "The users are the people in my household and the AI agents that answer for them. The complaint was one sentence: why is this show not in Plex? Answering it meant opening four apps and comparing what each one claimed.",
+        "I did not run formal interviews. The requirements below come from questions people asked in chat and from the incidents I logged, and each one became a test case. That makes them real, and it also means I have no adoption figures, so I do not claim any."
+      ]
+    },
+    {
+      "heading": "Discovery: the answer was in the data, not the question",
+      "paragraphs": [
+        "Two findings shaped the scope. First, the request tool kept its own copy of availability, and it disagreed with the apps that hold the files on 41 of 65 requests after a hardware loss. The apps that hold the files are the ground truth, so the assistant had to read from them and treat the request tool's status as a hint.",
+        "Second, the obvious fix is often wrong. In the worked example, the request tool said partially available, Sonarr had all 91 files, and Plex had lost the item. A refresh of the request tool would change nothing. Only a Plex library refresh would, and the only way to know is to check all three systems in order. The assistant had to show that reasoning, not only an answer."
+      ]
+    },
+    {
+      "heading": "Scope decisions",
+      "paragraphs": [
+        "I wrote the fence down before I built anything: it answers where a request is stuck, and it updates the stack. It is not a homelab dashboard. Two earlier attempts had died of generic scope with no data layer underneath.",
+        "Reads come first. Every diagnosis is deterministic code, so the same inputs always give the same verdict and a wrong answer is a bug I can fix. Four write tools exist, each limited to one title, one library section or one app, each able to run as a dry run, and each available only to callers I name. A caller that is not named does not see them, and a direct call returns 403. The plain-language path never writes.",
+        "I also removed the model from routing. A keyword router matched the model's choice on all 21 prompts in the first test set, so the model held a GPU for a decision the keywords already made. Dropping it made routing instant, free and testable offline."
+      ]
+    },
+    {
+      "heading": "The demo script",
+      "paragraphs": [
+        "A non-engineer can run this in a direct message to the bot in about three minutes.",
+        "1. Ask: do I have The Bear. The answer says what exists, season by season, and names the tool it read.",
+        "2. Ask: why isn't a named show showing up in Plex. The answer gives a verdict, the evidence behind it, and the one fix that applies.",
+        "3. Ask something with no media in it, such as what is the meaning of life. The assistant routes nowhere and says so.",
+        "4. Show the timing line under each answer. It splits routing from the tool call, so a slow answer points at the media stack and not at the assistant."
+      ]
+    },
+    {
+      "heading": "Acceptance checklist",
+      "paragraphs": [
+        "I tested each item before I called it done. Most are automated, so they run on every change.",
+        "Each tool answers for a title I know is stuck or missing. A failing backend produces a finding, such as sonarr is not answering, never an empty answer or a server error. A wrong, partial, missing or non-bearer credential is refused, and the logs never contain a token. A caller that is not a writer sees only the read tools and gets 403 on a write tool. A write does nothing when the title matches more than one item, and it refuses a partial-name guess. A question about possession and a question about progress stay separate.",
+        "That last item comes from a real failure. On 9 September a question about how many seasons of a show I owned was answered with a statement about the queue, because no tool covered possession and the nearest tool answered confidently about something else. I added a library tool, and a pair of test rows now holds the two questions apart."
+      ]
+    },
+    {
+      "heading": "Outcome",
+      "paragraphs": [
+        "The fixed question set holds 57 cases, including questions that must route to no tool, and the keyword router matches all 57. The first version of the set scored 21 of 21 under both the keyword router and the model, which is what justified removing the model. The whole suite runs 192 tests offline and passes.",
+        "The next measure I want is use: how often each person asks, and which questions return no answer. The service already logs the caller, the tool and the outcome without logging the question's text, so that number is available when I look for it."
+      ]
+    },
+    {
+      "heading": "What I would do differently",
+      "paragraphs": [
+        "Interview the people first, even for a household. I scoped from incidents, and a short list of the questions people want to ask, written before the build, would have caught the missing possession question six weeks sooner."
+      ]
+    }
+  ],
+  "skills": [
+    "Requirements and scoping",
+    "Acceptance testing",
+    "Stakeholder communication",
+    "Demo design"
+  ],
+  "sources": [
+    "petedio-media-control README.md and test/cases.ts (57 cases; bun test: 192 pass, run 2026-11-13)",
+    "petedio-vault Systems/mtrace.md (21 of 21 first set, PET-376 and PET-525, 9 September incident)",
+    "petedio-media-control README.md (41 of 65 seerr disagreement, write tier and caller scoping)"
+  ]
+}
