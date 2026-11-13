@@ -12,7 +12,7 @@
     {
       "heading": "Problem",
       "paragraphs": [
-        "Finding out why a show is missing meant opening several apps and reading logs. The household needed one place to ask in plain words: why is this stuck, is the VPN up, do we have this title."
+        "Finding out why a show is missing meant opening several apps and reading logs. The household needed one place to ask in plain words: why is this stuck, is the server healthy, do we have this title."
       ]
     },
     {
@@ -26,14 +26,14 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "The assistant went live on 7 November 2026. A live test confirmed that a question about the download queue returned a real answer, and that a subtitle request produced a Confirm card and then a search that Bazarr accepted. The search had not produced a subtitle by the time I looked 45 seconds later, so I treat the end-to-end result as accepted, not as delivered."
+        "The assistant went live on 7 November 2026. A live test confirmed that a status question returned a real answer, and that a subtitle request produced a Confirm card and then a search that Bazarr accepted. The search had not produced a subtitle by the time I looked 45 seconds later, so I treat the end-to-end result as accepted, not as delivered."
       ]
     },
     {
       "heading": "What the first live run found",
       "paragraphs": [
         "Review caught two defects before the first deploy. The deploy script read the media credentials but never passed them to the step that writes the configuration, so it would have shipped empty values while printing that they were present. A seed script could also print credentials under shell tracing.",
-        "The live test then found a gap in the tool set. Asked what was added recently, the assistant answered with the download queue, because no tool lists recent additions. I added a prompt rule so it says it has no such tool. The real fix is a new read tool in the triage service."
+        "The live test then found a gap in the tool set. Asked what was added recently, the assistant answered with an unrelated status report, because no tool lists recent additions. I added a prompt rule so it says it has no such tool. The real fix is a new read tool in the triage service."
       ]
     },
     {

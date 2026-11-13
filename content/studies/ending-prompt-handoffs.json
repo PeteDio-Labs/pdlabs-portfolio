@@ -47,7 +47,7 @@
     {
       "heading": "What is still manual",
       "paragraphs": [
-        "Two of my repositories deploy on merge. About a dozen host deploys are still scripts that I run, and most of them place a secret, which I keep out of automation on purpose. Converting them needs a scoped login per deploy and my approval at the gate, so that work is not done."
+        "On 7 November, two of my repositories deployed on merge. About a dozen host deploys were still scripts that I run, and most of them place a secret, which I keep out of automation on purpose. Since then, six host deploys in the infrastructure repository have moved to workflows. Converting them needs a scoped login per deploy and my approval at the gate, so that work is not done."
       ]
     },
     {

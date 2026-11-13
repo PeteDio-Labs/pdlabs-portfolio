@@ -19,7 +19,7 @@
     {
       "heading": "What I built",
       "paragraphs": [
-        "Three pieces. First, metrics on every question: the number of tools offered, tool calls by tool and result, invalid-input refusals, retries after a failure, answers that called no tool, and turns per question. One query can then compare the model with 10 tools against 13.",
+        "Three pieces. First, metrics on every question: the number of tools offered, tool calls by tool and result, invalid-input refusals, retries after a failure, answers that called no tool, and turns per question. One query can then compare the model with 10 of the media tool's tools against 13.",
         "Second, toolkits. An environment setting lists which groups of tools the model sees: core, health, audit, subtitles and search. Unset offers all of them. An unknown name stops startup, so a typo cannot leave a smaller set running unnoticed, and a test fails if any tool belongs to no group. Every metric carries a toolkits label.",
         "Third, a routing eval. It asks 13 fixed questions, compares the tools the model called with the tool each question needs, and prints a wrong-tool rate. A question that errors counts as a miss too, so the rate mixes wrong routing with failures. A question answered without any tool counts as a miss, an unexpected extra call is reported but not failed, and the exit code is non-zero on any miss or error. The last line says how many questions ran, so a run that asked nothing cannot look clean."
       ]

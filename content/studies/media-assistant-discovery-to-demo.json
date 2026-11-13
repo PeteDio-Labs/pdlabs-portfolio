@@ -20,7 +20,7 @@
     {
       "heading": "Discovery: the answer was in the data, not the question",
       "paragraphs": [
-        "Two findings shaped the scope. First, the request tool kept its own copy of availability, and it disagreed with the apps that hold the files on 41 of 65 requests after a hardware loss. The apps that hold the files are the ground truth, so the assistant had to read from them and treat the request tool's status as a hint.",
+        "Two findings shaped the scope. First, the request tool kept its own copy of availability, and it disagreed with the apps that hold the files on 41 of 65 requests after a hardware loss (measured in September 2026). The apps that hold the files are the ground truth, so the assistant had to read from them and treat the request tool's status as a hint.",
         "Second, the obvious fix is often wrong. In the worked example, the request tool said partially available, Sonarr had all 91 files, and Plex had lost the item. A refresh of the request tool would change nothing. Only a Plex library refresh would, and the only way to know is to check all three systems in order. The assistant had to show that reasoning, not only an answer."
       ]
     },
@@ -29,7 +29,7 @@
       "paragraphs": [
         "I wrote the fence down before I built anything: it answers where a request is stuck, and it updates the stack. It is not a homelab dashboard. Two earlier attempts had died of generic scope with no data layer underneath.",
         "Reads come first. Every diagnosis is deterministic code, so the same inputs always give the same verdict and a wrong answer is a bug I can fix. Four write tools exist, each limited to one title, one library section or one app, each able to run as a dry run, and each available only to callers I name. A caller that is not named does not see them, and a direct call returns 403. The plain-language path never writes. In chat, the bot never runs a write by itself: it proposes the action with Confirm and Cancel buttons and runs it only after the owner taps Confirm.",
-        "I also removed the model from routing. A keyword router matched the model's choice on all 21 prompts in the first test set, so the model held a GPU for a decision the keywords already made. Dropping it made routing instant, free and testable offline."
+        "I also removed the model from the media tool's own plain-language routing. The chat assistant described in the earlier study still uses a local model to choose tools. A keyword router matched the model's choice on all 21 prompts in the first test set, so the model held a GPU for a decision the keywords already made. Dropping it made routing instant, free and testable offline."
       ]
     },
     {

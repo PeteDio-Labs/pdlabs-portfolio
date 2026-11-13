@@ -26,7 +26,7 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "An agent can name the work items a commit cites in one call, and see the state of the lab in one call. In live use only one board is on the allowed list so far, so the multi-board path is tested but not yet exercised. I have no measurement of time saved, and I am not claiming one."
+        "An agent can name the work items a commit cites in one call, and see the state of the lab in one call. In live use the server reads one board, PET, so the multi-board path is tested but not yet exercised. I have no measurement of time saved, and I am not claiming one."
       ]
     },
     {
