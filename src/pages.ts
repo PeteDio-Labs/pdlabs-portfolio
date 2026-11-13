@@ -246,7 +246,7 @@ export function home(): string {
         ${kicker('03', 'About')}
         <div class="mt-s6 grid items-center gap-s8 md:grid-cols-[auto_minmax(0,1fr)] md:gap-16">
           <figure class="toon-tilt-l relative m-0 w-[200px] max-w-full justify-self-start pb-s3">
-            ${portrait({ src: '/pedro-cutout.webp', alt: 'Pedro Delgadillo, in a black blazer and black t-shirt, on a slate grey studio backdrop', width: 640, height: 768, backdrop: 'slate', accent: 'blue' })}
+            ${portrait({ src: '/pedro-cutout.webp', alt: 'Pedro Delgadillo, in a black blazer and black t-shirt, on a light grey studio backdrop', width: 640, height: 768, backdrop: 'paper', accent: 'red' })}
             <figcaption class="toon-caption absolute -bottom-s1 left-s3">${esc(site.name)}</figcaption>
           </figure>
           <div class="min-w-0">
