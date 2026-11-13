@@ -401,10 +401,11 @@ const contents = (items: { id: string; heading: string }[], onPaper: boolean) =>
 /** The stack on the home page, as rows of the kit's list: a short category, the tool, and what it is for. */
 const STACK = [
   { lead: 'Compute', title: 'Proxmox, three nodes', sub: 'built to the shape of AWS' },
+  { lead: 'Cloud', title: 'AWS', sub: 'S3 and CloudFront serve this site' },
   { lead: 'IaC', title: 'Terraform and Ansible', sub: 'deployed by GitOps' },
   { lead: 'Secrets', title: 'Vault', sub: 'reached from CI by OIDC' },
   { lead: 'Runtime', title: 'Bun and TypeScript', sub: 'for services and bots' },
-  { lead: 'AI', title: 'Claude and local Qwen models', sub: 'for the agents' },
+  { lead: 'AI', title: 'Claude, Codex and local Qwen models', sub: 'for the agents and code review' },
 ];
 
 /** The closing panel: why the work fits a hiring team, the skills, and the call to action. */
