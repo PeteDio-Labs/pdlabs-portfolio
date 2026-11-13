@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
 import { home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
-import { llmsTxt, robotsTxt, sitemapXml } from './seo.ts';
+import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
 import { site, studies, featured, latest, fit } from './content.ts';
 
@@ -186,12 +186,12 @@ test('a stat figure shrinks as its value gets longer, so it fits its card', () =
   expect(sizes(home()).length).toBe(2);
 });
 
-test('sitemap dates a page by its own date and build.ts leaves the noindex kit page out', async () => {
+test('sitemap dates a page by its own date and leaves the noindex kit page out', () => {
   const xml = sitemapXml(['work/a.html', 'index.html'], '2026-01-01', { 'work/a.html': '2025-05-05' });
   expect(xml).toContain('<loc>https://pdlab.dev/work/a.html</loc><lastmod>2025-05-05</lastmod>');
   expect(xml).toContain('<loc>https://pdlab.dev/</loc><lastmod>2026-01-01</lastmod>');
   expect(kit()).toContain('<meta name="robots" content="noindex">');
-  expect(await Bun.file(new URL('../build.ts', import.meta.url)).text()).toContain("p !== 'ui.html'");
+  expect(sitemapFiles(['index.html', 'ui.html', '404.html', 'work.html'])).toEqual(['index.html', 'work.html']);
 });
 
 test('home JSON-LD links GitHub and LinkedIn as the same person', () => {

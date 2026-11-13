@@ -48,7 +48,7 @@ cut over. The repository holds everything else: `content/studies/` is the data, 
 - **What gates a deploy.** `deploy.yml` runs typecheck, tests and the build itself, so a red
   build never syncs. The private repository has no branch protection, so `ci` does not block a
   merge. The merge gate in the vault's working agreement, section 5, is the control.
-- **Caching.** The deploy syncs everything with `max-age=300`, then re-uploads `fonts/`, `.png`
-  and `.svg` files with a one-year `immutable` header. HTML, CSS and JS keep the short header
+- **Caching.** The deploy syncs everything with `max-age=300`, then re-uploads `fonts/` with a one-year
+  `immutable` header and `.png` and `.svg` files with a one-day header. HTML, CSS and JS keep the short header
   because their names carry no hash.
 - **Size budget.** `build.ts` fails when `dist/` passes 1.5 MB.

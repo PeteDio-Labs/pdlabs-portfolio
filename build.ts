@@ -4,7 +4,7 @@ import { mkdir, rm } from 'node:fs/promises';
 import { home, kit, legal, notFound, study, workIndex, workScript } from './src/pages.ts';
 import { site, studies } from './src/content.ts';
 import { siteScript, motionScript } from './src/script.ts';
-import { robotsTxt, sitemapXml, llmsTxt } from './src/seo.ts';
+import { robotsTxt, sitemapFiles, sitemapXml, llmsTxt } from './src/seo.ts';
 
 const out = 'dist';
 await rm(out, { recursive: true, force: true });
@@ -38,7 +38,7 @@ await Bun.write(`${out}/site.js`, siteScript);
 await Bun.write(`${out}/motion.js`, motionScript);
 await Bun.write(`${out}/robots.txt`, robotsTxt());
 await Bun.write(`${out}/sitemap.xml`, sitemapXml(
-  Object.keys(pages).filter((p) => p !== '404.html' && p !== 'ui.html'),
+  sitemapFiles(Object.keys(pages)),
   undefined,
   Object.fromEntries(studies.map((s) => [`work/${s.slug}.html`, s.date])),
 ));

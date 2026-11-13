@@ -1,0 +1,41 @@
+# Checks pdlab.dev every 30 minutes and fails the run, which GitHub emails, when the site is down
+# or a hardening header is gone. It reads the public site only and holds no secrets. A deploy-time
+# check already runs in deploy.yml; this one catches faults between deploys (DNS, certificate, CloudFront).
+name: live-check
+
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check pages, headers and certificate
+        run: |
+          set -eu
+          fail=0
+          checked=0
+          for p in / /work.html /sitemap.xml /robots.txt /og.png; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --retry 3 --retry-all-errors "https://pdlab.dev$p") || code=000
+            echo "$code $p"; checked=$((checked + 1))
+            [ "$code" = 200 ] || { echo "::error::https://pdlab.dev$p answered $code, expected 200"; fail=1; }
+          done
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --retry 3 --retry-all-errors "https://pdlab.dev/no-such-page-check") || code=000
+          echo "$code /no-such-page-check"; checked=$((checked + 1))
+          [ "$code" = 404 ] || { echo "::error::a missing page answered $code, expected 404"; fail=1; }
+          headers=$(curl -sSI --retry 3 --retry-all-errors https://pdlab.dev/)
+          for h in strict-transport-security content-security-policy x-content-type-options referrer-policy; do
+            echo "$headers" | grep -qi "^$h:" || { echo "::error::response header $h is missing"; fail=1; }
+          done
+          end=$(echo | openssl s_client -servername pdlab.dev -connect pdlab.dev:443 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+          days=$(( ( $(date -d "$end" +%s) - $(date +%s) ) / 86400 ))
+          echo "certificate expires in $days days ($end)"
+          [ "$days" -ge 14 ] || { echo "::error::certificate expires in $days days"; fail=1; }
+          echo "examined $checked URLs, 4 headers and the certificate"
+          exit $fail
