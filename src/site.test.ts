@@ -170,3 +170,11 @@ test('every case study ends with a hiring call to action, and the fit notes name
   expect(study(studies[0])).toContain('Hiring for AI automation or forward-deployed engineering?');
   expect(home()).toContain(site.linkedin);
 });
+
+test('a stat figure shrinks as its value gets longer, so it fits its card', () => {
+  const size = (html: string) => Number(/font-size:(\d+)px/.exec(html.slice(html.indexOf('block max-w-full leading-none')))![1]);
+  const short = studies.find((s) => s.stat.value.length <= 4);
+  const long = studies.find((s) => s.stat.value.length >= 11);
+  if (short && long) expect(size(study(long))).toBeLessThan(size(study(short)));
+  for (const s of studies) expect(size(study(s))).toBeLessThanOrEqual(72);
+});

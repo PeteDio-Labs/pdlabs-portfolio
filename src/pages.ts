@@ -27,14 +27,24 @@ const speedLines = (cls = '') =>
  * the paired colour, for the logo and the hero. Each letter is its own span, so the kit's CSS can tilt them in turn.
  * The text stays real text, so readers and search see it as written.
  */
-const letters = (text: string, accent: Accent = 'blue', opts: { live?: boolean; flat?: boolean; cls?: string } = {}) =>
-  `<span class="toon-type${opts.live ? ' toon-type-comic' : ''}${opts.flat ? ' toon-type-flat' : ''} ${opts.cls ?? ''}" style="--toon-fill:${HEX[accent]}; --toon-shade:${HEX[PAIR[accent]]}">${text
+const letters = (text: string, accent: Accent = 'blue', opts: { live?: boolean; flat?: boolean; cls?: string; size?: number } = {}) =>
+  `<span class="toon-type${opts.live ? ' toon-type-comic' : ''}${opts.flat ? ' toon-type-flat' : ''} ${opts.cls ?? ''}" style="--toon-fill:${HEX[accent]}; --toon-shade:${HEX[PAIR[accent]]}${opts.size ? `; font-size:${opts.size}px` : ''}">${text
     .split(' ')
     .map((word) => `<span class="toon-word">${[...word].map((c) => `<span>${esc(c)}</span>`).join('')}</span>`)
     .join(' ')}</span>`;
 
-/** A figure on a paper card: the display type, flat and heavy. */
-const figure = (value: string, accent: Accent, cls: string) => letters(value, accent, { flat: true, cls: `block leading-none ${cls}` });
+/**
+ * The largest font size, in px and at most `max`, at which the longest word of `value` fits in `avail` px.
+ * Words wrap between spaces, so the longest word sets the width. The display face runs about 0.6em per character.
+ */
+const fitSize = (value: string, max: number, avail: number) => {
+  const longest = Math.max(...value.split(/\s+/).map((w) => w.length), 1);
+  return Math.max(18, Math.min(max, Math.floor(avail / (longest * 0.6))));
+};
+
+/** A figure on a paper card: the display type, flat and heavy. It shrinks as the value gets longer, so it stays inside the card. */
+const figure = (value: string, accent: Accent, max: number, avail: number) =>
+  letters(value, accent, { flat: true, cls: 'block max-w-full leading-none', size: fitSize(value, max, avail) });
 
 /** A section heading in the display type. */
 const lettered = (id: string, text: string, accent: Accent, cls: string) =>
@@ -130,7 +140,7 @@ const studyCard = (s: CaseStudy, i: number, label = '', h: 'h2' | 'h3' = 'h3') =
         <p class="m-0 flex flex-wrap items-center gap-s2"><span class="toon-badge ${BADGE[s.accent]}">${esc(s.tag)}</span><time class="text-footnote" datetime="${s.date}">${month(s.date)}</time></p>
         <${h} class="mb-s2 mt-s3 text-title2 font-bold leading-snug">${esc(s.title)}</${h}>
         <p class="my-0">${md(s.summary)}</p>
-        <p class="mt-s4 mb-s4">${figure(s.stat.value, s.accent, 'text-[52px]')}<span class="mt-s1 block text-footnote">${esc(s.stat.label)}</span></p>
+        <p class="mt-s4 mb-s4">${figure(s.stat.value, s.accent, 52, 280)}<span class="mt-s1 block text-footnote">${esc(s.stat.label)}</span></p>
         <a class="toon-link mt-auto self-start" href="/work/${s.slug}.html">Read the case study<span class="sr-only">: ${esc(s.title)}</span></a>
       </article>`;
 
@@ -310,7 +320,7 @@ export function study(s: CaseStudy): string {
           <p class="mt-s4 max-w-[60ch] text-title3">${md(s.summary)}</p>
         </div>
         <div class="toon-card m-0 w-full max-w-[18rem] text-center md:w-[16rem]" style="--toon-shadow:${HEX[PAIR[s.accent]]}">
-          ${figure(s.stat.value, s.accent, 'text-[72px]')}
+          ${figure(s.stat.value, s.accent, 72, 200)}
           <span class="mt-s2 block text-footnote">${esc(s.stat.label)}</span>
         </div>
       </header>
@@ -404,9 +414,9 @@ export function kit(): string {
       </div>
       <p class="max-w-[60ch]">A figure on a card is the same sans, so a number reads as part of the card.</p>
       <div class="grid gap-s8 sm:grid-cols-3">
-        <div class="toon-card" style="--toon-shadow:#f2c94c">${figure('214', 'blue', 'text-[52px]')}<span class="mt-s1 block text-footnote">a count</span></div>
-        <div class="toon-card" style="--toon-shadow:#5f8dff">${figure('60 min', 'yellow', 'text-[52px]')}<span class="mt-s1 block text-footnote">a duration</span></div>
-        <div class="toon-card" style="--toon-shadow:#f2706a">${figure('~70%', 'violet', 'text-[52px]')}<span class="mt-s1 block text-footnote">an estimate</span></div>
+        <div class="toon-card" style="--toon-shadow:#f2c94c">${figure('214', 'blue', 52, 200)}<span class="mt-s1 block text-footnote">a count</span></div>
+        <div class="toon-card" style="--toon-shadow:#5f8dff">${figure('60 min', 'yellow', 52, 200)}<span class="mt-s1 block text-footnote">a duration</span></div>
+        <div class="toon-card" style="--toon-shadow:#f2706a">${figure('~70%', 'violet', 52, 200)}<span class="mt-s1 block text-footnote">an estimate</span></div>
       </div>
     </section>
 
