@@ -7,10 +7,11 @@ const urlOf = (file: string) => (file === 'index.html' ? `${origin}/` : `${origi
 export const robotsTxt = () =>
   `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`;
 
-export const sitemapXml = (files: string[], lastmod = new Date().toISOString().slice(0, 10)) =>
+/** `dates` maps a file to its own lastmod (a study's finish date); other files get `lastmod`. */
+export const sitemapXml = (files: string[], lastmod = new Date().toISOString().slice(0, 10), dates: Record<string, string> = {}) =>
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${files
     .sort()
-    .map((f) => `  <url><loc>${urlOf(f)}</loc><lastmod>${lastmod}</lastmod></url>`)
+    .map((f) => `  <url><loc>${urlOf(f)}</loc><lastmod>${dates[f] ?? lastmod}</lastmod></url>`)
     .join('\n')}\n</urlset>\n`;
 
 /** llms.txt: a plain summary for language models, written from the same content as the pages. */
