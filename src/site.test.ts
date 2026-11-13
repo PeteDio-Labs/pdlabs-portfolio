@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
 import { esc } from './html.ts';
-import { home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
+import { bySlug, home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
 
@@ -50,12 +50,73 @@ test('kit sample nav switches in place instead of reloading', () => {
   expect(html).not.toMatch(/aria-label="Sample"[^>]*>\s*<a /);
 });
 
-test('home shows the featured and the latest study and links to /work', () => {
+test('home leads with the featured study, then the three newest others, and links to /work', () => {
   const html = home();
+  const rest = studies.filter((s) => s !== featured).slice(0, 3);
+  expect(rest).toHaveLength(3);
+  expect(rest[0]).toBe(latest!);
   expect(html).toContain(`/work/${featured.slug}.html`);
-  expect(html).toContain(`/work/${latest!.slug}.html`);
-  expect(html.match(/<article[^>]* data-study/g)?.length).toBe(2);
+  for (const s of rest) expect(html).toContain(`/work/${s.slug}.html`);
+  expect(html.match(/<article[^>]* data-home="lead"/g)?.length).toBe(1);
+  expect(html.match(/<article[^>]* data-home="card"/g)?.length).toBe(3);
+  // The lead comes first, and the cards are the compact kind: no summary.
+  expect(html.indexOf('data-home="lead"')).toBeLessThan(html.indexOf('data-home="card"'));
+  const cards = html.split('data-home="card"').slice(1).map((c) => c.slice(0, c.indexOf('</article>')));
+  for (const c of cards) expect(c).not.toMatch(/<p class="my-0">/);
   expect(html).toContain('href="/work.html"');
+  // The row scrolls sideways on a phone, so it is labelled and holds real links.
+  expect(html).toMatch(/role="group" aria-label="More recent case studies"/);
+});
+
+test('the proof strip reads its figures from the studies and links each to its source', () => {
+  const html = home();
+  const gate = studies.find((s) => s.slug === 'agent-merge-gate')!;
+  const rack = studies.find((s) => s.slug === 'rack-loss-recovery')!;
+  const patching = studies.find((s) => s.slug === 'fleet-patching')!;
+  // 1,200+ is the one figure with no field of its own, so this guards it against its source.
+  expect(gate.summary).toContain('Over 1,200 pull requests');
+  // The patching label names the guest count, which lives in that study's own stat label.
+  expect(patching.stat.label).toContain('across 21 guests');
+  const cells = [...html.matchAll(/<a class="toon-strip-item" href="([^"]+)"><span class="toon-strip-value"[^>]*>([^<]*)<\/span>/g)].map((m) => [m[1], m[2]]);
+  expect(cells).toEqual([
+    ['/work/agent-merge-gate.html', '1,200+'],
+    ['/work/rack-loss-recovery.html', esc(rack.stat.value)],
+    ['/work/fleet-patching.html', esc(patching.stat.value)],
+    ['/work.html', String(studies.length)],
+  ]);
+  expect(html.indexOf('toon-strip')).toBeGreaterThan(html.indexOf('toon-blink'));
+  expect(html.indexOf('toon-strip')).toBeLessThan(html.indexOf('id="work"'));
+});
+
+test('home sections are numbered, in order, and the nav anchors land on them', () => {
+  const html = home();
+  const nums = [...html.matchAll(/<span class="toon-kicker-num">(\d+)<\/span><span class="toon-kicker-label">([^<]*)</g)].map((m) => [m[1], m[2]]);
+  expect(nums).toEqual([['01', 'The work'], ['02', 'The method'], ['03', 'About']]);
+  for (const id of ['work', 'how', 'about']) expect(html).toContain(`<section id="${id}"`);
+  expect(html.indexOf('id="work"')).toBeLessThan(html.indexOf('id="how"'));
+  expect(html.indexOf('id="how"')).toBeLessThan(html.indexOf('id="about"'));
+  // The three steps carry the spec's words, and the arrows are decoration.
+  for (const t of ['One task, one session, one branch.', 'Nothing merges unreviewed.', 'Declared, not hand-run.']) expect(html).toContain(t);
+  expect(html.match(/class="toon-step-arrow" aria-hidden="true"/g)).toHaveLength(2);
+  // The closing panel holds the headshot, the bubble (one tail per layout) and the contact links.
+  const panel = html.slice(html.indexOf('class="toon-panel"'));
+  expect(panel).toContain('pedro-headshot.webp');
+  expect(panel).toContain('toon-bubble-up');
+  expect(panel).toContain('toon-bubble-left');
+  expect(panel).toContain(`href="${site.linkedin}"`);
+  expect(panel).toContain(`href="${site.github}"`);
+  expect(panel).toContain(esc(site.background));
+});
+
+test('the home page keeps one primary button in the hero and a text link for the repos', () => {
+  const hero = home().slice(0, home().indexOf('toon-strip'));
+  expect(hero.match(/class="toon-btn /g)?.length).toBe(1);
+  expect(hero).toContain(`<a class="toon-link" href="${site.org}">Browse the repos</a>`);
+});
+
+test('the proof strip fails the build when a study it reads is missing', () => {
+  expect(() => bySlug('no-such-study')).toThrow('no-such-study');
+  expect(bySlug('fleet-patching').slug).toBe('fleet-patching');
 });
 
 test('studies are newest first, with unique slugs and real dates', () => {
@@ -198,7 +259,8 @@ test('a stat figure shrinks as its value gets longer, so it fits its card', () =
   expect(short).toBeDefined();
   expect(long).toBeDefined();
   expect(long.size).toBeLessThan(short.size);
-  expect(sizes(home()).length).toBe(2);
+  // The lead story and the three compact cards each carry one sized figure.
+  expect(sizes(home()).length).toBe(4);
 });
 
 test('sitemap dates a page by its own date and leaves the noindex kit page out', () => {
@@ -372,4 +434,19 @@ test('the home page shows the headshot with alt text, and the build ships the fi
   expect(m![0]).toMatch(/width="320" height="320"/);
   expect(existsSync('public/pedro-headshot.webp')).toBe(true);
   expect(statSync('public/pedro-headshot.webp').size).toBeLessThan(50_000);
+});
+
+test('the kit page demonstrates the landing-page components', () => {
+  const html = kit();
+  for (const c of ['toon-kicker', 'toon-strip', 'toon-steps', 'toon-panel', 'toon-bubble-left', 'toon-bubble-up', 'toon-tilt-l', 'toon-tilt-r', 'toon-sfx', 'toon-sfx-ghost']) expect(html).toContain(c);
+});
+
+test('the home page has at most three sound effects, all hidden from readers, and none in the closing panel', () => {
+  const html = home();
+  const words = [...html.matchAll(/<span class="toon-sfx[^"]*"[^>]*aria-hidden="true">((?:<span[^>]*>[^<]*<\/span>)+)<\/span>/g)].map((m) => [...m[1].matchAll(/>([^<]*)<\/span>/g)].map((x) => x[1]).join(''));
+  expect(words).toEqual(['MERGE!', 'SHIP!', 'CLICK']);
+  expect(html.match(/class="toon-sfx/g)).toHaveLength(3);
+  expect(html.slice(html.indexOf('class="toon-panel"'))).not.toContain('toon-sfx');
+  // Only the hero's word shows on a phone: the other two are hidden below md.
+  expect(html.match(/toon-sfx[^"]*hidden md:block/g)).toHaveLength(2);
 });
