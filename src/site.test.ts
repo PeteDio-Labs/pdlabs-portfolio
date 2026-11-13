@@ -277,3 +277,9 @@ test('study screenshots render with alt text, size, caption and transcript, and 
   expect(html).toContain('toon-shot-text');
   expect(html.match(/aria-label="Open the full-size picture"/g)?.length).toBe(shots.length);
 });
+
+test('the site study page links to the kit repository and the kit page', () => {
+  const html = study(studies.find((s) => s.slug === 'how-this-site-is-built')!);
+  expect(html).toContain('href="https://github.com/PeteDio-Labs/toonish-ui"');
+  expect(html).toContain('href="https://pdlab.dev/ui.html"');
+});

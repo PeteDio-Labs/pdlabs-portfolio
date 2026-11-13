@@ -61,6 +61,6 @@ const FALLBACK = (s: string) => box(110, 40, 180, 90, PAPER, s) + line('M130 70h
 /** One illustration per case-study tag, shadowed in the study's accent color. */
 export function thumb(tag: string, accent: Accent): string {
   const scene = (SCENES[tag] ?? FALLBACK)(HEX[accent]);
-  return `<div class="mb-s4 overflow-hidden border-4 border-toon-ink leading-[0] [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" aria-hidden="true"><svg viewBox="0 0 400 170" focusable="false"><rect width="400" height="170" fill="${GROUND}"/><g fill="#fff" opacity=".07"><circle cx="24" cy="24" r="3"/><circle cx="48" cy="24" r="3"/><circle cx="72" cy="24" r="3"/><circle cx="352" cy="148" r="3"/><circle cx="376" cy="148" r="3"/></g><g stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">${scene}</g></svg></div>`;
+  return `<div class="mb-s4 overflow-hidden rounded-toon border-toon border-toon-ink leading-[0] [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" aria-hidden="true"><svg viewBox="0 0 400 170" focusable="false"><rect width="400" height="170" fill="${GROUND}"/><g fill="#fff" opacity=".07"><circle cx="24" cy="24" r="3"/><circle cx="48" cy="24" r="3"/><circle cx="72" cy="24" r="3"/><circle cx="352" cy="148" r="3"/><circle cx="376" cy="148" r="3"/></g><g stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">${scene}</g></svg></div>`;
 }
 
