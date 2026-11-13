@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
 import { esc } from './html.ts';
-import { bySlug, home, isResultHeading, kit, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
+import { LOST, LOST_LOOKS, bySlug, home, isResultHeading, kit, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
 
@@ -601,4 +601,29 @@ test('every study ends with a pager to the previous and the next study, by title
     expect(html).toContain(`<span class="toon-pager-title">${esc(next.title)}</span>`);
     expect(html.match(/class="toon-pager-arrow"/g)?.length).toBe(2);
   });
+});
+
+test('the 404 card holds every line in one of four looks, shows only the first with scripts off, and links home', () => {
+  const page = notFound();
+  const lines = [...page.matchAll(/<div data-lost-line data-lost-look="([a-z]+)"( hidden)?>/g)];
+  expect(LOST.length).toBeGreaterThanOrEqual(6);
+  expect(lines.length).toBe(LOST.length);
+  expect(lines.map((m) => Boolean(m[2]))).toEqual(LOST.map((_, i) => i > 0));
+  // Every look is used, and each the same number of times, so a random line gives a random look.
+  const uses = LOST_LOOKS.map((k) => lines.filter((m) => m[1] === k).length);
+  expect(LOST_LOOKS.length).toBe(4);
+  expect(new Set(uses).size).toBe(1);
+  expect(uses[0]).toBeGreaterThan(0);
+  for (const l of LOST) {
+    expect(l.word).toMatch(/^[A-Z0-9!?]+$/);
+    expect(page).toContain(esc(l.line));
+  }
+  expect(new Set(LOST.map((l) => l.line)).size).toBe(LOST.length);
+  expect(page).toContain('<h1 class="sr-only">Page not found</h1>');
+  expect(page).toContain('<a class="toon-btn" href="/">Go to the home page</a>');
+  // The button does nothing without the script, so it ships hidden and site.js reveals it.
+  expect(page).toMatch(/<button[^>]*data-lost-next hidden>/);
+  expect(page).toContain('aria-live="polite"');
+  expect(siteScript).toContain('[data-lost-line]');
+  expect(siteScript).toContain('[data-lost-next]');
 });
