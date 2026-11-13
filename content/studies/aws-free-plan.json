@@ -35,8 +35,8 @@
       "heading": "Result",
       "paragraphs": [
         "The watchdog is deployed. The lab's heartbeat reaches it, and its daily \"alive\" message arrived in my Discord on 3 November.",
-        "The site deploys from a merge to the main branch. The first deploy ran on 3 November: it type-checked, tested and built the site, confirmed which identity it ran as, synced the built files to S3 and invalidated the CloudFront cache. I then read the site back through CloudFront's own address: the home page and the case-study pages return 200 with the HSTS header, and a missing page returns the 404 page. The read-back also found that extensionless URLs such as /work return 404, because the build writes work.html. No link on the site uses that form, so nothing breaks today, but I still have to fix it.",
-        "Two parts are still in progress: the domain cutover to the AWS copy, and replacing the deploy user's long-lived key with a short-lived credential from Vault. I treat the key as a stopgap, not the design."
+        "The site deploys from a merge to the main branch. The first deploy ran on 3 November: it type-checked, tested and built the site, confirmed which identity it ran as, synced the built files to S3 and invalidated the CloudFront cache. I then read the site back through CloudFront's own address: the home page and the case-study pages return 200 with the HSTS header, and a missing page returns the 404 page. The read-back also found that extensionless URLs such as /work returned 404, because the build writes work.html. A small CloudFront function now maps /work to /work.html.",
+        "The site now serves from the AWS copy at pdlab.dev. One part is still open: replacing the deploy user's long-lived key with a short-lived credential. I treat the key as a stopgap, not the design."
       ]
     },
     {

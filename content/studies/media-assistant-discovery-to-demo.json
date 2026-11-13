@@ -29,7 +29,7 @@
       "paragraphs": [
         "I wrote the fence down before I built anything: it answers where a request is stuck, and it updates the stack. It is not a homelab dashboard. Two earlier attempts had died of generic scope with no data layer underneath.",
         "Reads come first. Every diagnosis is deterministic code, so the same inputs always give the same verdict and a wrong answer is a bug I can fix. Four write tools exist, each limited to one title, one library section or one app, each able to run as a dry run, and each available only to callers I name. A caller that is not named does not see them, and a direct call returns 403. The plain-language path never writes. In chat, the bot never runs a write by itself: it proposes the action with Confirm and Cancel buttons and runs it only after the owner taps Confirm.",
-        "I also removed the model from routing. A keyword router matched the model's choice on all 21 prompts in the first test set, so the model held a GPU for a decision the keywords already made. Dropping it made routing instant, free and testable offline."
+        "I also removed the model from the media tool's own plain-language routing. The chat assistant described in the earlier study still uses a local model to choose tools. A keyword router matched the model's choice on all 21 prompts in the first test set, so the model held a GPU for a decision the keywords already made. Dropping it made routing instant, free and testable offline."
       ]
     },
     {
