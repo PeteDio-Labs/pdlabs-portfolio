@@ -461,6 +461,14 @@ test('the hybrid diagram sits in a window like the hero terminal: a title bar wi
   expect(win.match(/rounded-full/g)).toHaveLength(3);
 });
 
+test('the stack on the home page is a kit list of five labelled rows, not a bullet list', () => {
+  const html = home();
+  const stack = html.slice(html.indexOf('data-home="stack"'), html.indexOf('</section>', html.indexOf('data-home="stack"')));
+  expect(stack.match(/class="toon-row" role="listitem"/g)).toHaveLength(5);
+  expect([...stack.matchAll(/toon-row-lead">([^<]*)</g)].map((m) => m[1])).toEqual(['Compute', 'IaC', 'Secrets', 'Runtime', 'AI']);
+  expect(html).not.toContain('list-disc');
+});
+
 test('the home row is a deck of the three newest studies that are not featured, and it has no sideways scroller', () => {
   const html = home();
   const at = html.indexOf('class="toon-deck"');
