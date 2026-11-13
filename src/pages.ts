@@ -231,7 +231,10 @@ export function home(): string {
       <div class="mt-s8 grid items-start gap-s8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <figure class="relative m-0 min-w-0">
           ${sfx('DEPLOY!', 'violet', { size: 'sm', corner: true, cls: 'md:text-[2.5rem]' })}
-          <div class="toon-frame relative bg-toon-ground">
+          <div class="toon-frame relative bg-toon-ground" data-home="window">
+            <div class="flex items-center gap-s2 border-0 border-b-2 border-solid border-toon-ink bg-toon-violet px-s4 py-s2" aria-hidden="true">
+              <span class="h-3.5 w-3.5 rounded-full bg-toon-red"></span><span class="h-3.5 w-3.5 rounded-full bg-toon-yellow"></span><span class="h-3.5 w-3.5 rounded-full bg-toon-blue"></span>
+            </div>
             <span class="toon-caption m-s3 inline-block">Hybrid by design</span>
             <div class="sm:hidden">${hybridDiagramTall()}</div>
             <div class="hidden sm:block">${hybridDiagram()}</div>
