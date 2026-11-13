@@ -9,7 +9,7 @@
         "axe-core": "4.10.2",
         "playwright-core": "1.65.0",
         "tailwindcss": "3.4.17",
-        "toonish-ui": "github:PeteDio-Labs/toonish-ui#05aa6850635b1a55b4698000f17b706914cff394",
+        "toonish-ui": "github:PeteDio-Labs/toonish-ui#488418d33c04c653d7d23ea0bfe6c0c9eb429194",
         "typescript": "5.8.3",
       },
     },
@@ -161,7 +161,7 @@
 
     "to-regex-range": ["to-regex-range@5.0.1", "", { "dependencies": { "is-number": "^7.0.0" } }, "sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ=="],
 
-    "toonish-ui": ["toonish-ui@github:PeteDio-Labs/toonish-ui#05aa685", {}, "PeteDio-Labs-Toonish-ui-05aa685", "sha512-Y4WtJMe1AMvIK21epfzCH4xYhhpk511O/IH//drPTwTfsExm0n45+eCG6IS30mngmpAseZbtR2ZTSWIZyS3psQ=="],
+    "toonish-ui": ["toonish-ui@github:PeteDio-Labs/toonish-ui#488418d", {}, "PeteDio-Labs-Toonish-ui-488418d", "sha512-5QDqERVvc6Hml1huxRIePjJBIm/L2HsmmpGP5ySKUEWkDsfHo9YNHxMfPYWX7+QLDNVd2IxaYnUD3auWSqmh1A=="],
 
     "ts-interface-checker": ["ts-interface-checker@0.1.13", "", {}, "sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA=="],
 
