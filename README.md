@@ -32,6 +32,7 @@ The home page shows the featured study and the newest other one. `/work.html` li
 newest first and, with JavaScript, sorts by date or title and filters by topic. The query string
 keeps the choice (`?sort=oldest&tag=Agents`). Without JavaScript the list stays in date order.
 The build also writes `studies.json`, the same list without the bodies.
+It also writes a read-only JSON API: `/api/studies.json` lists the studies and `/api/studies/<slug>.json` returns one study with its sections. CloudFront sends `Access-Control-Allow-Origin: *` on `/api/*` only.
 
 Pages are flat files (`/work/<slug>.html`), so S3 and CloudFront can serve them with no
 rewrite function.
