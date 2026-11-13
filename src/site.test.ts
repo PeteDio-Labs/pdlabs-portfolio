@@ -271,7 +271,7 @@ test('study screenshots render with alt text, size, caption and transcript, and 
   const html = study(s);
   for (const h of shots) {
     expect(html).toContain(`src="/studies/${s.slug}/${h.file}"`);
-    expect(html).toMatch(new RegExp(`<img src="/studies/${s.slug}/${h.file}" alt="[^"]+" width="${h.width}" height="${h.height}"`));
+    expect(html).toMatch(new RegExp(`<img class="[^"]*" src="/studies/${s.slug}/${h.file}" alt="[^"]+" width="${h.width}" height="${h.height}"`));
     expect(html).toContain(esc(h.caption));
   }
   expect(html).toContain('toon-shot-text');
