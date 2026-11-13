@@ -110,7 +110,7 @@ const studyCard = (s: CaseStudy, i: number, label = '', h: 'h2' | 'h3' = 'h3', f
       </article>`;
 
 /** A case study by slug. The proof strip reads its figures from these, so a renamed or deleted study fails the build. */
-const bySlug = (slug: string): CaseStudy => {
+export const bySlug = (slug: string): CaseStudy => {
   const s = studies.find((x) => x.slug === slug);
   if (!s) throw new Error(`home: the proof strip needs the case study "${slug}", and content/studies has none`);
   return s;
@@ -206,7 +206,7 @@ export function home(): string {
     </section>
 
     <section id="how" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="how-h">
-      ${kicker('02', 'How I work')}
+      ${kicker('02', 'The method')}
       ${lettered('how-h', 'How I work', 'blue', 'mb-s6 mt-s4 max-w-sm')}
       <div class="relative">
       ${sfx('CLICK', 'yellow', { size: 'sm', cls: 'absolute -top-s6 right-s6 z-10 hidden md:block' })}

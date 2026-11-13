@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
 import { esc } from './html.ts';
-import { home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
+import { bySlug, home, kit, legal, notFound, personJsonLd, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
 
@@ -74,7 +74,9 @@ test('the proof strip reads its figures from the studies and links each to its s
   const rack = studies.find((s) => s.slug === 'rack-loss-recovery')!;
   const patching = studies.find((s) => s.slug === 'fleet-patching')!;
   // 1,200+ is the one figure with no field of its own, so this guards it against its source.
-  expect(gate.summary).toContain('1,200');
+  expect(gate.summary).toContain('Over 1,200 pull requests');
+  // The patching label names the guest count, which lives in that study's own stat label.
+  expect(patching.stat.label).toContain('across 21 guests');
   const cells = [...html.matchAll(/<a class="toon-strip-item" href="([^"]+)"><span class="toon-strip-value"[^>]*>([^<]*)<\/span>/g)].map((m) => [m[1], m[2]]);
   expect(cells).toEqual([
     ['/work/agent-merge-gate.html', '1,200+'],
@@ -89,7 +91,7 @@ test('the proof strip reads its figures from the studies and links each to its s
 test('home sections are numbered, in order, and the nav anchors land on them', () => {
   const html = home();
   const nums = [...html.matchAll(/<span class="toon-kicker-num">(\d+)<\/span><span class="toon-kicker-label">([^<]*)</g)].map((m) => [m[1], m[2]]);
-  expect(nums).toEqual([['01', 'The work'], ['02', 'How I work'], ['03', 'About']]);
+  expect(nums).toEqual([['01', 'The work'], ['02', 'The method'], ['03', 'About']]);
   for (const id of ['work', 'how', 'about']) expect(html).toContain(`<section id="${id}"`);
   expect(html.indexOf('id="work"')).toBeLessThan(html.indexOf('id="how"'));
   expect(html.indexOf('id="how"')).toBeLessThan(html.indexOf('id="about"'));
@@ -112,15 +114,9 @@ test('the home page keeps one primary button in the hero and a text link for the
   expect(hero).toContain(`<a class="toon-link" href="${site.org}">Browse the repos</a>`);
 });
 
-test('the proof strip fails the build when a study it reads is missing', async () => {
-  const { renameSync } = await import('node:fs');
-  const dir = `${import.meta.dir}/../content/studies`;
-  renameSync(`${dir}/fleet-patching.json`, `${dir}/fleet-patching.json.off`);
-  try {
-    const p = Bun.spawnSync(['bun', '-e', `import('${import.meta.dir}/pages.ts').then((m) => m.home())`], { stderr: 'pipe' });
-    expect(p.exitCode).not.toBe(0);
-    expect(p.stderr.toString()).toContain('fleet-patching');
-  } finally { renameSync(`${dir}/fleet-patching.json.off`, `${dir}/fleet-patching.json`); }
+test('the proof strip fails the build when a study it reads is missing', () => {
+  expect(() => bySlug('no-such-study')).toThrow('no-such-study');
+  expect(bySlug('fleet-patching').slug).toBe('fleet-patching');
 });
 
 test('studies are newest first, with unique slugs and real dates', () => {
