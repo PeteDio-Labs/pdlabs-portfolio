@@ -10,10 +10,26 @@
     "label": "token file that every color, size and shadow in the kit builds from"
   },
   "facts": [
-    { "label": "Component classes", "value": "134", "detail": "toon-* classes in the compiled stylesheet" },
-    { "label": "Unit tests", "value": "41", "detail": "across three files, plus a browser check at two widths" },
-    { "label": "Font files", "value": "4", "detail": "self-hosted, so no page calls a font service" },
-    { "label": "Releases", "value": "2", "detail": "tagged versions; the site pins an exact commit" }
+    {
+      "label": "Component classes",
+      "value": "134",
+      "detail": "toon-* classes in the compiled stylesheet"
+    },
+    {
+      "label": "Unit tests",
+      "value": "41",
+      "detail": "across three files, plus a browser check at two widths"
+    },
+    {
+      "label": "Font files",
+      "value": "4",
+      "detail": "self-hosted, so no page calls a font service"
+    },
+    {
+      "label": "Releases",
+      "value": "2",
+      "detail": "tagged versions; the site pins an exact commit"
+    }
   ],
   "sections": [
     {
@@ -21,7 +37,7 @@
       "paragraphs": [
         "My portfolio is a stack of case studies, and every one has the same parts: figures, tables, screenshots, a pull-request trail. I wanted those parts to look like one product, not like pages that happened to share a stylesheet. I also wanted the look to be mine, so I did not start from a template.",
         "I do not draw, and I work with AI agents, so the real question was how to get a distinct, consistent design out of a team that has no taste of its own. The answer was to make the taste explicit. Tokens hold the decisions, tests hold the rules, and I hold the veto.",
-        "My design coursework at Full Sail University and my year at Apple taught me why this matters. UX and UI are not polish added at the end. They decide whether a person can use the thing, and the faults show on a real device in a real hand. That is why the kit has a mobile-first rule, a contrast test and a veto that I exercise on my phone."
+        "My design coursework at Full Sail University and my year at Apple taught me why this matters. UX and UI are not polish added at the end. They decide whether a person can use the thing, and that includes people who use a screen reader, a keyboard or a switch, not only people who tap a phone. That is why the kit has a mobile-first rule, a contrast test and, since I made it a hard rule, an accessibility standard."
       ]
     },
     {
@@ -29,18 +45,52 @@
       "paragraphs": [
         "The kit is called toonish-ui and lives in [its own public repository](https://github.com/PeteDio-Labs/toonish-ui) under an MIT license. It began inside the portfolio repository and moved out once a second page needed the same parts. Every color, type size, space, radius, shadow and easing is in one file, `tokens/toonish.tokens.json`, in the W3C design tokens format. A build script turns that file into CSS variables, a Tailwind v3 preset, a Tailwind v4 theme and plain JSON. Nobody edits those four outputs by hand.",
         "On top of the tokens sit the components, written as plain CSS so they work without Tailwind: buttons, cards, modals, a screenshot frame, data tiles, rows, stacked bars, a table for words, a card deck for phones, a pager, a portrait on a vector backdrop and the sound-effect lettering on the home page. A small script handles modals, toggle groups and the deck, with no framework. Helper functions in TypeScript return the markup for the parts that need it, and each one escapes every string it receives.",
-        "The look is blue, red, yellow and violet on deep navy, with cool grey paper panels, ink outlines two pixels thick and hard four-pixel shadows. Text is IBM Plex Sans and Plex Mono, and Bangers is the comic face for the logo, the hero and the sound effects. Every fill carries ink text, which keeps contrast at 5.1:1 or better, and a test computes that ratio on every run."
+        "The look is blue, red, yellow and violet on deep navy, with cool grey paper panels, ink outlines two pixels thick and hard four-pixel shadows. Text is IBM Plex Sans and Plex Mono, and Bangers is the comic face for the logo, the hero and the sound effects. Every fill carries ink text, which keeps contrast at 5.1:1 or better, and a test computes that ratio on every run.",
+        "People should be able to use this site no matter who they are, so accessibility is a rule of the kit, not a feature of it. Components start from the right HTML element: a native `dialog` for the modal, real buttons and links, headings in order. ARIA roles and labels ship inside the components, so a site that uses the kit gets them without remembering to add them. The target is WCAG 2.2 AA. Some of this was already true: the modal is a native dialog, the deck is a labelled carousel with a live counter and inert background cards, decoration is hidden from screen readers, and motion stops under a reduced-motion setting. The rule makes it a standard to meet and to check."
       ],
       "table": {
         "caption": "Design choices I made, with the first draft I rejected",
-        "columns": ["Decision", "What I chose", "What I threw out"],
+        "columns": [
+          "Decision",
+          "What I chose",
+          "What I threw out"
+        ],
         "rows": [
-          ["Palette", "Blue, red, yellow and violet on navy", "Cyan with orange, then cream with red and yellow, which looked like a default AI palette"],
-          ["Display type", "Bangers for the logo, hero and sound effects", "A hand-drawn lettering engine, which I disliked on sight"],
-          ["Body type", "IBM Plex Sans and Plex Mono", "Several font sets, before Plex survived"],
-          ["Paper", "Cool grey, `#eceff3`", "Cream paper, which made the page read as warm and generic"],
-          ["Cards on a phone", "A swipe deck that never traps a vertical scroll", "A sideways card row that caught my thumb"],
-          ["Decoration", "Always visible on a phone, pinned to a corner when space is tight", "Hiding the sound effects below a width"]
+          [
+            "Palette",
+            "Blue, red, yellow and violet on navy",
+            "Cyan with orange, then cream with red and yellow, which looked like a default AI palette"
+          ],
+          [
+            "Display type",
+            "Bangers for the logo, hero and sound effects",
+            "A hand-drawn lettering engine, which I disliked on sight"
+          ],
+          [
+            "Body type",
+            "IBM Plex Sans and Plex Mono",
+            "Several font sets, before Plex survived"
+          ],
+          [
+            "Paper",
+            "Cool grey, `#eceff3`",
+            "Cream paper, which made the page read as warm and generic"
+          ],
+          [
+            "Cards on a phone",
+            "A swipe deck that never traps a vertical scroll",
+            "A sideways card row that caught my thumb"
+          ],
+          [
+            "Decoration",
+            "Always visible on a phone, pinned to a corner when space is tight",
+            "Hiding the sound effects below a width"
+          ],
+          [
+            "Accessibility",
+            "A hard rule: semantic HTML first, ARIA roles built into the components, WCAG 2.2 AA",
+            "Treating it as a polish pass after the look was settled"
+          ]
         ]
       }
     },
@@ -49,7 +99,8 @@
       "paragraphs": [
         "The repository commits its built `dist/` folder, because Bun does not run a dependency's build scripts, so a consumer can install straight from git. That creates a risk: the source and the committed output can disagree. The CI check rebuilds `dist/` and fails when it differs from the commit, and it names the files that changed. A build that matches no component classes also fails, so an empty stylesheet cannot pass.",
         "Four checks run on every pull request: typecheck, build with the stale-output test, unit tests and a Chromium check at 1280 and 390 pixels. The browser check asserts computed styles, fonts, overflow, the modal, the toggle, reduced motion and console errors. It does not compare screenshots, because font rendering differs between machines, and it prints how many checks it ran, so a green result says what it examined.",
-        "Two rulesets guard the repository. The `main` branch takes changes only through a pull request with the check passing, and a `v*` tag can be created but never moved or deleted, so a released version cannot change under a consumer. A release is cut only when a consumer needs one, and the workflow checks that the tag, `package.json` and the changelog agree before it attaches a tarball and checksums."
+        "Two rulesets guard the repository. The `main` branch takes changes only through a pull request with the check passing, and a `v*` tag can be created but never moved or deleted, so a released version cannot change under a consumer. A release is cut only when a consumer needs one, and the workflow checks that the tag, `package.json` and the changelog agree before it attaches a tarball and checksums.",
+        "The rule has to fail a build or it is only a hope, so the kit's CI is being extended to fail on accessibility regressions. That enforcement is in progress as I write this, and I have not yet counted its checks, so this study states no figure for it. Until it lands, the contrast test and the browser check are the only automated accessibility checks, and neither replaces testing with a screen reader and a keyboard."
       ]
     },
     {
@@ -78,7 +129,7 @@
     {
       "heading": "Lesson",
       "paragraphs": [
-        "Make the design decisions machine-readable and the rules testable, then let agents work inside them. Review on the device your audience uses, because that is where the faults show. Write every rejection down once, so nobody has to make it again."
+        "Make the design decisions machine-readable and the rules testable, then let agents work inside them. Accessibility is one of those rules: write it as a standard, build it into the components and make CI fail without it. Review on the device your audience uses, because that is where the faults show. Write every rejection down once, so nobody has to make it again."
       ]
     }
   ],

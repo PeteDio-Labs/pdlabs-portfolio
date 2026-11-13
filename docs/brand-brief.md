@@ -21,6 +21,7 @@ cream, red and yellow set, and hand-drawn lettering. Don't reopen those choices.
 7. Draw original assets only. Use no Cuphead art, fonts or traced shapes.
 8. No mascot. The `toon-frame` and `toon-bubble` components hold an image or a line of speech when a page needs one.
 9. Design for a phone first: 390 px before any wider width. Decoration shows on a phone, and nothing traps a vertical scroll. `README.md`, "Mobile first", has the checks.
+10. Accessibility is a hard rule, not a polish pass. Write semantic HTML first, use the kit components' built-in ARIA roles and labels, and meet WCAG 2.2 AA. A change that breaks it does not merge.
 
 ## Color
 
