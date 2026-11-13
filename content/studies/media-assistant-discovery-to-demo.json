@@ -20,7 +20,7 @@
     {
       "heading": "Discovery: the answer was in the data, not the question",
       "paragraphs": [
-        "Two findings shaped the scope. First, the request tool kept its own copy of availability, and it disagreed with the apps that hold the files on 41 of 65 requests after a hardware loss. The apps that hold the files are the ground truth, so the assistant had to read from them and treat the request tool's status as a hint.",
+        "Two findings shaped the scope. First, the request tool kept its own copy of availability, and it disagreed with the apps that hold the files on 41 of 65 requests after a hardware loss (measured in September 2026). The apps that hold the files are the ground truth, so the assistant had to read from them and treat the request tool's status as a hint.",
         "Second, the obvious fix is often wrong. In the worked example, the request tool said partially available, Sonarr had all 91 files, and Plex had lost the item. A refresh of the request tool would change nothing. Only a Plex library refresh would, and the only way to know is to check all three systems in order. The assistant had to show that reasoning, not only an answer."
       ]
     },
