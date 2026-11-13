@@ -13,17 +13,21 @@ const lettered = (id: string, text: string, accent: Accent, cls: string) =>
 const dataTable = (t: DataTable) => `<div class="toon-table-wrap my-s6"><table class="toon-table toon-table-text"><caption class="sr-only">${esc(t.caption)}</caption><thead><tr>${t.columns.map((c) => `<th scope="col">${c.trim() ? esc(c) : '<span class="sr-only">Item</span>'}</th>`).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th scope="row" class="font-bold">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
 
 const nav = (current: string, path: string) => {
-  const items: [string, string, string?][] = [
-    ['Work', '/work.html', 'work'],
-    ['About', '/#about', 'about'],
+  // [label, href, the id the scroll spy watches on the home page, the href on the home page].
+  const items: [string, string, string?, string?][] = [
+    ['Home', '/', 'main', '/'],
+    ['Work', '/work.html'],
+    ['About', '/#about', 'about', '#about'],
     ['UI kit', '/ui.html'],
   ];
-  // On the home page, Work and About point at sections, and the page script marks the one in view.
+  // Work always opens the case studies. On the home page, Home and About watch the top of the page and the About
+  // section, and the page script marks the one in view.
   const home = path === '/';
-  return `<nav class="toon-nav" aria-label="Main">${items
-    .map(([label, href, spy]) => {
+  // Four links share a phone's row with the logo and the motion switch, so each pill is narrower below sm.
+  return `<nav class="toon-nav max-sm:[&_a]:px-[7px] max-[359px]:[&_a]:px-[5px] max-[359px]:[&_a]:text-footnote" aria-label="Main">${items
+    .map(([label, href, spy, here]) => {
       const attrs = [home && spy ? `data-spy="${spy}"` : '', label === current ? 'aria-current="page"' : ''].filter(Boolean).join(' ');
-      return `<a href="${home && spy ? `#${spy}` : href}"${attrs ? ` ${attrs}` : ''}>${label}</a>`;
+      return `<a href="${home && here ? here : href}"${attrs ? ` ${attrs}` : ''}>${label}</a>`;
     })
     .join('')}</nav>`;
 };
@@ -289,7 +293,7 @@ export function home(): string {
         </div>
       </div>
     </section>`;
-  return layout({ title: 'Home', path: '/', current: 'Work', description: `${site.name}. ${site.role} ${site.intro}`, body, jsonLd: personJsonLd() });
+  return layout({ title: 'Home', path: '/', current: 'Home', description: `${site.name}. ${site.role} ${site.intro}`, body, jsonLd: personJsonLd() });
 }
 
 /**

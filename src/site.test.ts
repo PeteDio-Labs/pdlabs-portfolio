@@ -36,12 +36,18 @@ test('every case study links to the previous one, the next one and back', () => 
   });
 });
 
-test('home nav points at its own sections and the script can mark them', () => {
+test('the home nav marks Home, watches the top and About, and sends Work to the case studies', () => {
   const html = home();
-  expect(html).toContain('<a href="#work" data-spy="work"');
-  expect(html).toContain('<a href="#about" data-spy="about"');
-  expect(html).toContain('id="work"');
+  expect(html).toContain('<a href="/" data-spy="main" aria-current="page">Home</a>');
+  expect(html).toContain('<a href="/work.html">Work</a>');
+  expect(html).toContain('<a href="#about" data-spy="about">About</a>');
+  expect(html).toContain('<main id="main">');
   expect(html).toContain('id="about"');
+  // Home comes first on every page, and only the home page marks it.
+  for (const page of [workIndex(), study(studies[0]), kit(), notFound()]) {
+    expect(page).toMatch(/<nav class="toon-nav [^"]*" aria-label="Main"><a href="\/">Home<\/a><a href="\/work\.html"/);
+    expect(page).toContain('<a href="/#about">About</a>');
+  }
 });
 
 test('kit sample nav switches in place instead of reloading', () => {
