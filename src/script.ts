@@ -20,7 +20,7 @@ export const siteScript = String.raw`// This site's own behaviours: the scroll s
   if (targets.length) {
     const seen = new Map();
     const pick = () => {
-      // The last section whose top has passed the upper third of the screen wins. Above the first one, Work stays marked.
+      // The last section whose top has passed the upper third of the screen wins. Above About, Home stays marked.
       let id = targets[0].id;
       for (const t of targets) if (t.getBoundingClientRect().top < innerHeight * 0.35) id = t.id;
       mark(id);
