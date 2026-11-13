@@ -8,5 +8,7 @@
   "fleet-patching": "This is routine operations work turned into reviewed automation: security patching and ordered, health-checked restarts across a fleet. It fits platform, DevOps and automation roles.",
   "review-fallback-chain": "This is a design for keeping a human-style review gate working when the main AI reviewer is out, by narrowing what the backup may approve. It fits agentic engineering and platform roles that put AI into code review.",
   "local-llm-tool-routing": "This is evaluation work for an agent with many tools: metrics, switchable toolkits and a fixed eval. It fits AI engineering roles that build the measurement for tool use.",
-  "how-this-site-is-built": "This is production hosting done carefully: a private bucket, a tested security policy, Terraform and a deploy that checks the live site before it reports success. It fits platform, cloud and AI automation roles that ship and run real services."
+  "how-this-site-is-built": "This is production hosting done carefully: a private bucket, a tested security policy, Terraform and a deploy that checks the live site before it reports success. It fits platform, cloud and AI automation roles that ship and run real services.",
+  "sql-reporting-sample": "This is SQL for measuring a process change: medians and tails, mix-shift checks, rework and a zero-row data-quality query. It fits analyst, operations and AI-operations roles that ask for SQL.",
+  "ai-adoption-playbook": "This is how I would roll an AI workflow out to a team: intake, limits, a pilot with a control, champions and a go or no-go gate with numbers. It fits implementation, enablement, operations and program roles."
 }
