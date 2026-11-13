@@ -89,6 +89,16 @@ test('the privacy page says no cookies, so no page or script sets one or uses we
   expect(legal('privacy')).toContain('sets no cookies');
 });
 
+test('every page loads the kit script before the site script', () => {
+  const pages = all();
+  expect(pages.length).toBeGreaterThan(20);
+  for (const html of pages) {
+    const kit = html.indexOf('<script src="/toonish.js" defer></script>');
+    expect(kit).toBeGreaterThan(-1);
+    expect(kit).toBeLessThan(html.indexOf('<script src="/site.js" defer></script>'));
+  }
+});
+
 test('no page carries an inline script, so the CSP needs no hash', () => {
   for (const html of all()) {
     const inline = [...html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)].filter((m) => !m[1].includes('application/ld+json'));
