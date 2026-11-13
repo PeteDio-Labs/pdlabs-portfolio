@@ -1,7 +1,7 @@
 # toonish-ui brand brief
 
 `PET-809`. This page holds the look of pdlab.dev in one place. The tokens live in
-`tailwind.config.js`, and `ui/README.md` lists the components.
+`tailwind.config.js`, and the toonish-ui repo's README lists the components.
 
 ## Intent
 
@@ -34,7 +34,7 @@ cream, red and yellow set, and hand-drawn lettering. Don't reopen those choices.
 | `toon-violet` | `#a995f0` | Secondary accent |
 
 Shadow pairs: blue and red carry yellow, yellow carries blue, violet carries red.
-Paper on the ground measures 16:1. Ink on the darkest fill (blue) measures 5.1:1. Both pass WCAG AA.
+Paper on the ground measures 15.6:1. Ink on the darkest fill (blue) measures 5.1:1. Both pass WCAG AA.
 
 ## Type
 
