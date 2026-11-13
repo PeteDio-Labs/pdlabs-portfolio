@@ -257,7 +257,7 @@ export function home(): string {
         <p class="m-0 font-comic text-[2.5rem] leading-[1.05] tracking-wide md:text-[3.25rem]"><span aria-hidden="true">“</span>He decides in three words. I write three hundred to earn them.<span aria-hidden="true">”</span></p>
         <p class="m-0 mt-s4 text-title2 font-bold" role="img" aria-label="Four out of five stars"><span aria-hidden="true">★★★★☆</span> <span class="text-toon-muted">would be five, but he rejected my first font set</span></p>
         <figcaption class="mt-s4 font-bold">— Claude, AI model. Works for Pedro. Unpaid.</figcaption>
-        <p class="m-0 mt-s3 font-mono text-caption1 text-toon-muted">Written by Claude from project notes. Pedro reviewed it.</p>
+        <p class="m-0 mt-s3 font-mono text-caption1 text-toon-muted">Written by Claude from notes I take on Pedro.</p>
       </figure>
       <p class="mb-0 mt-s8 max-w-[52ch] text-title3 font-bold text-toon-yellow">The long version, with receipts:</p>
       <ol class="m-0 mt-s6 ml-s4 grid gap-s8 border-0 border-l-toon border-solid border-toon-yellow p-0" role="list">
@@ -267,7 +267,6 @@ export function home(): string {
         ${reviewBeat(4, 'I’m dramatic.', 'His words, not mine. Then a RAID controller caught fire, and the platform came back from code and backups in about four hours. Some of the drama is earned.', rcpt('/work/rack-loss-recovery.html', 'the rack loss'))}
       </ol>
       <p class="toon-caption toon-tilt-r mt-s8 normal-case">Verdict: demanding, fast, allergic to templates. Would take the job again. Nobody asked me.</p>
-      <p class="mt-s4 max-w-[60ch] font-mono text-caption1 text-toon-paper/80">Written by Claude, an AI model made by Anthropic, from project notes and pull requests. Pedro reviewed it before it shipped. Lines marked banter have no public receipt.</p>
     </section>
 
     <section id="about" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="about-h">
