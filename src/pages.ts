@@ -405,7 +405,7 @@ const STACK = [
   { lead: 'IaC', title: 'Terraform and Ansible', sub: 'deployed by GitOps' },
   { lead: 'Secrets', title: 'Vault', sub: 'reached from CI by OIDC' },
   { lead: 'Runtime', title: 'Bun and TypeScript', sub: 'for services and bots' },
-  { lead: 'AI', title: 'Claude and local Qwen models', sub: 'for the agents' },
+  { lead: 'AI', title: 'Claude, Codex and local Qwen models', sub: 'for the agents and code review' },
 ];
 
 /** The closing panel: why the work fits a hiring team, the skills, and the call to action. */
