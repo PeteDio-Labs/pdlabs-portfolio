@@ -275,4 +275,5 @@ test('study screenshots render with alt text, size, caption and transcript, and 
     expect(html).toContain(esc(h.caption));
   }
   expect(html).toContain('toon-shot-text');
+  expect(html.match(/aria-label="Open the full-size picture"/g)?.length).toBe(shots.length);
 });

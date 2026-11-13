@@ -288,7 +288,7 @@ export function study(s: CaseStudy): string {
         <section>
           <h2 class="mb-s3 mt-0 font-display text-title1 font-normal" style="color:${HEX[s.accent]}">${esc(sec.heading)}</h2>
           ${sec.paragraphs.map((p) => `<p class="mb-s3 mt-0">${md(p)}</p>`).join('\n          ')}
-          ${(sec.shots ?? []).map((h) => shot({ src: `/studies/${s.slug}/${h.file}`, alt: h.alt, width: h.width, height: h.height, caption: h.caption, badge: h.badge, transcript: h.transcript, accent: s.accent, cls: "my-s6" })).join('\n          ')}
+          ${(sec.shots ?? []).map((h) => shot({ src: `/studies/${s.slug}/${h.file}`, alt: h.alt, width: h.width, height: h.height, caption: h.caption, badge: h.badge, transcript: h.transcript, accent: s.accent, cls: "my-s6" }).replace(/<img [^>]*>/, (img) => `<a href="/studies/${s.slug}/${h.file}" target="_blank" rel="noopener" aria-label="Open the full-size picture">${img}</a>`)).join('\n          ')}
         </section>`,
         )
         .join('')}

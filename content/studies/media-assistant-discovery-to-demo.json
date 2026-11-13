@@ -35,7 +35,7 @@
     {
       "heading": "The demo script",
       "paragraphs": [
-        "A non-engineer can run this in a direct message to the bot in about three minutes. These are real exchanges from the live bot, with names and titles blurred. The transcript under each picture holds the exact text.",
+        "A non-engineer can run this in a direct message to the bot in about three minutes. These are real exchanges from the live bot, with names and titles blurred. The transcript under each picture holds the exact text. On a phone, tap a picture to open it full size.",
         "1. Ask whether a title is in the library. The answer says what exists and names the tool it read.",
         "2. Ask for the server status. The answer says who is watching Plex, from one read tool.",
         "3. Ask for a subtitle search. The bot proposes the action and waits. After the owner taps Confirm, it reports what Bazarr said.",
