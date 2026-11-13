@@ -21,7 +21,37 @@
       "paragraphs": [
         "Two playbooks behind the lab's approval-gated action path. The patch playbook applies security-only upgrades in every running container, one node at a time. It holds back Vault, Postgres, Docker, MinIO, GPU, kernel and Proxmox packages, blocks service restarts while it runs, never reboots anything, and prints counts, not package lists.",
         "The restart playbook covers the gap the patch leaves: patched libraries stay loaded until a service restarts. It restarts the guests that nothing else restarts, one at a time, with one guest deliberately last. Each restart writes a marker that proves it happened, then checks an optional URL or unit, looks for any new failed unit, and looks for unhealthy containers. The first guest that does not come back healthy stops the run, so no later guest restarts. The runner that executes the job is left out, because restarting it would end the job."
-      ]
+      ],
+      "table": {
+        "caption": "The two playbooks compared",
+        "columns": [
+          "",
+          "Patch",
+          "Restart"
+        ],
+        "rows": [
+          [
+            "Job",
+            "Applies security-only upgrades in every running container",
+            "Restarts guests so patched libraries load"
+          ],
+          [
+            "Order",
+            "One node at a time",
+            "One guest at a time, one deliberately last"
+          ],
+          [
+            "Never does",
+            "Reboot anything, or touch Vault, Postgres, Docker, MinIO, GPU, kernel and Proxmox packages",
+            "Restart the runner that executes the job"
+          ],
+          [
+            "Safety check",
+            "Blocks service restarts while it runs and prints counts, not package lists",
+            "Writes a marker, checks a URL or unit, then looks for new failed units and unhealthy containers. The first failure stops the run."
+          ]
+        ]
+      }
     },
     {
       "heading": "Result",
@@ -57,5 +87,27 @@
   ],
   "sources": [
     "petedio-iac pull requests 688, 691 and 692 and their descriptions"
+  ],
+  "facts": [
+    {
+      "label": "Upgradable at audit",
+      "value": "2,046",
+      "detail": "packages, 12 November 2026"
+    },
+    {
+      "label": "Review findings",
+      "value": "6",
+      "detail": "2 high, 4 medium, all fixed before merge"
+    },
+    {
+      "label": "Guests",
+      "value": "21",
+      "detail": "running containers"
+    },
+    {
+      "label": "Playbooks",
+      "value": "2",
+      "detail": "patch, then restart"
+    }
   ]
 }

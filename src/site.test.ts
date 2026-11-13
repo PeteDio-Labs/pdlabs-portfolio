@@ -290,3 +290,60 @@ test('every preloaded font is a file this site ships, from its own folder or the
   expect(hrefs.length).toBe(2);
   for (const f of hrefs) expect(existsSync(`public/fonts/${f}`) || existsSync(`node_modules/toonish-ui/dist/fonts/${f}`)).toBe(true);
 });
+
+test('a study with facts shows them as tiles, and every table has a caption, headers and equal rows', () => {
+  const withFacts = studies.filter((s) => s.facts);
+  const withTables = studies.flatMap((s) => s.sections.filter((x) => x.table).map((x) => ({ s, t: x.table! })));
+  expect(withFacts.length).toBeGreaterThan(0);
+  expect(withTables.length).toBeGreaterThan(0);
+  for (const s of withFacts) {
+    const html = study(s);
+    expect((html.match(/class="toon-stat"/g) ?? []).length).toBe(s.facts!.length);
+    for (const f of s.facts!) expect(html).toContain(esc(f.value));
+  }
+  for (const { s, t } of withTables) {
+    const html = study(s);
+    expect(html).toContain(`<caption class="sr-only">${esc(t.caption)}</caption>`);
+    expect((html.match(/<th scope="col"/g) ?? []).length).toBeGreaterThanOrEqual(t.columns.length);
+    expect((html.match(/<th scope="row"/g) ?? []).length).toBeGreaterThanOrEqual(t.rows.length);
+    for (const r of t.rows) expect(r).toHaveLength(t.columns.length);
+  }
+  expect(study(studies.find((s) => !s.facts && !s.sections.some((x) => x.table))!)).not.toContain('toon-stats');
+});
+
+test('the JSON API carries a study\'s facts and its section tables', async () => {
+  const { apiFiles } = await import('./api.ts');
+  const files = apiFiles(studies, fit);
+  const s = studies.find((x) => x.facts)!;
+  const one = JSON.parse(files[`api/studies/${s.slug}.json`]);
+  expect(one.facts).toEqual(s.facts);
+  expect(one.sections.filter((x: any) => x.table).length).toBe(s.sections.filter((x) => x.table).length);
+});
+
+test('a malformed table or facts list fails the build with the file name', async () => {
+  const { writeFileSync, rmSync, readFileSync } = await import('node:fs');
+  const path = `${import.meta.dir}/../content/studies/zz-bad.json`;
+  const base = JSON.parse(readFileSync(`${import.meta.dir}/../content/studies/ssh-ca.json`, 'utf8'));
+  const run = async (patch: object) => {
+    writeFileSync(path, JSON.stringify({ ...base, slug: 'zz-bad', ...patch }));
+    try {
+      const p = Bun.spawnSync(['bun', '-e', `import('${import.meta.dir}/content.ts')`], { stderr: 'pipe' });
+      return { code: p.exitCode, err: p.stderr.toString() };
+    } finally { rmSync(path); }
+  };
+  const ok = await run({});
+  expect(ok.code).toBe(0);
+  const row = await run({ sections: [{ heading: 'H', paragraphs: ['p'], table: { caption: 'c', columns: ['a', 'b'], rows: [['only one']] } }] });
+  expect(row.code).not.toBe(0);
+  expect(row.err).toContain('zz-bad.json');
+  const facts = await run({ facts: [{ label: 'one', value: '1' }] });
+  expect(facts.code).not.toBe(0);
+  expect(facts.err).toContain('2 to 4');
+});
+
+test('the kit page documents the data components with made-up figures', () => {
+  const html = kit();
+  for (const c of ['toon-stats', 'toon-list', 'toon-bars', 'toon-table', 'toon-bar-seg']) expect(html).toContain(c);
+  expect(html).toContain('made-up sample data');
+  expect(html).toContain('aria-label="Sample orders by day');
+});
