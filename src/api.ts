@@ -22,7 +22,7 @@ export function summaryOf(s: CaseStudy): StudySummary {
 
 /** One study with its sections, skills and, when content/fit.json has one, the roles it fits. */
 export function detailOf(s: CaseStudy, fit: Record<string, string>) {
-  return { ...summaryOf(s), sections: s.sections, skills: s.skills, ...(fit[s.slug] ? { fit: fit[s.slug] } : {}) };
+  return { ...summaryOf(s), ...(s.facts ? { facts: s.facts } : {}), sections: s.sections, skills: s.skills, ...(fit[s.slug] ? { fit: fit[s.slug] } : {}) };
 }
 
 /** Path (relative to dist/) to JSON text, for the index and for every study. */

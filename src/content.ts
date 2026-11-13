@@ -21,10 +21,25 @@ export interface Shot {
   transcript?: string;
 }
 
+/** One figure tile: a value, what it counts and an optional line of detail. */
+export interface Fact {
+  label: string;
+  value: string;
+  detail?: string;
+}
+
+/** A table of words under a section's paragraphs. The first column names each row. */
+export interface DataTable {
+  caption: string;
+  columns: string[];
+  rows: string[][];
+}
+
 export interface Section {
   heading: string;
   paragraphs: string[];
   shots?: Shot[];
+  table?: DataTable;
 }
 
 export interface CaseStudy {
@@ -40,6 +55,8 @@ export interface CaseStudy {
   accent: Accent;
   summary: string;
   stat: { value: string; label: string };
+  /** Two to four figures, shown as tiles above the sections. Each must come from the study's own text. */
+  facts?: Fact[];
   sections: Section[];
   skills: string[];
 }
@@ -73,6 +90,16 @@ function check(file: string, s: any): CaseStudy {
   if (!s.stat?.value || !s.stat?.label) bad('"stat" needs a value and a label');
   if (!Array.isArray(s.sections) || !s.sections.length) bad('"sections" must be a non-empty list');
   if (!Array.isArray(s.skills)) bad('"skills" must be a list');
+  if (s.facts !== undefined) {
+    if (!Array.isArray(s.facts) || s.facts.length < 2 || s.facts.length > 4) bad('"facts" needs 2 to 4 entries');
+    for (const f of s.facts) if (!f?.label?.trim() || !f?.value?.trim()) bad('each fact needs a label and a value');
+  }
+  for (const sec of s.sections) {
+    const t = sec.table;
+    if (!t) continue;
+    if (!t.caption?.trim() || !Array.isArray(t.columns) || t.columns.length < 2 || !Array.isArray(t.rows) || !t.rows.length) bad(`table in "${sec.heading}" needs a caption, 2 or more columns and rows`);
+    for (const r of t.rows) if (!Array.isArray(r) || r.length !== t.columns.length || r.some((c: unknown) => typeof c !== 'string' || !c.trim())) bad(`every row of the table in "${sec.heading}" needs ${t.columns.length} non-empty cells`);
+  }
   for (const sec of s.sections) for (const sh of sec.shots ?? []) {
     if (!sh.alt?.trim() || !sh.caption?.trim()) bad(`shot "${sh.file}" needs alt text and a caption`);
     if (!existsSync(`${import.meta.dir}/../public/studies/${s.slug}/${sh.file}`)) bad(`shot "${sh.file}" is missing from public/studies/${s.slug}/`);

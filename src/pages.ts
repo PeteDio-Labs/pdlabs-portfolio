@@ -1,13 +1,16 @@
 import { esc, md } from './html.ts';
-import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot } from 'toonish-ui/markup';
+import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, stat, badge, chip, row, bars } from 'toonish-ui/markup';
 import { thumb } from './illustrations/thumbs.ts';
 import { hybridDiagram, hybridDiagramTall } from './illustrations/hybrid.ts';
 import { legalPages, legalUpdated } from './legal.ts';
-import { site, studies, featured, latest, tags, fit, type Accent, type CaseStudy } from './content.ts';
+import { site, studies, featured, latest, tags, fit, type Accent, type CaseStudy, type DataTable } from './content.ts';
 
 /** A section heading in the display type. */
 const lettered = (id: string, text: string, accent: Accent, cls: string) =>
   `<h2 id="${id}" class="m-0 ${cls}">${letters(text, accent, { cls: 'text-display2' })}</h2>`;
+
+/** A table of words in the kit's paper panel. The first column heads each row. */
+const dataTable = (t: DataTable) => `<div class="toon-table-wrap my-s6"><table class="toon-table toon-table-text"><caption class="sr-only">${esc(t.caption)}</caption><thead><tr>${t.columns.map((c) => (c ? `<th scope="col">${esc(c)}</th>` : '<td></td>').replace('<td></td>', '<th scope="col"><span class="sr-only">Item</span></th>')).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th scope="row" class="font-bold">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
 
 const nav = (current: string, path: string) => {
   const items: [string, string, string?][] = [
@@ -295,12 +298,14 @@ export function study(s: CaseStudy): string {
         </div>
       </aside>
       <div class="min-w-0 lg:col-start-1 lg:row-start-2">
+      ${s.facts ? `<div class="toon-stats mb-s8" role="group" aria-label="Key figures">${s.facts.map((f) => stat(f.label, f.value, f.detail)).join('')}</div>` : ''}
       <div class="grid max-w-[68ch] grid-cols-1 gap-s8 lg:max-w-none">${s.sections
         .map(
           (sec) => `
         <section class="min-w-0">
           <h2 class="mb-s3 mt-0 font-display text-title1 font-normal" style="color:${HEX[s.accent]}">${esc(sec.heading)}</h2>
           ${sec.paragraphs.map((p) => `<p class="mb-s3 mt-0">${md(p)}</p>`).join('\n          ')}
+          ${sec.table ? dataTable(sec.table) : ''}
           ${(sec.shots ?? []).map((h) => shot({ src: `/studies/${s.slug}/${h.file}`, alt: h.alt, width: h.width, height: h.height, caption: h.caption, badge: h.badge, transcript: h.transcript, accent: s.accent, cls: "my-s6 min-w-0 max-w-full [&>*]:min-w-0 [&>*]:max-w-full" }).replace(/<img /, '<img class="h-auto w-[760px] max-w-none sm:w-full" ').replace(/<img [^>]*>/, (img) => `<a href="/studies/${s.slug}/${h.file}" target="_blank" rel="noopener" aria-label="Open the full-size picture" class="block overflow-x-auto rounded-[inherit]">${img}</a>`)).join('\n          ')}
         </section>`,
         )
@@ -394,11 +399,26 @@ export function kit(): string {
       </div>
     </section>
 
+    <section class="py-s6" aria-labelledby="k-data"><h2 id="k-data" class="toon-heading mb-s6 text-display2">Figures, rows, bars and tables</h2>
+      <p class="mb-s6 max-w-[60ch]">For dashboards and case studies. Every figure below is made-up sample data. The helpers in <code>toonish-ui/markup</code> escape every string they render.</p>
+      <div class="toon-stats">${stat('Orders', '128', 'this week')}${stat('On time', '94%', 'sample figure')}${stat('Busiest day', 'Thu')}</div>
+      <p class="mb-0 mt-s6 flex flex-wrap items-center gap-s2">${badge('Open', 'blue', 12)}${badge('Held', 'yellow', 3)}${badge('Shipped', 'violet', 40)}${badge('Late', 'red', 2)}${badge('Archived', 'mist', 9)}${badge('Draft', 'paper')}${chip('A chip')}</p>
+      <div class="toon-list mt-s6">${row({ lead: 'Nov 12', title: 'Order 1042', sub: 'Pending', aside: 'Web', dot: 'blue' })}${row({ lead: 'Nov 11', title: 'Order 1041', aside: 'Phone', dot: 'red' })}${row({ title: 'A row with no lead', aside: 'Store', dot: 'violet' })}</div>
+      <div class="toon-card mt-s8">${bars({ label: 'Sample orders by day, stacked by channel, against a target of 1', target: 1, columns: [
+        { label: 'Mon', sub: '9', segments: [{ value: 0.6, tone: 'blue', label: 'Web' }, { value: 0.2, tone: 'hatch', label: 'Returned' }] },
+        { label: 'Tue', sub: '10', current: true, segments: [{ value: 0.7, tone: 'blue', label: 'Web' }, { value: 0.45, tone: 'red', label: 'Phone' }] },
+        { label: 'Wed', sub: '11', segments: [{ value: 0.3, tone: 'red', label: 'Phone' }] },
+        { label: 'Thu', sub: '12', segments: [] }] })}
+        <ul class="toon-bars-key mt-s4"><li><i></i>Web</li><li><i style="--toon-dot:#f2706a"></i>Phone</li><li><i style="background:repeating-linear-gradient(135deg,#0a0a1f 0 2px,#f3efe6 2px 6px)"></i>Returned</li></ul></div>
+      <div class="toon-table-wrap mt-s8"><table class="toon-table"><caption class="sr-only">Sample orders by channel</caption><thead><tr><th scope="col">Day</th><th scope="col">Web</th><th scope="col">Phone</th></tr></thead><tbody><tr><td>Mon</td><td>3</td><td>0</td></tr><tr aria-current="date"><td>Tue</td><td>4</td><td>2</td></tr></tbody><tfoot><tr><td>Total</td><td>7</td><td>2</td></tr></tfoot></table></div>
+      <p class="mt-s4 max-w-[60ch]">Add <code>toon-table-text</code> for cells that hold words, as the case studies do.</p>
+    </section>
+
     <section class="py-s6" aria-labelledby="k-tok"><h2 id="k-tok" class="toon-heading mb-s6 text-display2">Colors</h2>
-      <div class="grid grid-cols-3 gap-s3 sm:grid-cols-6">
-        ${swatch('ground', 'bg-toon-ground', 'text-toon-paper')}${swatch('blue', 'bg-toon-blue')}${swatch('red', 'bg-toon-red')}${swatch('yellow', 'bg-toon-yellow')}${swatch('violet', 'bg-toon-violet')}${swatch('paper', 'bg-toon-paper')}
+      <div class="grid grid-cols-3 gap-s3 sm:grid-cols-5 lg:grid-cols-10">
+        ${swatch('ground', 'bg-toon-ground', 'text-toon-paper')}${swatch('blue', 'bg-toon-blue')}${swatch('red', 'bg-toon-red')}${swatch('yellow', 'bg-toon-yellow')}${swatch('violet', 'bg-toon-violet')}${swatch('paper', 'bg-toon-paper')}${swatch('muted', 'bg-toon-muted', 'text-toon-paper')}${swatch('mist', 'bg-toon-mist')}${swatch('rule', 'bg-toon-rule')}
       </div>
-      <p class="mt-s4 max-w-[60ch]">Text on every fill is ink, at 5.1:1 or better. Paper text on the ground is 15.6:1.</p>
+      <p class="mt-s4 max-w-[60ch]">Text on every fill is ink, at 5.1:1 or better. Paper text on the ground is 15.6:1. <code>muted</code> is secondary text on paper, <code>mist</code> is secondary text on the ground and the quiet fill for a closed state, and <code>rule</code> draws grid lines on paper.</p>
     </section>`;
   return layout({ title: 'toonish-ui', path: '/ui.html', current: 'UI kit', noindex: true, description: 'toonish-ui, the original cartoon component kit behind this site.', body });
 }
