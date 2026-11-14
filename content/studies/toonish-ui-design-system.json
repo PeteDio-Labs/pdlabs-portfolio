@@ -122,7 +122,7 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "The site and the kit move independently. I can change a token, build, and see every component on [the kit page](https://pdlab.dev/ui.html) change together, and a stale build cannot reach `main`. New case studies use the kit's data components, so a table, a figure row or a screenshot looks the same in every study.",
+        "The site and the kit move independently. I can change a token, build, and see every component in the kit's own test fixture change together, and a stale build cannot reach `main`. New case studies use the kit's data components, so a table, a figure row or a screenshot looks the same in every study.",
         "The part I would reuse anywhere is the loop, not the colors. An AI team proposes, I reject on a phone in seconds, the rejection becomes a token, a rule or a test, and the next proposal starts from there. The design system is the written-down version of my taste."
       ]
     },

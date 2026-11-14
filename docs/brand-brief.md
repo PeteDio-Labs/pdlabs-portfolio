@@ -64,9 +64,9 @@ animation and transition.
 ## Components
 
 Button, card, heading, link, badge, nav, callout, footer, modal, frame, bubble, caption, burst and
-speed lines. The showcase is `/ui.html`, built from `kit()` in `src/pages.ts`.
+speed lines. The showcase page left the site; `/ui.html` now redirects to the kit's case study.
 
 ## Decisions for Pedro
 
-Approve the brief, the lettering (Bangers on the logo and hero) and the showcase page at `/ui.html`.
+Approve the brief, the lettering (Bangers on the logo and hero) and the case study that replaced the showcase page.
 After approval, link this brief from `PET-774`. A split of the kit into its own public repo is a later item.

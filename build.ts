@@ -1,7 +1,7 @@
 // Builds the static site into dist/: renders every page, then compiles Tailwind over the
 // page sources. Exits non-zero when any step fails or a page is missing from the output.
 import { mkdir, rm } from 'node:fs/promises';
-import { home, kit, legal, notFound, study, workIndex, workScript } from './src/pages.ts';
+import { home, kitMoved, legal, notFound, study, workIndex, workScript } from './src/pages.ts';
 import { site, studies, fit } from './src/content.ts';
 import { apiFiles } from './src/api.ts';
 import { siteScript, motionScript } from './src/script.ts';
@@ -14,7 +14,7 @@ await mkdir(`${out}/work`, { recursive: true });
 const pages: Record<string, string> = {
   'index.html': home(),
   'work.html': workIndex(),
-  'ui.html': kit(),
+  'ui.html': kitMoved(),
   'privacy.html': legal('privacy'),
   'terms.html': legal('terms'),
   '404.html': notFound(),
@@ -42,7 +42,7 @@ const shots = [...new Bun.Glob('studies/**/*.png').scanSync('public')];
 for (const f of shots) await Bun.write(`${out}/${f}`, Bun.file(`public/${f}`));
 console.log(`copied ${shots.length} study screenshot(s)`);
 
-// Static assets and machine-readable files. The sitemap lists every page except the 404 and the noindex kit page, and dates each study by its own date.
+// Static assets and machine-readable files. The sitemap lists every page except the 404 and the moved kit page, and dates each study by its own date.
 await Bun.write(`${out}/site.js`, siteScript);
 await Bun.write(`${out}/motion.js`, motionScript);
 await Bun.write(`${out}/robots.txt`, robotsTxt());
