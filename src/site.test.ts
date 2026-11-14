@@ -626,9 +626,9 @@ test('the 404 card holds every line in one of four looks, shows only the first w
   }
   expect(new Set(LOST.map((l) => l.line)).size).toBe(LOST.length);
   expect(page).toContain('<h1 class="sr-only">Page not found</h1>');
-  expect(page).toContain('<a class="toon-btn" href="/">Go to the home page</a>');
+  expect(page).toMatch(/<a class="toon-pager-link toon-pager-prev" href="\/">.*Go to the home page/);
   // The button does nothing without the script, so it ships hidden and site.js reveals it.
-  expect(page).toMatch(/<button[^>]*data-lost-next hidden>/);
+  expect(page).toMatch(/<button class="toon-pager-link toon-pager-next[^>]*data-lost-next hidden>/);
   expect(page).toContain('aria-live="polite"');
   expect(siteScript).toContain('[data-lost-line]');
   expect(siteScript).toContain('[data-lost-next]');
