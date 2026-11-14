@@ -204,7 +204,9 @@ test('home carries valid JSON-LD and states the background in About', () => {
   const m = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s);
   expect(m).not.toBeNull();
   expect(JSON.parse(m![1])).toEqual(JSON.parse(JSON.stringify(personJsonLd())));
-  expect(html).toContain('master&#39;s in computer science');
+  expect(html).toContain('studying for an M.S. in computer science');
+  // The M.S. is in progress: the page must not say he holds it.
+  expect(html).not.toMatch(/hold[^.]*master/i);
   expect(html).toContain('one year at Apple as a full-stack engineer');
 });
 
