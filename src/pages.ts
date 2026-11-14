@@ -668,6 +668,8 @@ const lostLook: Record<LostLook, (l: Lost) => string> = {
           </div>`,
 };
 
+const CHEV = (d: string) => `<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
 export function notFound(): string {
   // Every line is in the page in its own look, and all but the first are hidden. site.js shows one at random and
   // wires the button, so the page reads the same with scripts off: one card, one line and the way home.
@@ -684,10 +686,10 @@ export function notFound(): string {
       <div class="flex min-h-[23rem] flex-col justify-center md:min-h-[24rem]" aria-live="polite">${cards}
       </div>
       <p class="mb-0 mt-s6">There is no page at this address. The link may be mistyped, or the page may have moved.</p>
-      <div class="mt-s5 flex flex-wrap gap-s3">
-        <a class="toon-btn" href="/">Go to the home page</a>
-        <button class="toon-btn toon-btn-paper" type="button" data-lost-next hidden>Show another one</button>
-      </div>
+      <nav class="toon-pager mt-s5" aria-label="Next steps">
+        <a class="toon-pager-link toon-pager-prev" href="/"><span class="toon-pager-arrow" aria-hidden="true">${CHEV('M10 3 5 8l5 5')}</span><span class="toon-pager-text"><span class="toon-pager-dir">Go to the home page</span></span></a>
+        <button class="toon-pager-link toon-pager-next cursor-pointer font-body" type="button" data-lost-next hidden><span class="toon-pager-arrow" aria-hidden="true">${CHEV('M6 3l5 5-5 5')}</span><span class="toon-pager-text"><span class="toon-pager-dir">Show another one</span></span></button>
+      </nav>
     </section>`;
   return layout({ title: 'Page not found', path: '/404.html', description: 'Page not found.', noindex: true, body });
 }
