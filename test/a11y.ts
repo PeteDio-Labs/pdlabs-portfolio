@@ -21,7 +21,7 @@ const server = Bun.serve({
 
 const pages = ['/', '/work.html', '/privacy.html', '/terms.html', '/no-such-page', ...(await Array.fromAsync(new Bun.Glob('work/*.html').scan(root))).sort().map((f) => `/${f}`)];
 const fail: string[] = [];
-let rules = 0, runs = 0, links = 0, measured = 0;
+let rules = 0, runs = 0, links = 0, measured = 0, modalRuns = 0;
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
 try {
   for (const [w, h] of [[390, 844], [1280, 800]] as const) {
@@ -48,6 +48,16 @@ try {
       }
       const s = await p.evaluate(() => ({ h1: document.querySelectorAll('h1').length, main: document.querySelectorAll('main').length, lang: document.documentElement.lang }));
       if (s.h1 !== 1 || s.main !== 1 || !s.lang) fail.push(`${path} @${w}: ${s.h1} h1, ${s.main} main, lang "${s.lang}"`);
+      // The modal is closed at rest, so the run above never reads it. On the home page, open Privacy and run axe again.
+      if (path === '/') {
+        await p.click('footer a[href="/privacy.html"]');
+        await p.waitForSelector('dialog.toon-modal[open] .toon-modal-body section');
+        const m = await p.evaluate(() => (window as any).axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] }));
+        modalRuns++;
+        for (const v of m.violations) fail.push(`${path} @${w}, modal open: ${v.id} (${v.nodes.length}): ${v.help}; first ${v.nodes[0].target.join(' ')}: ${v.nodes[0].any[0]?.message ?? ''}`.slice(0, 400));
+        const x = await p.evaluate(() => Math.round(document.querySelector('dialog[open] .toon-modal-x')!.getBoundingClientRect().height));
+        if (x < 44) fail.push(`${path} @${w}, modal open: the Close button is ${x} px tall`);
+      }
       await p.close();
     }
     await ctx.close();
@@ -95,6 +105,6 @@ try {
   await browser.close();
   server.stop(true);
 }
-console.log(`a11y: read ${pages.length} pages in ${runs} axe runs (390 and 1280 px), resolved ${links} internal links, and measured ${measured} elements for reflow at 320 px; ${rules} rule passes, ${fail.length} failures`);
-if (runs !== pages.length * 2 || pages.length < 10 || links < pages.length || measured < pages.length * 10) { console.error(`a11y check read too little: ${runs} runs over ${pages.length} pages, ${links} links, ${measured} elements measured`); process.exit(1); }
+console.log(`a11y: read ${pages.length} pages in ${runs} axe runs (390 and 1280 px) plus ${modalRuns} with the Privacy modal open, resolved ${links} internal links, and measured ${measured} elements for reflow at 320 px; ${rules} rule passes, ${fail.length} failures`);
+if (runs !== pages.length * 2 || pages.length < 10 || modalRuns !== 2 || links < pages.length || measured < pages.length * 10) { console.error(`a11y check read too little: ${runs} runs over ${pages.length} pages, ${links} links, ${measured} elements measured`); process.exit(1); }
 if (fail.length) { console.error('a11y check FAILED:\n- ' + fail.join('\n- ')); process.exit(1); }
