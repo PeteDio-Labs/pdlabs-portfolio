@@ -204,7 +204,10 @@ test('home carries valid JSON-LD and states the background in About', () => {
   const m = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s);
   expect(m).not.toBeNull();
   expect(JSON.parse(m![1])).toEqual(JSON.parse(JSON.stringify(personJsonLd())));
-  expect(html).toContain('master&#39;s in computer science');
+  expect(html).toContain('studying for an M.S. in computer science');
+  // The M.S. is in progress: the page must not say he holds it.
+  expect(site.background).not.toMatch(/master/i);
+  expect(site.background).toMatch(/studying for an M\.S\./);
   expect(html).toContain('one year at Apple as a full-stack engineer');
 });
 
@@ -490,7 +493,7 @@ test('every study has unique section ids and a contents list that links to each 
     const rail = html.slice(html.indexOf('<nav id="contents"'), html.indexOf('</nav>', html.indexOf('<nav id="contents"')));
     const phone = html.slice(html.indexOf('<details'), html.indexOf('</details>'));
     for (const part of [rail, phone]) {
-      const links = [...part.matchAll(/<a class="toon-link" href="#([^"]+)">([^<]*)<\/a>/g)];
+      const links = [...part.matchAll(/<a class="toon-link inline-flex min-h-\[44px\] items-center" href="#([^"]+)">([^<]*)<\/a>/g)];
       expect(links.map((m) => m[1])).toEqual(ids);
       expect(links.map((m) => m[2])).toEqual(s.sections.map((x) => esc(x.heading)));
     }

@@ -9,8 +9,8 @@ import { site, studies, featured, tags, fit, type Accent, type CaseStudy, type D
 const lettered = (id: string, text: string, accent: Accent, cls: string) =>
   `<h2 id="${id}" class="m-0 ${cls}">${letters(text, accent, { cls: 'text-display2' })}</h2>`;
 
-/** A table of words in the kit's paper panel. The first column heads each row. */
-const dataTable = (t: DataTable) => `<div class="toon-table-wrap my-s6"><table class="toon-table toon-table-text"><caption class="sr-only">${esc(t.caption)}</caption><thead><tr>${t.columns.map((c) => `<th scope="col">${c.trim() ? esc(c) : '<span class="sr-only">Item</span>'}</th>`).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th scope="row" class="font-bold">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
+/** A table of words in the kit's paper panel. The first column heads each row. Three or more columns can outgrow a phone and scroll sideways, so that panel is a focusable, labelled region a keyboard can scroll. */
+const dataTable = (t: DataTable) => `<div class="toon-table-wrap my-s6"${t.columns.length > 2 ? ` role="region" tabindex="0" aria-label="${esc(t.caption)}"` : ''}><table class="toon-table toon-table-text"><caption class="sr-only">${esc(t.caption)}</caption><thead><tr>${t.columns.map((c) => `<th scope="col">${c.trim() ? esc(c) : '<span class="sr-only">Item</span>'}</th>`).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th scope="row" class="font-bold">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
 
 const nav = (current: string, path: string) => {
   // [label, href, the id the scroll spy watches on the home page, the href on the home page].
@@ -83,7 +83,7 @@ ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ?
 ${skipLink('main')}
 <div class="toon-page mx-auto max-w-5xl pl-s4 pb-16">
   <header class="flex items-center justify-between gap-s1 py-s4 min-[360px]:gap-s3 sm:py-s5">
-    <a href="/" class="block shrink-0 no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { live: true, cls: 'text-[24px] min-[360px]:text-[30px] sm:text-[40px]' })}</a>
+    <a href="/" class="flex min-h-[44px] shrink-0 items-center no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { live: true, cls: 'text-[24px] min-[360px]:text-[30px] sm:text-[40px]' })}</a>
     ${nav(opts.current ?? '', opts.path)}
     <button type="button" class="toon-motion" data-motion-toggle aria-pressed="true"><span aria-hidden="true">✦</span><span class="toon-motion-label">Motion</span></button>
   </header>
@@ -200,7 +200,7 @@ export function home(): string {
 
     <section id="work" class="relative mt-16 scroll-mt-8 md:mt-24" aria-labelledby="work-h">
       ${sfx('SHIP!', 'blue', { size: 'lg', ghost: true, cls: 'absolute -top-[3.5rem] right-s2 text-[3.25rem] md:-top-[5.75rem] md:right-s6 md:text-[5rem]' })}
-      ${kicker('01', 'The work', { link: { href: '/work.html', text: `All ${studies.length} case studies`, cls: 'hidden sm:inline' } })}
+      ${kicker('01', 'The work', { link: { href: '/work.html', text: `All ${studies.length} case studies`, cls: 'hidden min-h-[44px] items-center sm:inline-flex' } })}
       ${lettered('work-h', 'Case studies', 'yellow', 'mb-s6 mt-s4 max-w-md')}
       <article class="toon-card toon-pop relative grid items-center gap-s6 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-s8 md:p-s8" data-home="lead" style="--toon-shadow:${HEX[featured.accent]}">
         <span class="toon-corner" style="background:${HEX[featured.accent]}">Featured</span>
@@ -256,9 +256,8 @@ export function home(): string {
       ${lettered('review-h', "I work for this guy. Here's my review.", 'red', 'mt-s4 max-w-md')}
       <figure class="toon-panel toon-tilt-l relative m-0 mt-s6 max-w-[34rem]" style="--toon-shadow:${HEX.yellow}">
         <p class="m-0 font-comic text-[2.5rem] leading-[1.05] tracking-wide md:text-[3.25rem]"><span aria-hidden="true">“</span>He decides in three words. I write three hundred to earn them.<span aria-hidden="true">”</span></p>
-        <p class="m-0 mt-s4 text-title2 font-bold" role="img" aria-label="Four out of five stars"><span aria-hidden="true">★★★★☆</span> <span class="text-toon-muted">would be five, but he rejected my first font set</span></p>
-        <figcaption class="mt-s4 font-bold">— Claude, AI model. Works for Pedro. Unpaid.</figcaption>
-        <p class="m-0 mt-s3 font-mono text-caption1 text-toon-muted">Written by Claude from notes I take on Pedro.</p>
+        <p class="m-0 mt-s4 text-title2 font-bold"><span role="img" aria-label="Four out of five stars">★★★★☆</span> <span class="text-toon-muted">would be five, but he rejected my first font set</span></p>
+        <figcaption class="mt-s4"><span class="block font-bold">— Claude, AI model. Works for Pedro. Unpaid.</span><span class="mt-s3 block font-mono text-caption1 text-toon-muted">Written by Claude from notes I take on Pedro.</span></figcaption>
       </figure>
       <p class="mb-0 mt-s8 max-w-[52ch] text-title3 font-bold text-toon-yellow">The long version, with receipts:</p>
       <ol class="m-0 mt-s6 ml-s4 grid gap-s8 border-0 border-l-toon border-solid border-toon-yellow p-0" role="list">
@@ -395,8 +394,8 @@ const partNo = (i: number) => String(i + 1).padStart(2, '0');
 
 /** The contents list, shared by the desktop rail and the phone disclosure. `onPaper` picks the text colours. */
 const contents = (items: { id: string; heading: string }[], onPaper: boolean) =>
-  `<ol class="m-0 grid list-none gap-s3 p-0">${items
-    .map((x, i) => `<li class="flex items-baseline gap-s3"><span class="font-mono text-footnote font-bold ${onPaper ? 'text-toon-muted' : 'text-toon-yellow'}">${partNo(i)}</span><a class="toon-link" href="#${x.id}">${esc(x.heading)}</a></li>`)
+  `<ol class="m-0 grid list-none p-0">${items
+    .map((x, i) => `<li class="flex items-center gap-s3"><span class="font-mono text-footnote font-bold ${onPaper ? 'text-toon-muted' : 'text-toon-yellow'}">${partNo(i)}</span><a class="toon-link inline-flex min-h-[44px] items-center" href="#${x.id}">${esc(x.heading)}</a></li>`)
     .join('')}</ol>`;
 
 /** The stack on the home page, as rows of the kit's list: a short category, the tool, and what it is for. */
@@ -466,9 +465,9 @@ export function study(s: CaseStudy): string {
         </aside>
       </header>
       ${s.facts ? `<div class="toon-stats mt-s8 lg:mt-12" role="group" aria-label="Key figures">${s.facts.map((f) => stat(f.label, f.value, f.detail)).join('')}</div>` : ''}
-      <details class="mt-s8 rounded-toon border-toon border-toon-ink bg-toon-paper px-s4 py-s3 text-toon-ink lg:hidden">
-        <summary class="cursor-pointer font-bold">In this study (${toc.length} parts)</summary>
-        <div class="mt-s3">${contents(toc, true)}</div>
+      <details class="mt-s8 rounded-toon border-toon border-toon-ink bg-toon-paper px-s4 text-toon-ink lg:hidden">
+        <summary class="cursor-pointer py-[10px] font-bold">In this study (${toc.length} parts)</summary>
+        <div class="pb-s2">${contents(toc, true)}</div>
       </details>
       <div class="mt-s8 grid gap-s8 lg:mt-16 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-x-12">
         <div class="grid min-w-0 gap-12 md:gap-16">${s.sections.map(section).join('')}
