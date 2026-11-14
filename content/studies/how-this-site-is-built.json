@@ -28,7 +28,7 @@
     {
       "heading": "The UI kit",
       "paragraphs": [
-        "The look comes from toonish-ui, a comic-book component kit I wrote for this site: thin ink outlines, short hard shadows and a gentle lift on hover, in blue, red, yellow and violet on deep navy. It ships design tokens in the W3C format, component CSS that needs no Tailwind, a small script for modals and toggle groups, and self-hosted fonts. [See every component running on the kit page](https://pdlab.dev/ui.html).",
+        "The look comes from toonish-ui, a comic-book component kit I wrote for this site: thin ink outlines, short hard shadows and a gentle lift on hover, in blue, red, yellow and violet on deep navy. It ships design tokens in the W3C format, component CSS that needs no Tailwind, a small script for modals and toggle groups, and self-hosted fonts. [The kit's README lists every component](https://github.com/PeteDio-Labs/toonish-ui).",
         "The kit started inside this repository and moved to [its own public repository](https://github.com/PeteDio-Labs/toonish-ui), with its own tests, changelog and releases. This site installs it from an exact git commit, not from a registry and not from `main`, so a kit change reaches the site only when I move the pin in a pull request. [How the kit is built and tested has its own study](https://pdlab.dev/work/toonish-ui-design-system.html). The kit commits its built files, because Bun does not run a dependency's build scripts, and its CI fails when they are stale. The build copies the kit's fonts and script into the site, so no page loads either from a third party."
       ]
     },

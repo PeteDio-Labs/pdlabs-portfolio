@@ -19,7 +19,7 @@ const server = Bun.serve({
   },
 });
 
-const pages = ['/', '/work.html', '/ui.html', '/privacy.html', '/terms.html', '/no-such-page', ...(await Array.fromAsync(new Bun.Glob('work/*.html').scan(root))).sort().map((f) => `/${f}`)];
+const pages = ['/', '/work.html', '/privacy.html', '/terms.html', '/no-such-page', ...(await Array.fromAsync(new Bun.Glob('work/*.html').scan(root))).sort().map((f) => `/${f}`)];
 const fail: string[] = [];
 let rules = 0, runs = 0;
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });

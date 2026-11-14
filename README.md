@@ -1,7 +1,7 @@
 # pdlabs-portfolio
 
 Pedro Delgadillo's portfolio for `pdlab.dev`: case studies about building systems with AI,
-on [toonish-ui](https://github.com/PeteDio-Labs/toonish-ui), an original cartoon component kit (`PET-809`, under the `PET-773` epic). The kit's tokens, CSS, script and fonts install from a tagged release (`bun add github:PeteDio-Labs/toonish-ui#vX.Y.Z`). The kit page, `/ui.html`, stays in this repo.
+on [toonish-ui](https://github.com/PeteDio-Labs/toonish-ui), an original cartoon component kit (`PET-809`, under the `PET-773` epic). The kit's tokens, CSS, script and fonts install from a tagged release (`bun add github:PeteDio-Labs/toonish-ui#vX.Y.Z`). The kit page left the site. `/ui.html` is a small page that redirects to the kit's case study.
 The site is static HTML rendered by TypeScript under Bun and styled with Tailwind CSS.
 
 ## Commands

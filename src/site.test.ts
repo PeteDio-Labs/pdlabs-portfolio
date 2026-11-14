@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
 import { esc } from './html.ts';
-import { LOST, LOST_LOOKS, bySlug, home, isResultHeading, kit, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
+import { LOST, LOST_LOOKS, bySlug, home, isResultHeading, kitMoved, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
 import { siteScript, motionScript } from './script.ts';
 
@@ -8,7 +8,7 @@ import { siteScript, motionScript } from './script.ts';
 const toonishScript = await Bun.file('node_modules/toonish-ui/dist/toonish.js').text();
 import { site, studies, featured, latest, fit } from './content.ts';
 
-const all = () => [home(), workIndex(), kit(), notFound(), legal('privacy'), legal('terms'), ...studies.map(study)];
+const all = () => [home(), workIndex(), notFound(), legal('privacy'), legal('terms'), ...studies.map(study)];
 
 test('every page has one h1, a title, and a description', () => {
   for (const html of all()) {
@@ -44,16 +44,10 @@ test('the home nav marks Home, watches the top and About, and sends Work to the 
   expect(html).toContain('<main id="main">');
   expect(html).toContain('id="about"');
   // Home comes first on every page, and only the home page marks it.
-  for (const page of [workIndex(), study(studies[0]), kit(), notFound()]) {
+  for (const page of [workIndex(), study(studies[0]), notFound()]) {
     expect(page).toMatch(/<nav class="toon-nav [^"]*" aria-label="Main"><a href="\/">Home<\/a><a href="\/work\.html"/);
     expect(page).toContain('<a href="/#about">About</a>');
   }
-});
-
-test('kit sample nav switches in place instead of reloading', () => {
-  const html = kit();
-  expect(html).toContain('data-toon-toggle');
-  expect(html).not.toMatch(/aria-label="Sample"[^>]*>\s*<a /);
 });
 
 test('home leads with the featured study, then the three newest others, and links to /work', () => {
@@ -150,7 +144,7 @@ test('every page ships the main nav with Work pointing at /work', () => {
 test('the privacy page says no cookies, so no page or script sets one or uses web storage beyond the motion setting', () => {
   // The privacy page names these APIs, so it is left out of the scan. The one allowed use is the motion
   // switch's saved choice, which the privacy page states.
-  const text = [home(), kit(), notFound(), ...studies.map(study), siteScript, toonishScript].join('\n');
+  const text = [home(), notFound(), ...studies.map(study), siteScript, toonishScript].join('\n');
   expect(text).not.toMatch(/document\.cookie|sessionStorage|indexedDB|Set-Cookie/i);
   expect([...(text + motionScript).matchAll(/localStorage\.\w+\('([^']+)'/g)].every((m) => m[1] === 'pd-motion')).toBe(true);
   expect(legal('privacy')).toContain('pd-motion');
@@ -223,18 +217,12 @@ test('footer links open Privacy and Terms in a modal and stay real links without
   for (const html of all()) {
     expect(html).toContain('href="/privacy.html" data-toon-modal');
     expect(html).toContain('href="/terms.html" data-toon-modal');
-    expect(html).toContain('class="toon-link whitespace-nowrap" href="/ui.html"');
+    expect(html).toContain('class="toon-link whitespace-nowrap" href="https://github.com/PeteDio-Labs/toonish-ui"');
+    expect(html).not.toContain('href="/ui.html"');
   }
   expect(toonishScript).toContain('showModal');
   expect(toonishScript).not.toMatch(/innerHTML|eval\(|document\.write/);
   expect(siteScript).not.toMatch(/innerHTML|eval\(|document\.write/);
-});
-
-test('the kit page demonstrates an accessible modal', () => {
-  const html = kit();
-  expect(html).toMatch(/<dialog id="k-modal-demo" class="toon-modal" aria-modal="true" aria-labelledby="k-modal-demo-title">/);
-  expect(html).toContain('data-toon-modal-open="k-modal-demo"');
-  expect(html).toContain('data-toon-modal-close');
 });
 
 test('no page loads a font or stylesheet from Google, because the fonts are self-hosted', () => {
@@ -269,11 +257,11 @@ test('a stat figure shrinks as its value gets longer, so it fits its card', () =
   expect(sizes(home()).length).toBe(4);
 });
 
-test('sitemap dates a page by its own date and leaves the noindex kit page out', () => {
+test('sitemap dates a page by its own date and leaves the moved kit page out', () => {
   const xml = sitemapXml(['work/a.html', 'index.html'], '2026-01-01', { 'work/a.html': '2025-05-05' });
   expect(xml).toContain('<loc>https://pdlab.dev/work/a.html</loc><lastmod>2025-05-05</lastmod>');
   expect(xml).toContain('<loc>https://pdlab.dev/</loc><lastmod>2026-01-01</lastmod>');
-  expect(kit()).toContain('<meta name="robots" content="noindex">');
+  expect(kitMoved()).toContain('<meta name="robots" content="noindex">');
   expect(sitemapFiles(['index.html', 'ui.html', '404.html', 'work.html'])).toEqual(['index.html', 'work.html']);
 });
 
@@ -346,10 +334,10 @@ test('study screenshots render with alt text, size, caption and transcript, and 
   expect(html.match(/aria-label="Open the full-size picture: /g)?.length).toBe(shots.length);
 });
 
-test('the site study page links to the kit repository and the kit page', () => {
+test('the site study page links to the kit repository, not the removed kit page', () => {
   const html = study(studies.find((s) => s.slug === 'how-this-site-is-built')!);
   expect(html).toContain('href="https://github.com/PeteDio-Labs/toonish-ui"');
-  expect(html).toContain('href="https://pdlab.dev/ui.html"');
+  expect(html).not.toContain('ui.html');
 });
 
 test('every preloaded font is a file the kit ships', () => {
@@ -424,13 +412,6 @@ test('a malformed table or facts list fails the build with the file name', async
   expect(numCell.err).toContain('non-empty text cells');
 });
 
-test('the kit page documents the data components with made-up figures', () => {
-  const html = kit();
-  for (const c of ['toon-stats', 'toon-list', 'toon-bars', 'toon-table', 'toon-bar-seg']) expect(html).toContain(c);
-  expect(html).toContain('made-up sample data');
-  expect(html).toContain('aria-label="Sample orders by day');
-});
-
 test('the home page shows the cut-out portrait on the kit backdrop, with alt text, and the build ships the file', () => {
   const { existsSync, statSync } = require('node:fs');
   const html = home();
@@ -442,11 +423,6 @@ test('the home page shows the cut-out portrait on the kit backdrop, with alt tex
   expect(existsSync('public/pedro-cutout.webp')).toBe(true);
   expect(statSync('public/pedro-cutout.webp').size).toBeLessThan(60_000);
   expect(existsSync('public/pedro-headshot.webp')).toBe(false);
-});
-
-test('the kit page demonstrates the landing-page components', () => {
-  const html = kit();
-  for (const c of ['toon-kicker', 'toon-strip', 'toon-steps', 'toon-panel', 'toon-bubble-left', 'toon-bubble-up', 'toon-tilt-l', 'toon-tilt-r', 'toon-sfx', 'toon-sfx-ghost']) expect(html).toContain(c);
 });
 
 test('the home page has five sound effects, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
@@ -493,13 +469,6 @@ test('the home row is a deck of the three newest studies that are not featured, 
   expect(deckHtml).not.toMatch(/overflow-x-auto|snap-x|snap-mandatory|snap-start|w-\[78%\]/);
   expect(html).not.toMatch(/overflow-x-auto/);
   expect(html).toContain('data-toon-deck="phone"');
-});
-
-test('the kit page demonstrates the deck', () => {
-  const html = kit();
-  expect(html).toContain('data-toon-deck="phone"');
-  expect(html).toContain('toon-deck-pile');
-  expect(html).toContain('data-toon-deck-next');
 });
 
 test('section ids come from the heading, stay unique, and avoid ids the page already uses', () => {
@@ -632,4 +601,20 @@ test('the 404 card holds every line in one of four looks, shows only the first w
   expect(page).toContain('aria-live="polite"');
   expect(siteScript).toContain('[data-lost-line]');
   expect(siteScript).toContain('[data-lost-next]');
+});
+
+test('the nav is Home, Work and About on every page, and no page links to the removed kit page', () => {
+  for (const html of all()) {
+    const nav = html.match(/<nav class="toon-nav [^"]*" aria-label="Main">(.*?)<\/nav>/s)![1];
+    expect([...nav.matchAll(/>([^<]+)<\/a>/g)].map((m) => m[1])).toEqual(['Home', 'Work', 'About']);
+    expect(html).not.toMatch(/href="[^"]*ui\.html/);
+  }
+});
+
+test('the old kit address redirects to the kit case study and is not indexed', () => {
+  const html = kitMoved();
+  expect(html).toContain('<meta http-equiv="refresh" content="0; url=/work/toonish-ui-design-system.html">');
+  expect(html).toContain('href="/work/toonish-ui-design-system.html"');
+  expect(html).toContain('href="https://github.com/PeteDio-Labs/toonish-ui"');
+  expect(studies.some((s) => s.slug === 'toonish-ui-design-system')).toBe(true);
 });
