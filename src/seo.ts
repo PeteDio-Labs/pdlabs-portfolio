@@ -42,5 +42,5 @@ ${studies.map((s) => `- [${s.title}](${origin}/work/${s.slug}.html): ${s.summary
 - [Terms](${origin}/terms.html)
 `;
 
-/** The pages the sitemap lists: every page except the 404 and the noindex kit page. */
+/** The pages the sitemap lists: every page except the 404 and the moved kit page. */
 export const sitemapFiles = (pages: string[]) => pages.filter((p) => p !== '404.html' && p !== 'ui.html');

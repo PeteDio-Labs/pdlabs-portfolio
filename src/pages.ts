@@ -18,12 +18,11 @@ const nav = (current: string, path: string) => {
     ['Home', '/', 'main', '/'],
     ['Work', '/work.html'],
     ['About', '/#about', 'about', '#about'],
-    ['UI kit', '/ui.html'],
   ];
   // Work always opens the case studies. On the home page, Home and About watch the top of the page and the About
   // section, and the page script marks the one in view.
   const home = path === '/';
-  // Four links share a phone's row with the logo and the motion switch, so each pill is narrower below sm.
+  // Three links share a phone's row with the logo and the motion switch, so each pill is narrower below sm.
   return `<nav class="toon-nav max-sm:[&_a]:px-[7px] max-[359px]:[&_a]:px-[5px] max-[359px]:[&_a]:text-footnote" aria-label="Main">${items
     .map(([label, href, spy, here]) => {
       const attrs = [home && spy ? `data-spy="${spy}"` : '', label === current ? 'aria-current="page"' : ''].filter(Boolean).join(' ');
@@ -92,7 +91,7 @@ ${opts.body}
   </main>
   <footer class="toon-footer">
     <span class="block">${letters('pdlab', 'red', { live: true, cls: 'text-title1' })}</span>
-    <p class="toon-footer-note text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link whitespace-nowrap" href="/ui.html">toonish-ui</a>, an original kit.</p>
+    <p class="toon-footer-note text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link whitespace-nowrap" href="https://github.com/PeteDio-Labs/toonish-ui">toonish-ui</a>, an original kit.</p>
     <nav aria-label="Footer"><ul class="toon-footer-links text-footnote">
       <li><a class="toon-link" href="${site.github}">GitHub</a></li>
       <li><a class="toon-link" href="/privacy.html" data-toon-modal>Privacy</a></li>
@@ -486,135 +485,27 @@ export function study(s: CaseStudy): string {
   return layout({ title: s.title, path: `/work/${s.slug}.html`, current: 'Work', description: s.summary.replace(/`/g, ''), body });
 }
 
-export function kit(): string {
-  const swatch = (name: string, cls: string, text = 'text-toon-ink') =>
-    `<div class="grid h-16 w-full place-items-end justify-start rounded-toon border-toon border-toon-ink ${cls} p-s2 text-caption1 font-bold ${text}">${name}</div>`;
-  const body = `
-    <section class="py-s8">
-      <h1 class="sr-only">toonish-ui</h1>
-      <div class="text-hero leading-[.9]">${letters('toonish-ui', 'yellow', { live: true })}</div>
-      <p class="mt-s4 max-w-[60ch] text-title3">The component kit this site is built on. Calm comic-book panels: thin ink outlines, short hard shadows and a gentle lift on hover, in blue, red, yellow and violet on deep navy. Every animation stops when you ask your system for reduced motion.</p>
-    </section>
-
-    <section class="py-s6" aria-labelledby="k-btn"><h2 id="k-btn" class="toon-heading mb-s6 text-display2">Buttons</h2>
-      <div class="flex flex-wrap gap-s4">
-        <button class="toon-btn" type="button">Blue</button>
-        <button class="toon-btn toon-btn-red" type="button">Red</button>
-        <button class="toon-btn toon-btn-yellow" type="button">Yellow</button>
-        <button class="toon-btn toon-btn-paper" type="button">Paper</button>
-        <button class="toon-btn toon-wiggle" type="button">Wiggle on hover</button>
-      </div>
-    </section>
-
-    <section class="py-s6" aria-labelledby="k-card"><h2 id="k-card" class="toon-heading mb-s6 text-display2">Cards, badges and links</h2>
-      <div class="grid gap-s8 sm:grid-cols-3">
-        <div class="toon-card relative"><span class="toon-corner" aria-hidden="true">01</span><span class="toon-badge">Badge</span><p>A paper card lifts a little when you point at it. A <code>toon-corner</code> labels or numbers it.</p><a class="toon-link" href="/ui.html">A link</a></div>
-        <div class="toon-card"><span class="toon-badge toon-badge-blue">Blue</span><p>Its shadow color comes from <code>--toon-shadow</code>.</p></div>
-        <div class="toon-card"><span class="toon-badge toon-badge-yellow">Yellow</span> <span class="toon-badge toon-badge-violet">Violet</span><p>Badges sit on any surface.</p></div>
-      </div>
-    </section>
-
-    <section class="py-s6" aria-labelledby="k-comic"><h2 id="k-comic" class="toon-heading mb-s6 text-display2">Panels, captions, bursts</h2>
-      <div class="grid gap-s8 sm:grid-cols-[1fr_auto] items-start">
-        <div class="relative">${speedLines('toon-speed-hero')}<div class="toon-frame p-s6 text-toon-ink"><span class="toon-caption absolute left-s3 top-s3">Caption</span><p class="mb-0 mt-s8">A <code>toon-frame</code> is a comic panel: off-white, ink border, short hard shadow. <code>toon-speed</code> fans speed lines behind it, and a <code>toon-caption</code> is the yellow box a narrator speaks from.</p></div></div>
-        <div class="relative grid h-40 w-40 place-items-center">${burst('red', 'toon-burst-spin')}<span class="relative font-display text-title1 text-toon-ink">POW</span></div>
-      </div>
-    </section>
-
-    <section class="py-s6" aria-labelledby="k-misc"><h2 id="k-misc" class="toon-heading mb-s6 text-display2">Nav, bubble, callout</h2>
-      <div class="flex flex-wrap items-start gap-s8">
-        <div class="toon-nav" role="group" aria-label="Sample nav, tap to switch" data-toon-toggle><button type="button" aria-pressed="true">Current</button><button type="button" aria-pressed="false">Other</button><button type="button" aria-pressed="false">Third</button></div>
-        <div class="toon-bubble">A speech bubble with a tail.</div>
-      </div>
-      <div class="toon-callout mt-s8"><strong>Callout:</strong> violet by default, yellow with <code>toon-callout-yellow</code>.</div>
-    </section>
-
-    <section class="py-s6" aria-labelledby="k-modal"><h2 id="k-modal" class="toon-heading mb-s6 text-display2">Modal</h2>
-      <p class="max-w-[60ch]">A <code>toon-modal</code> is a native <code>&lt;dialog&gt;</code>: it traps focus, closes on <kbd>Esc</kbd> or a tap on the backdrop, marks the page behind it inert and returns focus to the button that opened it. The footer uses it for Privacy and Terms: a link with <code>data-toon-modal</code> opens the linked page's article in the modal, and without JavaScript it stays an ordinary link.</p>
-      <button class="toon-btn toon-btn-yellow" type="button" data-toon-modal-open="k-modal-demo">Open a modal</button>
-      <dialog id="k-modal-demo" class="toon-modal" aria-modal="true" aria-labelledby="k-modal-demo-title">
-        <div class="toon-modal-box">
-          <div class="toon-modal-head"><h2 id="k-modal-demo-title" class="toon-heading m-0 text-display2">POW!</h2><button type="button" class="toon-btn toon-btn-red toon-modal-x" data-toon-modal-close>Close</button></div>
-          <div class="toon-modal-body"><p class="mt-0">Any markup fits here. Tab stays inside the box, <kbd>Esc</kbd> closes it, and the pop-in stops under reduced motion.</p><p class="mb-0"><button type="button" class="toon-btn toon-btn-paper" data-toon-modal-close>Got it</button></p></div>
-        </div>
-      </dialog>
-    </section>
-
-    <section class="py-s6" aria-labelledby="k-let"><h2 id="k-let" class="toon-heading mb-s6 text-display2">Display type</h2>
-      <p class="mb-s6 max-w-[60ch]">Headings and figures are set in IBM Plex Sans bold, in the accent colour. Badges, chips and labels use IBM Plex Mono. <code>toon-type-comic</code> switches to Bangers with an ink outline and a short shadow in the paired colour, for the logo and the hero, and tilts every other letter a little. <code>toon-type-flat</code> sets them straight.</p>
-      <div class="grid gap-s3 text-display2 leading-none">
-        <div>${letters('ABCDEFGHIJKLM', 'blue', { live: true })}</div>
-        <div>${letters('NOPQRSTUVWXYZ', 'yellow')}</div>
-        <div>${letters('0123456789 &?! +~%/', 'violet')}</div>
-      </div>
-      <p class="mb-s6 mt-s4 max-w-[60ch]">A figure on a card is the same sans, so a number reads as part of the card.</p>
-      <div class="grid gap-s8 sm:grid-cols-3">
-        <div class="toon-card" style="--toon-shadow:#f2c94c">${figure('214', 'blue', 52, 200)}<span class="mt-s1 block text-footnote">a count</span></div>
-        <div class="toon-card" style="--toon-shadow:#5f8dff">${figure('60 min', 'yellow', 52, 200)}<span class="mt-s1 block text-footnote">a duration</span></div>
-        <div class="toon-card" style="--toon-shadow:#f2706a">${figure('~70%', 'violet', 52, 200)}<span class="mt-s1 block text-footnote">an estimate</span></div>
-      </div>
-    </section>
-
-    <section class="py-s6" aria-labelledby="k-data"><h2 id="k-data" class="toon-heading mb-s6 text-display2">Figures, rows, bars and tables</h2>
-      <p class="mb-s6 max-w-[60ch]">For dashboards and case studies. Every figure below is made-up sample data. The helpers in <code>toonish-ui/markup</code> escape every string they render.</p>
-      <div class="toon-stats">${stat('Orders', '12', 'Monday to Thursday')}${stat('On time', '94%', 'sample figure')}${stat('Busiest day', 'Tue')}</div>
-      <p class="mb-0 mt-s6 flex flex-wrap items-center gap-s2">${badge('Open', 'blue', 12)}${badge('Held', 'yellow', 3)}${badge('Shipped', 'violet', 40)}${badge('Late', 'red', 2)}${badge('Archived', 'mist', 9)}${badge('Draft', 'paper')}${chip('A chip')}</p>
-      <div class="toon-list mt-s6">${row({ lead: 'Nov 10', title: 'Order 1042', sub: 'Pending', aside: 'Web', dot: 'blue' })}${row({ lead: 'Nov 11', title: 'Order 1041', aside: 'Phone', dot: 'red' })}${row({ title: 'A row with no lead', aside: 'Store', dot: 'violet' })}</div>
-      <div class="toon-card mt-s8">${bars({ label: 'Sample orders by day, stacked by channel, against a target of 5', target: 5, columns: [
-        { label: 'Mon', sub: '9', segments: [{ value: 3, tone: 'blue', label: 'Web' }, { value: 1, tone: 'hatch', label: 'Returned' }] },
-        { label: 'Tue', sub: '10', current: true, segments: [{ value: 4, tone: 'blue', label: 'Web' }, { value: 2, tone: 'red', label: 'Phone' }] },
-        { label: 'Wed', sub: '11', segments: [{ value: 2, tone: 'red', label: 'Phone' }] },
-        { label: 'Thu', sub: '12', segments: [] }] })}
-        <ul class="toon-bars-key mt-s4"><li><i></i>Web</li><li><i style="--toon-dot:#f2706a"></i>Phone</li><li><i style="background:repeating-linear-gradient(135deg,#0a0a1f 0 2px,#eceff3 2px 6px)"></i>Returned</li></ul></div>
-      <div class="toon-table-wrap mt-s8"><table class="toon-table"><caption class="sr-only">Sample orders by channel</caption><thead><tr><th scope="col">Day</th><th scope="col">Web</th><th scope="col">Phone</th><th scope="col">Returned</th></tr></thead><tbody><tr><td>Mon</td><td>3</td><td>0</td><td>1</td></tr><tr aria-current="date"><td>Tue</td><td>4</td><td>2</td><td>0</td></tr><tr><td>Wed</td><td>0</td><td>2</td><td>0</td></tr><tr><td>Thu</td><td>0</td><td>0</td><td>0</td></tr></tbody><tfoot><tr><td>Total</td><td>7</td><td>4</td><td>1</td></tr></tfoot></table></div>
-      <p class="mt-s4 max-w-[60ch]">Add <code>toon-table-text</code> for cells that hold words, as the case studies do.</p>
-    </section>
-
-    <section class="py-s6" aria-labelledby="k-page"><h2 id="k-page" class="toon-heading mb-s6 text-display2">Page structure</h2>
-      <p class="mb-s6 max-w-[60ch]">Parts for a page that reads in order, as the home page does. The figures and words below are made-up samples.</p>
-      <h3 class="mb-s3 mt-0 text-title2 font-bold">Kicker</h3>
-      <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-kicker</code> opens a section: a number chip, a short label, a rule to the right edge and an optional link. It takes the text colour, so it works on the ground and inside a <code>toon-panel</code>. The <code>kicker()</code> helper writes it.</p>
-      ${kicker('01', 'Sample section', { link: { href: '/ui.html#k-page', text: 'A link' } })}
-      <div class="toon-panel mt-s6">${kicker('02', 'Inside a panel')}<p class="mb-0 mt-s4">A <code>toon-panel</code> is a large paper section with an ink border, a hard shadow and generous padding. Set <code>--toon-shadow</code> to change the shadow colour.</p></div>
-      <h3 class="mb-s3 mt-s8 text-title2 font-bold">Strip</h3>
-      <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-strip</code> holds figure cells in one panel: four across from <code>sm</code>, two by two below. A cell with an <code>href</code> is one link. The <code>strip()</code> helper writes it.</p>
-      ${strip([{ value: '12', label: 'sample count', href: '/ui.html#k-page' }, { value: 'Same day', label: 'sample duration', href: '/ui.html#k-page' }, { value: '~594', label: 'sample estimate' }, { value: '3', label: 'sample plain cell' }], { label: 'Sample figures' })}
-      <h3 class="mb-s3 mt-s8 text-title2 font-bold">Steps</h3>
-      <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-steps</code> is an ordered list of panels with an arrow between them: right in a row from <code>md</code>, down when stacked. The arrows are decoration. The <code>steps()</code> helper writes it.</p>
-      ${steps([{ title: 'First step.', body: 'A sample line about the first step.' }, { title: 'Second step.', body: 'A sample line about the second step.' }, { title: 'Third step.', body: 'A sample line about the third step.' }], { label: 'Sample steps' })}
-      <h3 class="mb-s3 mt-s8 text-title2 font-bold">Bubble tails and tilt</h3>
-      <p class="mb-s6 mt-0 max-w-[60ch]"><code>toon-bubble-left</code> puts the tail on the left edge and <code>toon-bubble-up</code> on the top edge, so a bubble can point at a speaker beside or above it. <code>toon-tilt-l</code> and <code>toon-tilt-r</code> turn a block 2 degrees from <code>sm</code> up.</p>
-      <div class="grid items-start gap-s8 sm:grid-cols-2">
-        <div class="flex items-center gap-s8 pl-s6"><div class="toon-bubble toon-bubble-left max-w-none"><p class="m-0 font-bold">A tail on the left.</p></div></div>
-        <div class="pt-s6"><div class="toon-bubble toon-bubble-up max-w-none"><p class="m-0 font-bold">A tail on top.</p></div></div>
-        <div class="toon-frame toon-tilt-l p-s6 text-toon-ink"><span class="toon-caption">toon-tilt-l</span></div>
-        <div class="toon-frame toon-tilt-r p-s6 text-toon-ink"><span class="toon-caption">toon-tilt-r</span></div>
-      </div>
-      <h3 class="mb-s3 mt-s8 text-title2 font-bold">Deck</h3>
-      <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-deck</code> turns a row of cards into a pile you flip through on a phone, and a grid from <code>md</code>. Narrow the window, or open this page on a phone, to see the pile: swipe sideways, or use the buttons or the arrow keys. A vertical drag still scrolls the page, and a tap on a link in the top card still follows it. Without script the cards are a plain list. <code>data-toon-deck="always"</code> keeps the pile at every width. The <code>deck()</code> helper writes it. It does not escape the card HTML you pass it, so escape any text you put in a card.</p>
-      ${deck(
-        [
-          { n: 'One', t: 'A sample card in the pile.' },
-          { n: 'Two', t: 'The cards under the top one peek out behind it.' },
-          { n: 'Three', t: 'Next on the last card returns to the first.' },
-        ].map((c, k) => `<article class="toon-card flex flex-col" style="--toon-shadow:${[HEX.yellow, HEX.violet, HEX.blue][k]}"><h4 class="m-0 text-title3 font-bold">Sample card ${c.n}</h4><p class="mb-s4 mt-s3">${c.t}</p><a class="toon-link mt-auto self-start" href="/ui.html#k-page">A link in the card</a></article>`),
-        { label: 'Sample cards, flip through them' },
-      )}
-      <h3 class="mb-s3 mt-s8 text-title2 font-bold">Pager</h3>
-      <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-pager</code> is a pair of previous and next links in the shape of the deck's switcher. The title under each direction says where the link goes.</p>
-      ${pager({ label: 'Sample pages', prev: { href: '/ui.html', title: 'A sample page before this one' }, next: { href: '/ui.html', title: 'A sample page after this one, with a longer title that is cut at two lines' } })}
-      <h3 class="mb-s3 mt-s8 text-title2 font-bold">Sound effects</h3>
-      <p class="mb-s4 mt-0 max-w-[60ch]"><code>toon-sfx</code> is a sound-effect word in the comic face. Each letter has its own turn, rise and size, set from its index by the <code>sfx()</code> helper, and drifts in turn. It is decoration: the helper hides it from readers and it takes no pointer. You position it, usually <code>absolute</code> in a <code>relative</code> parent. <code>toon-sfx-sm</code>, <code>toon-sfx-lg</code> and <code>toon-sfx-ghost</code> change the size or make it an outline for sitting behind content. <code>toon-sfx-corner</code> pins the word to the top right corner of a <code>relative</code> parent at every width. Latin letters only.</p>
-      <div class="relative flex min-h-[9rem] flex-wrap items-center gap-x-s8 gap-y-s6 pl-s2">${sfx('POW!', 'red')}${sfx('click', 'yellow', { size: 'sm' })}${sfx('WHAM', 'violet', { size: 'lg' })}${sfx('SHIP!', 'blue', { size: 'lg', ghost: true })}</div>
-    </section>
-
-    <section class="py-s6" aria-labelledby="k-tok"><h2 id="k-tok" class="toon-heading mb-s6 text-display2">Colors</h2>
-      <div class="grid grid-cols-3 gap-s3 sm:grid-cols-5 lg:grid-cols-10">
-        ${swatch('ground', 'bg-toon-ground', 'text-toon-paper')}${swatch('blue', 'bg-toon-blue')}${swatch('red', 'bg-toon-red')}${swatch('yellow', 'bg-toon-yellow')}${swatch('violet', 'bg-toon-violet')}${swatch('paper', 'bg-toon-paper')}${swatch('muted', 'bg-toon-muted', 'text-toon-paper')}${swatch('mist', 'bg-toon-mist')}${swatch('rule', 'bg-toon-rule')}
-      </div>
-      <p class="mt-s4 max-w-[60ch]">Text on every fill is ink, at 5.1:1 or better. Paper text on the ground is 15.5:1. <code>muted</code> is secondary text on paper, <code>mist</code> is secondary text on the ground and the quiet fill for a closed state, and <code>rule</code> draws grid lines on paper.</p>
-    </section>`;
-  return layout({ title: 'toonish-ui', path: '/ui.html', current: 'UI kit', noindex: true, description: 'toonish-ui, the original cartoon component kit behind this site.', body });
+/**
+ * The page at the old kit address. The kit page left the site, so /ui.html is a small noindex page that sends a
+ * visitor on to the kit's case study. A meta refresh needs no script and no CloudFront rule.
+ */
+export function kitMoved(): string {
+  const to = '/work/toonish-ui-design-system.html';
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moved | pdlab</title>
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url=${to}">
+<link rel="canonical" href="https://pdlab.dev${to}">
+</head>
+<body>
+<p>The kit page moved. Read <a href="${to}">the toonish-ui case study</a> or see <a href="https://github.com/PeteDio-Labs/toonish-ui">the kit on GitHub</a>.</p>
+</body>
+</html>
+`;
 }
 
 /**
