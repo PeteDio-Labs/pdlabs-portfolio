@@ -66,8 +66,17 @@ try {
       const out: string[] = [];
       let n = 0;
       for (const el of document.querySelectorAll<HTMLElement>('main *, header *, footer *')) {
-        if (el.children.length || el.closest('[aria-hidden="true"], svg, .sr-only')) continue;
-        const r = el.getBoundingClientRect();
+        if (el.closest('[aria-hidden="true"], svg, .sr-only')) continue;
+        // Measure the element's own text, not its box: a paragraph with a link inside is not a leaf, and its words can still be cut.
+        const texts = [...el.childNodes].filter((t) => t.nodeType === 3 && t.textContent!.trim());
+        if (!texts.length && el.children.length) continue;
+        let r = el.getBoundingClientRect();
+        if (texts.length) {
+          const range = document.createRange();
+          range.setStartBefore(texts[0]!); range.setEndAfter(texts[texts.length - 1]!);
+          const rs = [...range.getClientRects()];
+          if (rs.length) r = new DOMRect(Math.min(...rs.map((x) => x.left)), 0, Math.max(...rs.map((x) => x.right)) - Math.min(...rs.map((x) => x.left)), 1);
+        }
         if (!r.width || !r.height || getComputedStyle(el).visibility === 'hidden') continue;
         let scroller = false;
         for (let a = el.parentElement; a; a = a.parentElement) if (/auto|scroll/.test(getComputedStyle(a).overflowX)) { scroller = true; break; }

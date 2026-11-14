@@ -9,8 +9,8 @@ import { site, studies, featured, tags, fit, type Accent, type CaseStudy, type D
 const lettered = (id: string, text: string, accent: Accent, cls: string) =>
   `<h2 id="${id}" class="m-0 ${cls}">${letters(text, accent, { cls: 'text-display2' })}</h2>`;
 
-/** A table of words in the kit's paper panel. The first column heads each row. */
-const dataTable = (t: DataTable) => `<div class="toon-table-wrap my-s6" role="region" tabindex="0" aria-label="${esc(t.caption)}"><table class="toon-table toon-table-text"><caption class="sr-only">${esc(t.caption)}</caption><thead><tr>${t.columns.map((c) => `<th scope="col">${c.trim() ? esc(c) : '<span class="sr-only">Item</span>'}</th>`).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th scope="row" class="font-bold">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
+/** A table of words in the kit's paper panel. The first column heads each row. Three or more columns can outgrow a phone and scroll sideways, so that panel is a focusable, labelled region a keyboard can scroll. */
+const dataTable = (t: DataTable) => `<div class="toon-table-wrap my-s6"${t.columns.length > 2 ? ` role="region" tabindex="0" aria-label="${esc(t.caption)}"` : ''}><table class="toon-table toon-table-text"><caption class="sr-only">${esc(t.caption)}</caption><thead><tr>${t.columns.map((c) => `<th scope="col">${c.trim() ? esc(c) : '<span class="sr-only">Item</span>'}</th>`).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th scope="row" class="font-bold">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
 
 const nav = (current: string, path: string) => {
   // [label, href, the id the scroll spy watches on the home page, the href on the home page].
