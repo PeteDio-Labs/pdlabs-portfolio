@@ -12,13 +12,13 @@
   "facts": [
     {
       "label": "Component classes",
-      "value": "134",
+      "value": "135",
       "detail": "toon-* classes in the compiled stylesheet"
     },
     {
       "label": "Unit tests",
-      "value": "41",
-      "detail": "across three files, plus a browser check at two widths"
+      "value": "47",
+      "detail": "across four files, plus a browser check at two widths"
     },
     {
       "label": "Font files",
@@ -98,9 +98,9 @@
       "heading": "How the kit stays correct",
       "paragraphs": [
         "The repository commits its built `dist/` folder, because Bun does not run a dependency's build scripts, so a consumer can install straight from git. That creates a risk: the source and the committed output can disagree. The CI check rebuilds `dist/` and fails when it differs from the commit, and it names the files that changed. A build that matches no component classes also fails, so an empty stylesheet cannot pass.",
-        "Four checks run on every pull request: typecheck, build with the stale-output test, unit tests and a Chromium check at 1280 and 390 pixels. The browser check asserts computed styles, fonts, overflow, the modal, the toggle, reduced motion and console errors. It does not compare screenshots, because font rendering differs between machines, and it prints how many checks it ran, so a green result says what it examined.",
+        "Four checks run on every pull request: typecheck, build with the stale-output test, unit tests and a Chromium check at 1280 and 390 pixels. The browser check asserts computed styles, fonts, overflow, the modal, the toggle, reduced motion, accessibility and console errors. It does not compare screenshots, because font rendering differs between machines, and it prints how many checks it ran, so a green result says what it examined.",
         "Two rulesets guard the repository. The `main` branch takes changes only through a pull request with the check passing, and a `v*` tag can be created but never moved or deleted, so a released version cannot change under a consumer. A release is cut only when a consumer needs one, and the workflow checks that the tag, `package.json` and the changelog agree before it attaches a tarball and checksums.",
-        "The rule has to fail a build or it is only a hope, so the kit's CI is being extended to fail on accessibility regressions. That enforcement is in progress as I write this, and I have not yet counted its checks, so this study states no figure for it. Until it lands, the contrast test and the browser check are the only automated accessibility checks, and neither replaces testing with a screen reader and a keyboard."
+        "The rule has to fail a build or it is only a hope, so the browser check also runs axe at WCAG 2.2 AA on the kit's test page at both widths. It reads the focus ring, the target sizes, the heading order and the skip link, and a violation fails CI. The portfolio runs the same scan on every built page. Neither replaces testing with a screen reader and a keyboard, and a full screen reader pass is still owed."
       ]
     },
     {
@@ -141,7 +141,7 @@
     "Working with AI agents"
   ],
   "sources": [
-    "toonish-ui: README.md, CHANGELOG.md, CLAUDE.md, docs/maintaining.md, tokens/toonish.tokens.json; build and test output at main 7a23d5b (134 toon-* classes, 41 tests in 3 files, 4 font files)",
+    "toonish-ui: README.md, CHANGELOG.md, CLAUDE.md, docs/maintaining.md, tokens/toonish.tokens.json; build and test output at main 488418d (135 toon-* classes, 47 tests in 4 files, 4 font files)",
     "pdlabs-portfolio: README.md (branch rules), docs/brand-brief.md, .github/workflows/deploy.yml, sync-staging.yml, package.json (kit pin)",
     "Project notes on the palette and font decisions, 2026-11-03 and 2026-11-13; landing page design review, 2026-11-13"
   ]

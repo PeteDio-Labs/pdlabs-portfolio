@@ -7,12 +7,15 @@
     "build": "bun run build.ts",
     "dev": "bun run build.ts && bun run serve.ts",
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "test:a11y": "bun run test/a11y.ts"
   },
   "devDependencies": {
     "@types/bun": "1.2.17",
+    "axe-core": "4.10.2",
+    "playwright-core": "1.65.0",
     "tailwindcss": "3.4.17",
-    "toonish-ui": "github:PeteDio-Labs/toonish-ui#7a23d5b5636127767288d970e3ea98dbe1957923",
+    "toonish-ui": "github:PeteDio-Labs/toonish-ui#400c8c3209fe1b59e0f426fdc0b08b4a6341246c",
     "typescript": "5.8.3"
   }
 }

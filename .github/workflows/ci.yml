@@ -27,3 +27,7 @@ jobs:
           n=$(ls dist/work/*.html | wc -l)
           echo "dist/work holds $n case-study pages"
           test "$n" -ge 4
+      - name: Install Chromium for the accessibility check
+        run: bunx playwright-core install --with-deps chromium
+      - name: Accessibility check (axe at WCAG 2.2 AA on every built page)
+        run: bun run test:a11y

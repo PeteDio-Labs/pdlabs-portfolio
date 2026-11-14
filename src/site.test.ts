@@ -111,7 +111,7 @@ test('home sections are numbered, in order, and the nav anchors land on them', (
 test('the home page keeps one primary button in the hero and a text link for the repos', () => {
   const hero = home().slice(0, home().indexOf('toon-strip'));
   expect(hero.match(/class="toon-btn /g)?.length).toBe(1);
-  expect(hero).toContain(`<a class="toon-link" href="${site.org}">Browse the repos</a>`);
+  expect(hero).toContain(`<a class="toon-link inline-flex min-h-[44px] items-center" href="${site.org}">Browse the repos</a>`);
 });
 
 test('the proof strip fails the build when a study it reads is missing', () => {
@@ -204,7 +204,10 @@ test('home carries valid JSON-LD and states the background in About', () => {
   const m = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s);
   expect(m).not.toBeNull();
   expect(JSON.parse(m![1])).toEqual(JSON.parse(JSON.stringify(personJsonLd())));
-  expect(html).toContain('master&#39;s in computer science');
+  expect(html).toContain('studying for an M.S. in computer science');
+  // The M.S. is in progress: the page must not say he holds it.
+  expect(site.background).not.toMatch(/master/i);
+  expect(site.background).toMatch(/studying for an M\.S\./);
   expect(html).toContain('one year at Apple as a full-stack engineer');
 });
 
@@ -463,8 +466,8 @@ test('the home row is a deck of the three newest studies that are not featured, 
   const deckHtml = html.slice(at, html.indexOf('All ' + studies.length + ' case studies<span', at));
   const rest = studies.filter((s) => s !== featured).slice(0, 3);
   expect(deckHtml.match(/data-home="card"/g)).toHaveLength(3);
-  expect(deckHtml.match(/class="toon-deck-card" role="group" aria-label="\d of 3"/g)).toHaveLength(3);
-  const hrefs = [...deckHtml.matchAll(/<a class="toon-link self-start" href="(\/work\/[^"]+)"/g)].map((m) => m[1]);
+  expect(deckHtml.match(/class="toon-deck-card" role="group" aria-roledescription="slide" aria-label="\d of 3"/g)).toHaveLength(3);
+  const hrefs = [...deckHtml.matchAll(/<a class="toon-link inline-flex min-h-\[44px\] items-center self-start" href="(\/work\/[^"]+)"/g)].map((m) => m[1]);
   expect(hrefs).toEqual(rest.map((s) => `/work/${s.slug}.html`));
   expect(deckHtml).not.toMatch(/overflow-x-auto|snap-x|snap-mandatory|snap-start|w-\[78%\]/);
   expect(html).not.toMatch(/overflow-x-auto/);
@@ -490,7 +493,7 @@ test('every study has unique section ids and a contents list that links to each 
     const rail = html.slice(html.indexOf('<nav id="contents"'), html.indexOf('</nav>', html.indexOf('<nav id="contents"')));
     const phone = html.slice(html.indexOf('<details'), html.indexOf('</details>'));
     for (const part of [rail, phone]) {
-      const links = [...part.matchAll(/<a class="toon-link" href="#([^"]+)">([^<]*)<\/a>/g)];
+      const links = [...part.matchAll(/<a class="toon-link inline-flex min-h-\[44px\] items-center" href="#([^"]+)">([^<]*)<\/a>/g)];
       expect(links.map((m) => m[1])).toEqual(ids);
       expect(links.map((m) => m[2])).toEqual(s.sections.map((x) => esc(x.heading)));
     }
