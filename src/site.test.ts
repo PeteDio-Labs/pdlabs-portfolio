@@ -492,7 +492,7 @@ test('every study has unique section ids and a contents list that links to each 
     const rail = html.slice(html.indexOf('<nav id="contents"'), html.indexOf('</nav>', html.indexOf('<nav id="contents"')));
     const phone = html.slice(html.indexOf('<details'), html.indexOf('</details>'));
     for (const part of [rail, phone]) {
-      const links = [...part.matchAll(/<a class="toon-link" href="#([^"]+)">([^<]*)<\/a>/g)];
+      const links = [...part.matchAll(/<a class="toon-link inline-flex min-h-\[44px\] items-center" href="#([^"]+)">([^<]*)<\/a>/g)];
       expect(links.map((m) => m[1])).toEqual(ids);
       expect(links.map((m) => m[2])).toEqual(s.sections.map((x) => esc(x.heading)));
     }
