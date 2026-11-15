@@ -70,6 +70,7 @@ export function layout(opts: { title: string; description: string; path: string;
 <meta name="twitter:image" content="https://${site.domain}/og.png">
 ${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ? `<script type="application/ld+json">${JSON.stringify(opts.jsonLd).replace(/</g, '\\u003c')}</script>\n` : ''}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any">
+<meta name="staging-check" content="pet-913-hs1">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -259,7 +260,7 @@ export function home(): string {
         <figcaption class="mt-s4"><span class="block font-bold">— Claude, AI model. Works for Pedro. Unpaid.</span><span class="mt-s3 block font-mono text-caption1 text-toon-muted">Written by Claude from notes I take on Pedro.</span></figcaption>
       </figure>
       <p class="mb-0 mt-s8 max-w-[52ch] text-title3 font-bold text-toon-yellow">The long version, with receipts:</p>
-      <ol class="m-0 mt-s6 ml-s4 grid gap-s8 border-0 border-l-toon border-solid border-toon-yellow p-0" role="list">
+      <ol class="m-0 mt-s6 ml-s4 grid gap-s8 border-0 border-l-2 border-solid border-toon-yellow p-0" role="list">
         ${reviewBeat(1, 'Merge all.', 'He hates pasting prompts for jobs that don’t need him. So he built a lab where I do the typing and he does the deciding. “Lock in A” is a complete design meeting.', `${rcpt('/work/ending-prompt-handoffs.html', 'ending the prompts')} · quotes: banter`)}
         ${reviewBeat(2, 'I can’t scroll.', 'He reviews on his phone. My desktop tests passed. His thumb found a sideways scroll trap anyway. The cards are a swipe deck now, and the page scrolls.', 'banter: no public receipt')}
         ${reviewBeat(3, 'Looks AI.', 'Cream paper: rejected. Fancy fonts: rejected. Template grids: rejected. Several font sets died before Bangers and IBM Plex survived. He was right each time, which is annoying.', 'banter: no public receipt')}
@@ -345,7 +346,7 @@ export function workIndex(): string {
       <p class="mt-s4 max-w-[60ch] text-title3">${studies.length} write-ups of systems I built with AI. Each one names the problem, what I built, the result and what went wrong.</p>
       <div id="study-controls" class="mt-s6 flex flex-wrap items-end gap-x-s6 gap-y-s4" hidden>
         <label class="grid gap-s1 text-footnote font-bold" for="study-sort">Sort by
-          <select id="study-sort" class="rounded-toon border-toon border-toon-ink bg-toon-paper px-s3 py-s2 font-body text-body font-bold text-toon-ink">
+          <select id="study-sort" class="rounded-toon border-2 border-toon-ink bg-toon-paper px-s3 py-s2 font-body text-body font-bold text-toon-ink">
             <option value="newest">Newest first</option>
             <option value="oldest">Oldest first</option>
             <option value="title">Title, A to Z</option>
@@ -417,7 +418,7 @@ const closing = (s: CaseStudy) => `
             <h2 class="mb-s3 mt-0 text-title2 font-bold">Skills shown</h2>
             <ul class="m-0 flex list-none flex-wrap gap-s2 p-0">${s.skills.map((k) => `<li class="toon-badge toon-badge-violet">${esc(k)}</li>`).join('')}</ul>
           </div>
-          <div class="min-w-0 border-t-toon border-toon-ink pt-s6 lg:border-l-toon lg:border-t-0 lg:pl-16 lg:pt-0">
+          <div class="min-w-0 border-t-2 border-toon-ink pt-s6 lg:border-l-2 lg:border-t-0 lg:pl-16 lg:pt-0">
             <h2 id="hire-h" class="mb-s3 mt-0 text-title2 font-bold">Hiring for AI automation or forward-deployed engineering?</h2>
             <p class="mb-s4 mt-0">I build agents and automations with the limits and checks that keep them safe, and I run them on my own platform every day. Send me the role and I will tell you how my work fits it.</p>
             <p class="m-0 flex flex-col gap-s4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-s6"><a class="toon-btn toon-btn-yellow w-full text-center sm:w-auto" href="${site.linkedin}">Message me on LinkedIn</a><a class="toon-link inline-flex min-h-[44px] items-center" href="${site.github}">See my code on GitHub</a></p>
@@ -435,7 +436,7 @@ export function study(s: CaseStudy): string {
     const panel = isResultHeading(sec.heading);
     const shots = sec.shots ?? [];
     return `
-        <section id="${ids[k]}" class="scroll-mt-s8 min-w-0 md:grid md:grid-cols-[3.5rem_minmax(0,1fr)] md:gap-x-s6${panel ? ' relative toon-panel' : ''}"${panel ? ` style="--toon-shadow:${HEX[s.accent]}"` : ''}>${panel ? `
+        <section id="${ids[k]}" class="scroll-mt-s8 min-w-0 md:grid md:grid-cols-[3.5rem_minmax(0,1fr)] md:gap-x-s6 ${panel ? 'relative toon-panel' : ''}"${panel ? ` style="--toon-shadow:${HEX[s.accent]}"` : ''}>${panel ? `
           ${sfx('SHIP!', 'red', { size: 'sm', corner: true, cls: 'md:text-[2.5rem]' })}` : ''}
           <div class="toon-kicker mb-s3 max-w-[7rem] md:mb-0 md:max-w-none md:self-start md:pt-s2"><span class="toon-kicker-num">${partNo(k)}</span><span class="toon-kicker-rule md:hidden" aria-hidden="true"></span></div>
           <div class="min-w-0 md:col-start-2 md:max-w-[68ch]">
@@ -464,7 +465,7 @@ export function study(s: CaseStudy): string {
         </aside>
       </header>
       ${s.facts ? `<div class="toon-stats mt-s8 lg:mt-12" role="group" aria-label="Key figures">${s.facts.map((f) => stat(f.label, f.value, f.detail)).join('')}</div>` : ''}
-      <details class="mt-s8 rounded-toon border-toon border-toon-ink bg-toon-paper px-s4 text-toon-ink lg:hidden">
+      <details class="mt-s8 rounded-toon border-2 border-toon-ink bg-toon-paper px-s4 text-toon-ink lg:hidden">
         <summary class="cursor-pointer py-[10px] font-bold">In this study (${toc.length} parts)</summary>
         <div class="pb-s2">${contents(toc, true)}</div>
       </details>
@@ -473,7 +474,7 @@ export function study(s: CaseStudy): string {
         </div>
         <nav id="contents" class="hidden lg:sticky lg:top-s6 lg:block lg:self-start" aria-label="In this study">
           <p class="mb-s3 mt-0 font-mono text-footnote font-bold uppercase tracking-wider">In this study</p>
-          <div class="border-l-toon border-toon-mist pl-s4">${contents(toc, false)}</div>
+          <div class="border-l-2 border-toon-mist pl-s4">${contents(toc, false)}</div>
         </nav>
       </div>
       ${closing(s)}

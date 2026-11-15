@@ -1,7 +1,7 @@
 # toonish-ui brand brief
 
 `PET-809`. This page holds the look of pdlab.dev in one place. The tokens live in
-`tailwind.config.js`, and the toonish-ui repo's README lists the components.
+`src/site.css`, and the toonish-ui repo's README lists the components.
 
 ## Intent
 

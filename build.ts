@@ -75,7 +75,7 @@ await Bun.write(`${out}/site.webmanifest`, JSON.stringify({
 }) + '\n');
 await Bun.write(`${out}/.well-known/security.txt`, `Contact: mailto:privacy@pdlab.dev\nExpires: ${new Date(Date.now() + 365 * 86400000).toISOString()}\nPreferred-Languages: en\nCanonical: https://pdlab.dev/.well-known/security.txt\n`);
 
-const tw = Bun.spawnSync(['bunx', 'tailwindcss', '-i', 'node_modules/toonish-ui/src/toonish.css', '-o', `${out}/toonish.css`, '--minify'], {
+const tw = Bun.spawnSync(['bunx', 'tailwindcss', '-i', 'src/site.css', '-o', `${out}/toonish.css`, '--minify'], {
   stderr: 'pipe',
 });
 if (tw.exitCode !== 0) {
@@ -85,7 +85,7 @@ if (tw.exitCode !== 0) {
 
 const css = await Bun.file(`${out}/toonish.css`).text();
 if (!css.includes('font-family:IBM Plex Sans') || !css.includes('font-family:IBM Plex Mono')) throw new Error('toonish.css does not name the kit fonts');
-if (!css.includes('.toon-btn')) throw new Error('toonish.css has no components: the Tailwind content globs matched nothing');
+if (!css.includes('.toon-btn')) throw new Error('toonish.css has no components: the Tailwind source scan matched nothing');
 
 console.log(`built ${Object.keys(pages).length} pages and toonish.css (${css.length} bytes) into ${out}/`);
 

@@ -25,7 +25,7 @@ You need Bun 1.4.4 or later, because `bun.lock` uses lockfile version 2. CI pins
 | `src/pages.ts` | Page templates: home, `/work`, case study, kit and 404 |
 | `build.ts` | Writes `dist/` and fails when a page or the CSS is missing |
 | `serve.ts` | Local preview server |
-| `tailwind.config.js` | This site's Tailwind config: the toonish-ui preset plus the content globs |
+| `src/site.css` | This site's Tailwind v4 entry: the toonish-ui full entry plus one extra source |
 
 The home page shows the featured study and the newest other one. `/work.html` lists every study
 newest first and, with JavaScript, sorts by date or title and filters by topic. The query string
