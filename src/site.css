@@ -2,3 +2,8 @@
    Tailwind v4 scans this repository for class names, and the kit's @source lines add its markup helpers and script. */
 @import "toonish-ui/src/toonish.css";
 @source "../build.ts";
+
+/* Safari draws each sfx letter on its own layer because the letters drift, and sizes that layer from the glyph
+   without the text stroke, so the stroke is cut at the glyph's edges. Padding grows the layer, and the equal negative
+   margin keeps the layout where it was. Chromium renders this identically with or without the rule. */
+.toon-sfx > span { padding: .12em; margin: -.12em; }
