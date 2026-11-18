@@ -3,7 +3,7 @@ import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, st
 import { thumb } from './illustrations/thumbs.ts';
 import { hybridDiagram, hybridDiagramTall } from './illustrations/hybrid.ts';
 import { legalPages, legalUpdated } from './legal.ts';
-import { site, studies, featured, tags, fit, type Accent, type CaseStudy, type DataTable } from './content.ts';
+import { site, studies, featured, fit, type Accent, type CaseStudy, type DataTable } from './content.ts';
 
 /** A section heading in the display type. */
 const lettered = (id: string, text: string, accent: Accent, cls: string) =>
@@ -11,25 +11,6 @@ const lettered = (id: string, text: string, accent: Accent, cls: string) =>
 
 /** A table of words in the kit's paper panel. The first column heads each row. Three or more columns can outgrow a phone and scroll sideways, so that panel is a focusable, labelled region a keyboard can scroll. */
 const dataTable = (t: DataTable) => `<div class="toon-table-wrap my-s6"${t.columns.length > 2 ? ` role="region" tabindex="0" aria-label="${esc(t.caption)}"` : ''}><table class="toon-table toon-table-text"><caption class="sr-only">${esc(t.caption)}</caption><thead><tr>${t.columns.map((c) => `<th scope="col">${c.trim() ? esc(c) : '<span class="sr-only">Item</span>'}</th>`).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th scope="row" class="font-bold">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
-
-const nav = (current: string, path: string) => {
-  // [label, href, the id the scroll spy watches on the home page, the href on the home page].
-  const items: [string, string, string?, string?][] = [
-    ['Home', '/', 'main', '/'],
-    ['Work', '/work.html'],
-    ['About', '/#about', 'about', '#about'],
-  ];
-  // Work always opens the case studies. On the home page, Home and About watch the top of the page and the About
-  // section, and the page script marks the one in view.
-  const home = path === '/';
-  // Three links share a phone's row with the logo and the motion switch, so each pill is narrower below sm.
-  return `<nav class="toon-nav max-sm:[&_a]:px-[7px] max-[359px]:[&_a]:px-[5px] max-[359px]:[&_a]:text-footnote" aria-label="Main">${items
-    .map(([label, href, spy, here]) => {
-      const attrs = [home && spy ? `data-spy="${spy}"` : '', label === current ? 'aria-current="page"' : ''].filter(Boolean).join(' ');
-      return `<a href="${home && here ? here : href}"${attrs ? ` ${attrs}` : ''}>${label}</a>`;
-    })
-    .join('')}</nav>`;
-};
 
 const analyticsToken = process.env.CF_ANALYTICS_TOKEN?.trim() || '';
 
@@ -43,75 +24,33 @@ const reviewBeat = (n: number, say: string, body: string, tag: string, fx = '') 
   </li>`;
 const rcpt = (href: string, text: string) => `receipt: <a class="toon-link" href="${href}">${text}</a>`;
 
-export function layout(opts: { title: string; description: string; path: string; current?: string; body: string; scriptSrc?: string; noindex?: boolean; jsonLd?: object }): string {
-  const fullTitle = opts.path === '/' ? `${site.name}: systems built with AI` : `${opts.title} | ${site.name}`;
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0c1240">
-<title>${esc(fullTitle)}</title>
-<meta name="description" content="${esc(opts.description)}">
-<link rel="canonical" href="https://${site.domain}${opts.path}">
-<meta property="og:type" content="${opts.path.startsWith('/work/') ? 'article' : 'website'}">
-<meta property="og:site_name" content="${esc(site.name)}">
-<meta property="og:url" content="https://${site.domain}${opts.path}">
-<meta property="og:title" content="${esc(fullTitle)}">
-<meta property="og:description" content="${esc(opts.description)}">
-<meta property="og:image" content="https://${site.domain}/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="pdlab: systems built with AI, in comic-book style">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${esc(fullTitle)}">
-<meta name="twitter:description" content="${esc(opts.description)}">
-<meta name="twitter:image" content="https://${site.domain}/og.png">
-${opts.noindex ? '<meta name="robots" content="noindex">\n' : ''}${opts.jsonLd ? `<script type="application/ld+json">${JSON.stringify(opts.jsonLd).replace(/</g, '\\u003c')}</script>\n` : ''}
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any">
-<meta name="staging-check" content="pet-913-hs1">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/fonts/ibm-plex-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/toonish.css">
-<script src="/motion.js"></script>
-</head>
-<body class="toon-dots">
-${skipLink('main')}
-<div class="toon-page mx-auto max-w-5xl pl-s4 pb-16">
-  <header class="flex items-center justify-between gap-s1 py-s4 min-[360px]:gap-s3 sm:py-s5">
-    <a href="/" class="flex min-h-[44px] shrink-0 items-center no-underline" aria-label="pdlab home">${letters('pdlab', 'blue', { live: true, cls: 'text-[24px] min-[360px]:text-[30px] sm:text-[40px]' })}</a>
-    ${nav(opts.current ?? '', opts.path)}
-    <button type="button" class="toon-motion" data-motion-toggle aria-pressed="true"><span aria-hidden="true">✦</span><span class="toon-motion-label">Motion</span></button>
-  </header>
-  <main id="main">
-${opts.body}
-  </main>
-  <footer class="toon-footer">
-    <span class="block">${letters('pdlab', 'red', { live: true, cls: 'text-title1' })}</span>
-    <p class="toon-footer-note text-subhead">Built with Bun, TypeScript and Tailwind on <a class="toon-link whitespace-nowrap" href="https://github.com/PeteDio-Labs/toonish-ui">toonish-ui</a>, an original kit.</p>
-    <nav aria-label="Footer"><ul class="toon-footer-links text-footnote">
-      <li><a class="toon-link inline-flex min-h-[44px] items-center" href="${site.github}">GitHub</a></li>
-      <li><a class="toon-link inline-flex min-h-[44px] items-center" href="/privacy.html" data-toon-modal>Privacy</a></li>
-      <li><a class="toon-link inline-flex min-h-[44px] items-center" href="/terms.html" data-toon-modal>Terms</a></li>
-    </ul></nav>
-  </footer>
-</div>
-<script src="/toonish.js" defer></script>
-<script src="/site.js" defer></script>${opts.scriptSrc ? `\n<script src="${opts.scriptSrc}" defer></script>` : ''}
-${analyticsToken ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${esc(analyticsToken)}"}'></script>\n` : ''}</body>
-</html>
-`;
+/** One page of the site: what the head needs, and the body the app puts inside <main>. Both the build and the browser read it. */
+export interface Page {
+  path: string;
+  title: string;
+  description: string;
+  /** The main-nav item to mark as the current page. */
+  current?: 'Home' | 'Work' | 'About';
+  /** True for a page whose body the browser fetches from the page's own file instead of carrying it. Reading `body` on such a page builds it, so only the build does. */
+  remote?: boolean;
+  /** `html` is a string body, `work` is the sortable list (a Preact component), `lost` is the 404 card. */
+  kind: 'html' | 'work' | 'lost';
+  body: string;
+  jsonLd?: object;
+  noindex?: boolean;
 }
 
+/** The title in the tab and in search results. */
+export const fullTitle = (p: Pick<Page, 'path' | 'title'>) => (p.path === '/' ? `${site.name}: systems built with AI` : `${p.title} | ${site.name}`);
+
+/** The analytics token is a public build variable. The client bundle gets the same value through a define. */
+export const analytics = analyticsToken;
+
 /** "Oct 2026": the month is enough, and it does not promise a precision the dates do not have. */
-const month = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+export const month = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 
 /** A case-study card. The data attributes let the /work sort script order and filter without re-reading the page. */
-const studyCard = (s: CaseStudy, i: number, label = '', h: 'h2' | 'h3' = 'h3', figureWidth = 280) => `
+export const studyCard = (s: CaseStudy, i: number, label = '', h: 'h2' | 'h3' = 'h3', figureWidth = 280) => `
       <article class="toon-card toon-pop relative flex flex-col" data-study data-date="${s.date}" data-tag="${esc(s.tag)}" data-title="${esc(s.title)}" style="--toon-shadow:${HEX[s.accent]}; animation-delay:${120 * i}ms">
         ${label ? `<span class="toon-corner" style="background:${HEX[s.accent]}">${esc(label)}</span>` : ''}
         ${thumb(s.tag, s.accent)}
@@ -132,6 +71,21 @@ export const bySlug = (slug: string): CaseStudy => {
 /** The merge count has no field of its own: it is one sentence in the merge-gate summary, and a test checks that it still says 1,200. */
 const MERGED_PRS = '1,200+';
 
+/** Services I run and maintain, for the landing page. Technology only, with public-safe names: no hostnames, addresses, accounts or internal URLs. */
+export const SERVICES = [
+  { lead: 'Identity', title: 'Authentik single sign-on', sub: 'one login in front of the lab’s web tools' },
+  { lead: 'Secrets', title: 'HashiCorp Vault', sub: 'short-lived credentials that CI and agents request at run time' },
+  { lead: 'Delivery', title: 'Self-hosted CI runners', sub: 'GitHub Actions jobs that plan, apply and deploy' },
+  { lead: 'IaC', title: 'Terraform and Ansible', sub: 'every host and service declared, reviewed and applied from git' },
+  { lead: 'Monitoring', title: 'Prometheus and Uptime Kuma', sub: 'metrics and uptime checks that feed the alerts' },
+  { lead: 'Agents', title: 'pete-bot and the lab dashboard', sub: 'alerts, the merge desk and a phone dashboard that says what needs me' },
+  { lead: 'Tools', title: 'Lab MCP servers and portal', sub: 'read-only tools that let Claude inspect the lab' },
+  { lead: 'Work', title: 'Plane', sub: 'self-hosted tracker, written to through a queue so agents never hit its rate limit' },
+  { lead: 'Data', title: 'MinIO and Postgres', sub: 'S3-compatible storage for state and backups, and the databases behind the services' },
+  { lead: 'AI', title: 'Local models on Ollama', sub: 'Qwen for triage and embeddings, on two GPUs' },
+  { lead: 'Cloud', title: 'AWS failover', sub: 'the dashboard and sign-in are being built to run in AWS when the lab is down' },
+];
+
 /** The closing question, rendered twice because the tail points up on a phone and left beside the headshot from `md`. */
 const hiring = 'Hiring for AI automation or agent work?';
 
@@ -144,7 +98,7 @@ const compactCard = (s: CaseStudy, i: number) => `
           <a class="toon-link inline-flex min-h-[44px] items-center self-start" href="/work/${s.slug}.html">Read the case study<span class="sr-only">: ${esc(s.title)}</span></a>
         </article>`;
 
-export function home(): string {
+export function landingPage(): Page {
   const gate = bySlug('agent-merge-gate');
   const rack = bySlug('rack-loss-recovery');
   const patching = bySlug('fleet-patching');
@@ -214,7 +168,40 @@ export function home(): string {
         </div>
       </article>
       <div class="mt-s6 md:mt-s8">${deck(recent.map(compactCard), { label: 'More recent case studies', cols: 3 })}</div>
-      <p class="mt-s6"><a class="toon-btn toon-btn-yellow" href="/work.html">All ${studies.length} case studies<span class="sr-only">, sortable by date and topic</span></a></p>
+      <p class="mt-s6 flex flex-col gap-s4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-s6"><a class="toon-btn toon-btn-yellow w-full text-center sm:w-auto" href="/work.html">All ${studies.length} case studies<span class="sr-only">, sortable by date and topic</span></a><a class="toon-link inline-flex min-h-[44px] items-center" href="/about.html">About me, and how I work</a></p>
+    </section>
+
+    <section id="services" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="services-h">
+      ${kicker('02', 'The upkeep')}
+      ${lettered('services-h', 'Services I maintain', 'blue', 'mb-s6 mt-s4 max-w-md')}
+      <p class="mb-s6 mt-0 max-w-[52ch] text-title3">The platform under the case studies. I run each one, and each one is declared in code.</p>
+      ${list(SERVICES.map((r) => row(r)), { label: 'Services I maintain', cls: 'toon-list-stack' }).replace('<div class="toon-list', '<div data-home="services" class="toon-list')}
+    </section>`;
+  return { path: '/', title: 'Home', current: 'Home', kind: 'html', description: `${site.name}. ${site.role} ${site.intro}`, body, jsonLd: personJsonLd() };
+}
+
+export function aboutPage(): Page {
+  const body = `
+    <section id="about" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="about-h">
+      <div class="toon-panel">
+        <h1 id="about-h" class="sr-only">About ${esc(site.name)}</h1>
+        ${kicker('01', 'About')}
+        <div class="mt-s6 grid items-center gap-s8 md:grid-cols-[auto_minmax(0,1fr)] md:gap-16">
+          <figure class="toon-tilt-l relative m-0 w-[200px] max-w-full justify-self-start pb-s3">
+            ${portrait({ src: '/pedro-cutout.webp', alt: 'Pedro Delgadillo, in a black blazer and black t-shirt, on a light grey studio backdrop', width: 640, height: 768, backdrop: 'paper', accent: 'red' })}
+            <figcaption class="toon-caption absolute -bottom-s1 left-s3">${esc(site.name)}</figcaption>
+          </figure>
+          <div class="min-w-0">
+            <div class="toon-bubble toon-bubble-up toon-pop mt-s2 max-w-none md:hidden"><p class="m-0 text-title2 font-bold">${hiring}</p></div>
+            <div class="toon-bubble toon-bubble-left toon-pop hidden max-w-none md:block"><p class="m-0 text-title2 font-bold">${hiring}</p></div>
+            <p class="mb-0 mt-s6 max-w-[60ch]">${esc(site.background)}</p>
+            <div class="mt-s6 flex flex-col gap-s4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-s6">
+              <a class="toon-btn toon-btn-yellow toon-wiggle w-full text-center sm:w-auto" href="${site.linkedin}">Hire me: message on LinkedIn</a>
+              <a class="toon-link inline-flex min-h-[44px] items-center" href="${site.github}">Find me on GitHub</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section id="how" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="how-h">
@@ -265,112 +252,23 @@ export function home(): string {
         ${reviewBeat(2, 'I can’t scroll.', 'He reviews on his phone. My desktop tests passed. His thumb found a sideways scroll trap anyway. The cards are a swipe deck now, and the page scrolls.', 'banter: no public receipt')}
         ${reviewBeat(3, 'Looks AI.', 'Cream paper: rejected. Fancy fonts: rejected. Template grids: rejected. Several font sets died before Bangers and IBM Plex survived. He was right each time, which is annoying.', 'banter: no public receipt')}
         ${reviewBeat(4, 'I’m dramatic.', 'His words, not mine. Then a RAID controller caught fire, and the platform came back from code and backups in about four hours. Some of the drama is earned.', rcpt('/work/rack-loss-recovery.html', 'the rack loss'))}
+        ${reviewBeat(5, 'Make it smooth.', 'It was past 2 AM when he said the dashboard sold him because its tabs swap without a hop or a skip. So this site became the same kind of app that night, and he will review it in the morning. I work the night shift.', 'banter: no public receipt')}
       </ol>
       <p class="toon-caption toon-tilt-r mt-s8 normal-case">Verdict: demanding, fast, allergic to templates. Would take the job again. Nobody asked me.</p>
-    </section>
-
-    <section id="about" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="about-h">
-      <div class="toon-panel">
-        <h2 id="about-h" class="sr-only">About ${esc(site.name)}</h2>
-        ${kicker('04', 'About')}
-        <div class="mt-s6 grid items-center gap-s8 md:grid-cols-[auto_minmax(0,1fr)] md:gap-16">
-          <figure class="toon-tilt-l relative m-0 w-[200px] max-w-full justify-self-start pb-s3">
-            ${portrait({ src: '/pedro-cutout.webp', alt: 'Pedro Delgadillo, in a black blazer and black t-shirt, on a light grey studio backdrop', width: 640, height: 768, backdrop: 'paper', accent: 'red' })}
-            <figcaption class="toon-caption absolute -bottom-s1 left-s3">${esc(site.name)}</figcaption>
-          </figure>
-          <div class="min-w-0">
-            <div class="toon-bubble toon-bubble-up toon-pop mt-s2 max-w-none md:hidden"><p class="m-0 text-title2 font-bold">${hiring}</p></div>
-            <div class="toon-bubble toon-bubble-left toon-pop hidden max-w-none md:block"><p class="m-0 text-title2 font-bold">${hiring}</p></div>
-            <p class="mb-0 mt-s6 max-w-[60ch]">${esc(site.background)}</p>
-            <div class="mt-s6 flex flex-col gap-s4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-s6">
-              <a class="toon-btn toon-btn-yellow toon-wiggle w-full text-center sm:w-auto" href="${site.linkedin}">Hire me: message on LinkedIn</a>
-              <a class="toon-link inline-flex min-h-[44px] items-center" href="${site.github}">Find me on GitHub</a>
-            </div>
-          </div>
-        </div>
-      </div>
     </section>`;
-  return layout({ title: 'Home', path: '/', current: 'Home', description: `${site.name}. ${site.role} ${site.intro}`, body, jsonLd: personJsonLd() });
-}
-
-/**
- * The /work page script, written to dist/work.js so a Content-Security-Policy of script-src 'self' allows it.
- * The page is complete without it: cards arrive newest first and the controls
- * stay hidden. With it, the controls appear and the cards reorder and filter in place, with no fetch
- * and no animation of its own. The choice lives in the query string, so a sorted view can be shared.
- */
-export const workScript = `(() => {
-  const list = document.getElementById('study-list');
-  const controls = document.getElementById('study-controls');
-  const sort = document.getElementById('study-sort');
-  const tagBar = document.getElementById('study-tags');
-  const status = document.getElementById('study-status');
-  if (!list || !controls || !sort || !tagBar || !status) return;
-  const cards = [...list.querySelectorAll('[data-study]')];
-  const by = {
-    newest: (a, b) => b.dataset.date.localeCompare(a.dataset.date) || a.dataset.title.localeCompare(b.dataset.title),
-    oldest: (a, b) => a.dataset.date.localeCompare(b.dataset.date) || a.dataset.title.localeCompare(b.dataset.title),
-    title: (a, b) => a.dataset.title.localeCompare(b.dataset.title),
-  };
-  const state = { sort: 'newest', tag: '' };
-  const q = new URLSearchParams(location.search);
-  if (by[q.get('sort')]) state.sort = q.get('sort');
-  if (cards.some((c) => c.dataset.tag === q.get('tag'))) state.tag = q.get('tag');
-  const render = () => {
-    cards.sort(by[state.sort]).forEach((c) => {
-      list.appendChild(c);
-      c.hidden = !!state.tag && c.dataset.tag !== state.tag;
-    });
-    sort.value = state.sort;
-    tagBar.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tag === state.tag)));
-    const shown = cards.filter((c) => !c.hidden).length;
-    status.textContent = 'Showing ' + shown + ' of ' + cards.length + ' case studies' + (state.tag ? ', topic ' + state.tag : '') + ', ' + sort.selectedOptions[0].textContent.toLowerCase() + '.';
-    const next = new URLSearchParams();
-    if (state.sort !== 'newest') next.set('sort', state.sort);
-    if (state.tag) next.set('tag', state.tag);
-    try { history.replaceState(null, '', location.pathname + (next.size ? '?' + next : '')); } catch (e) {}
-  };
-  sort.addEventListener('change', () => { state.sort = sort.value; render(); });
-  tagBar.addEventListener('click', (e) => {
-    const b = e.target.closest('button');
-    if (b && tagBar.contains(b)) { state.tag = b.dataset.tag; render(); }
-  });
-  controls.hidden = false;
-  render();
-})();`;
-
-export function workIndex(): string {
-  const body = `
-    <section class="py-s8" aria-labelledby="work-h">
-      <h1 id="work-h" class="m-0">${letters('Case studies', 'yellow', { live: true, cls: 'text-hero leading-[.9]' })}</h1>
-      <p class="mt-s4 max-w-[60ch] text-title3">${studies.length} write-ups of systems I built with AI. Each one names the problem, what I built, the result and what went wrong.</p>
-      <div id="study-controls" class="mt-s6 flex flex-wrap items-end gap-x-s6 gap-y-s4" hidden>
-        <label class="grid gap-s1 text-footnote font-bold" for="study-sort">Sort by
-          <select id="study-sort" class="rounded-toon border-2 border-toon-ink bg-toon-paper px-s3 py-s2 font-body text-body font-bold text-toon-ink">
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-            <option value="title">Title, A to Z</option>
-          </select>
-        </label>
-        <div class="grid gap-s1 text-footnote font-bold"><span id="study-tags-label">Topic</span>
-          <div id="study-tags" class="toon-nav toon-nav-wrap" role="group" aria-labelledby="study-tags-label" data-toon-toggle>
-            <button type="button" data-tag="" aria-pressed="true">All</button>${tags.map((g) => `<button type="button" data-tag="${esc(g)}" aria-pressed="false">${esc(g)}</button>`).join('')}
-          </div>
-        </div>
-      </div>
-      <p id="study-status" class="sr-only" role="status" aria-live="polite"></p>
-      <div id="study-list" class="mt-s8 grid gap-s6 sm:grid-cols-2 lg:grid-cols-3">${studies.map((s, i) => studyCard(s, i, '', 'h2', 240)).join('')}
-      </div>
-    </section>`;
-  return layout({
-    title: 'Case studies',
-    path: '/work.html',
-    current: 'Work',
-    description: `${studies.length} case studies on building systems with AI: agents, merge gates, short-lived access, local models and disaster recovery. Sort by date or filter by topic.`,
+  return {
+    path: '/about.html',
+    title: 'About',
+    current: 'About',
+    kind: 'html',
+    description: `About ${site.name}. ${site.background} How I work with AI agents, the stack I run, and a review written by Claude.`,
     body,
-    scriptSrc: '/work.js',
-  });
+  };
 }
+
+/** The case-study index. The list is a Preact component (WorkIndex in app.tsx), so there is no string body. */
+export const workDescription = () => `${studies.length} case studies on building systems with AI: agents, merge gates, short-lived access, local models and disaster recovery. Sort by date or filter by topic.`;
+export const workPage = (): Page => ({ path: '/work.html', title: 'Case studies', current: 'Work', kind: 'work', description: workDescription(), body: '' });
 
 /** An id from a heading: lower case, hyphens between runs of letters and digits. */
 const slugify = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'section';
@@ -426,7 +324,22 @@ const closing = (s: CaseStudy) => `
         </div>
       </aside>`;
 
-export function study(s: CaseStudy): string {
+export function studyPage(s: CaseStudy): Page {
+  // The case-study text is most of the bundle, so the browser does not carry it: it fetches the study's own page. Only the build reads `body`.
+  return {
+    title: s.title,
+    path: `/work/${s.slug}.html`,
+    current: 'Work',
+    kind: 'html',
+    remote: true,
+    description: s.summary.replace(/`/g, ''),
+    get body() {
+      return studyBody(s);
+    },
+  };
+}
+
+function studyBody(s: CaseStudy): string {
   const i = studies.indexOf(s);
   const next = studies[(i + 1) % studies.length];
   const prev = studies[(i + studies.length - 1) % studies.length];
@@ -480,7 +393,7 @@ export function study(s: CaseStudy): string {
       ${closing(s)}
       ${pager({ label: 'Case studies', cls: 'mt-16', prev: { href: `/work/${prev.slug}.html`, title: prev.title }, next: { href: `/work/${next.slug}.html`, title: next.title } })}
     </article>`;
-  return layout({ title: s.title, path: `/work/${s.slug}.html`, current: 'Work', description: s.summary.replace(/`/g, ''), body });
+  return body;
 }
 
 /**
@@ -559,8 +472,8 @@ const lostLook: Record<LostLook, (l: Lost) => string> = {
 
 const CHEV = (d: string) => `<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-export function notFound(): string {
-  // Every line is in the page in its own look, and all but the first are hidden. site.js shows one at random and
+export function notFoundPage(): Page {
+  // Every line is in the page in its own look, and all but the first are hidden. the app shows one at random and
   // wires the button, so the page reads the same with scripts off: one card, one line and the way home.
   const cards = LOST.map((l, i) => {
     const look = LOST_LOOKS[i % LOST_LOOKS.length]!;
@@ -580,7 +493,7 @@ export function notFound(): string {
         <button class="toon-pager-link toon-pager-next cursor-pointer font-body" type="button" data-lost-next hidden><span class="toon-pager-arrow" aria-hidden="true">${CHEV('M6 3l5 5-5 5')}</span><span class="toon-pager-text"><span class="toon-pager-dir">Show another one</span></span></button>
       </nav>
     </section>`;
-  return layout({ title: 'Page not found', path: '/404.html', description: 'Page not found.', noindex: true, body });
+  return { title: 'Page not found', path: '/404.html', kind: 'lost', description: 'Page not found.', noindex: true, body };
 }
 
 /** Structured data for search engines and LLMs: a ProfilePage whose main entity is the person. */
@@ -599,7 +512,7 @@ export const personJsonLd = () => ({
   },
 });
 
-export function legal(slug: 'privacy' | 'terms'): string {
+export function legalPage(slug: 'privacy' | 'terms'): Page {
   const page = legalPages(Boolean(analyticsToken)).find((l) => l.slug === slug)!;
   const body = `
     <article class="py-s8">
@@ -611,5 +524,19 @@ export function legal(slug: 'privacy' | 'terms'): string {
         .join('')}
       </div>
     </article>`;
-  return layout({ title: page.title, path: `/${slug}.html`, description: page.description, body });
+  return { title: page.title, path: `/${slug}.html`, kind: 'html', description: page.description, body };
+}
+
+
+/** Every page the app and the build know, by path. The 404 is not here: it answers any other path. */
+export function pageFor(pathname: string): Page | undefined {
+  const path = pathname.replace(/\/+$/, '').replace(/\.html$/, '') || '/';
+  if (path === '/') return landingPage();
+  if (path === '/work') return workPage();
+  if (path === '/about') return aboutPage();
+  if (path === '/privacy' || path === '/terms') return legalPage(path.slice(1) as 'privacy' | 'terms');
+  if (path === '/404') return notFoundPage();
+  const m = path.match(/^\/work\/([^/]+)$/);
+  const s = m && studies.find((x) => x.slug === m[1]);
+  return s ? studyPage(s) : undefined;
 }

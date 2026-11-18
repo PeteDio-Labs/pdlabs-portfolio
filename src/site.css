@@ -7,3 +7,8 @@
    without the text stroke, so the stroke is cut at the glyph's edges. Padding grows the layer, and the equal negative
    margin keeps the layout where it was. Chromium renders this identically with or without the rule. */
 .toon-sfx > span { padding: .12em; margin: -.12em; }
+
+/* A page change fades the new content in under a header and footer that stay put, like the dashboard's tabs. The kit turns every
+   animation off for a visitor who asked for less motion, and for the motion switch, so this needs no query of its own. */
+@keyframes route-in { from { opacity: 0; transform: translateY(8px); } }
+.route-in { animation: route-in .18s ease-out; }

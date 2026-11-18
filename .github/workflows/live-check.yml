@@ -21,7 +21,7 @@ jobs:
           set -eu
           fail=0
           checked=0
-          for p in / /work.html /sitemap.xml /robots.txt /og.png; do
+          for p in / /about.html /work.html /sitemap.xml /robots.txt /og.png; do
             code=$(curl -sS -o /dev/null -w '%{http_code}' --retry 3 --retry-all-errors "https://pdlab.dev$p") || code=000
             echo "$code $p"; checked=$((checked + 1))
             [ "$code" = 200 ] || { echo "::error::https://pdlab.dev$p answered $code, expected 200"; fail=1; }

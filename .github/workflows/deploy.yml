@@ -57,7 +57,7 @@ jobs:
       - name: Check the build wrote every page
         run: |
           set -eu
-          for f in index.html work.html work.js studies.json api/studies.json ui.html 404.html toonish.css toonish.js favicon.svg; do test -s "dist/$f" || { echo "missing dist/$f"; exit 1; }; done
+          for f in index.html about.html work.html app.js motion.js studies.json api/studies.json ui.html 404.html toonish.css favicon.svg; do test -s "dist/$f" || { echo "missing dist/$f"; exit 1; }; done
           n=$(ls dist/work/*.html | wc -l)
           echo "dist/work holds $n case-study pages"
           test "$n" -ge 4
@@ -102,7 +102,7 @@ jobs:
       - name: Verify the live site
         run: |
           set -eu
-          paths="/ /studies.json /api/studies.json $(jq -r '.[].url, .[].api' dist/api/studies.json)"
+          paths="/ /about.html /work.html /studies.json /api/studies.json $(jq -r '.[].url, .[].api' dist/api/studies.json)"
           checked=0
           for p in $paths; do
             code=$(curl -sS -o /dev/null -w '%{http_code}' --retry 3 --retry-all-errors "https://pdlab.dev$p")
