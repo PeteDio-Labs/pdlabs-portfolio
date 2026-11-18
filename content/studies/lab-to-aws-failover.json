@@ -43,7 +43,7 @@
     {
       "heading": "What I built",
       "paragraphs": [
-        "A failover registry in the dashboard's code is the only place that says which services can move. Each entry has a data class: stateless, replicated or snapshot. A service that stays on-prem is marked pinned and never gets an enabled switch. The media server, the download client and the media automation stack are pinned.",
+        "A failover registry in the dashboard's code is the only place that says which services can move. Each entry has a data class: stateless, replicated or snapshot. A service that stays in the Lab is marked pinned and never gets an enabled switch. The media server, the download client and the media automation stack are pinned.",
         "On the AWS side, one Terraform root holds the static site, an API with a function and a table, sign-in, and a delegated DNS zone. The health check and failover record are written and wait on a second apply. A CloudFront origin group lets the API fall back to the lab on a server error or a timeout, because a DNS secondary cannot terminate TLS for a target that sits behind a proxy. That fallback is written, and stays off until its service token exists and the lab verifies the viewer's sign-in token itself.",
         "DNS for the failover subdomain is delegated from Cloudflare to the AWS zone with four name-server records, so AWS answers the failover records and Cloudflare keeps everything else."
       ]
