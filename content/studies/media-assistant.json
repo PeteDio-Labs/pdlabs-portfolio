@@ -3,10 +3,10 @@
   "title": "A chat assistant that troubleshoots the media stack and asks before it changes anything",
   "tag": "Agents",
   "accent": "yellow",
-  "summary": "A local-model assistant that answers media questions by direct message, reads the stack through ten read-only tools, and runs one write only after a button tap.",
+  "summary": "A local-model assistant that answers media questions by direct message, reads the stack through read-only tools, and runs three writes, each only after a button tap.",
   "stat": {
-    "value": "One",
-    "label": "write action, and it runs only after the owner taps Confirm"
+    "value": "Three",
+    "label": "write actions, each run only after the owner taps Confirm"
   },
   "sections": [
     {
@@ -18,8 +18,8 @@
     {
       "heading": "What I built",
       "paragraphs": [
-        "A direct-message front on an existing Discord bot, backed by a small service that runs a local language model in a tool loop. The model reads the stack through ten read-only tools from a triage service that already gave deterministic verdicts. The assistant quotes each verdict and names the tools it read, so an answer can be checked.",
-        "The one write is a subtitle search. The model can only propose it. The bot shows a Confirm button, the button holds a random id, and the action stays in the bot's memory, so a forged button cannot name a different target. A tap works once, within ten minutes, for the owner only.",
+        "A direct-message front on an existing Discord bot, backed by a small service that runs a local language model in a tool loop. The model reads the stack through thirteen read-only tools from a triage service that already gave deterministic verdicts. The assistant quotes each verdict and names the tools it read, so an answer can be checked.",
+        "The model can propose five actions. Two only read or offer options: a choice among results and an update check. Three are writes, and each needs a tap: a subtitle search, a download and an update apply. The model can only propose them. The bot shows a Confirm button, the button holds a random id, and the action stays in the bot's memory, so a forged button cannot name a different target. A tap works once, within ten minutes, for the owner only.",
         "Credentials arrive through the same deploy path as every other secret, and a script that I run places them. No session handled either value. Merging the code changed nothing until those values were seeded."
       ]
     },
