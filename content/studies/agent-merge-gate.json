@@ -21,14 +21,14 @@
       "heading": "Testing the control",
       "paragraphs": [
         "Before this gate, I built and retired an unattended agent that opened draft pull requests from labelled tickets. Its safety rested on one claim: the GitHub App it used could not merge its own pull request. I tested the claim instead of assuming it. As the real App, against two throwaway branches, the merge call returned 405 on the branch that required one review and 200 on an unprotected control, back to back. The control is what makes the 405 mean something: without it, a refusal looks the same as a broken credential.",
-        "I never enabled that agent's timer and retired it. Independent review, the merge gate above and one project thread per task replaced it. Reviews come from Codex first. When Codex stays silent for two hours, a local model reviews the low-risk tiers, and a Claude review agent covers a pull request the local model fails twice. Two rules outlived it: every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo."
+        "I never enabled that agent's timer and retired it. Independent review, the merge gate above and one project thread per task replaced it. Reviews come from Codex first. When Codex stays silent for two hours, a local model reviews tier 1, prose merges on green checks, and the highest tier never falls back: it waits for Codex or, on a lab day, a Claude review thread. Two rules outlived it: every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo."
       ]
     },
     {
       "heading": "What I built",
       "paragraphs": [
         "An agent workflow where each task gets its own session, every pull request gets a review, and no session approves its own work. A session may merge its own PR only outside the infrastructure repo, and only after a separate review has cleared it.",
-        "A tiered gate decides who merges. A script scores each PR's blast radius from the files it touches. Tier 0 is prose. Tier 1 is code that runs nothing on merge. Tier 2 is everything else, such as infrastructure code and workflows. A merge bot with deterministic code merges tiers 0 and 1 after CI and a clean review. A separate merger handles tier 2 under the same gate. No model output widens what merges.",
+        "A tiered gate decides who merges. A script scores each PR's blast radius from the files it touches. Tier 0 is prose. Tier 1 is code that runs nothing on merge. Tier 2 is everything else, such as infrastructure code and workflows. A merge bot with deterministic code merges tiers 0 and 1 after CI and the review chain's verdict. A separate merger handles tier 2 under the same gate. No model output widens what merges.",
         "A PR waits when its review has a blocking finding, a check is red or skipped, or it has no checks. It also waits when it carries a hold label, asks to wait, or needs a hand step. A push voids the review of the old head, and the merge is pinned to the commit that was reviewed. After each merge, the bot reads the main branch back and expects the change to be there.",
         "An unrecognised file path counts as tier 2, because the rules fail closed. Infrastructure changes run `validate` on PR, then `plan` and `apply` on merge. Credentials and destructive flags stay hand steps that no merge runs."
       ],
@@ -43,12 +43,12 @@
           [
             "0",
             "Prose",
-            "A merge bot, after CI and a clean review"
+            "A merge bot, after CI and the review chain's verdict"
           ],
           [
             "1",
             "Code that runs nothing on merge",
-            "A merge bot, after CI and a clean review"
+            "A merge bot, after CI and the review chain's verdict"
           ],
           [
             "2",
@@ -61,7 +61,7 @@
     {
       "heading": "Workflows added since",
       "paragraphs": [
-        "Reviewer chain. Every pull request gets a review before it merges. A hosted reviewer goes first. After two hours of silence from it, a local model running on my own GPU reviews instead. When that model fails twice on the same pull request, a Claude subagent takes the review. The chain has one rule: a review that could not run is not a clean review.",
+        "Reviewer chain. Every pull request gets a review before it merges. A hosted reviewer goes first. After two hours of silence from it, a local model running on my own GPU reviews tier 1 instead, and prose merges on green checks. The highest tier never falls back: it waits for Codex or, on a lab day, a Claude review thread. The chain has one rule: a review that could not run is not a clean review.",
         "Gated lab writes. An agent can ask my lab to apply a change, but a write waits on an approval environment where I am the only reviewer. Reads run without a tap. A merge that would destroy resources also waits on an approval, in place of an environment flag.",
         "A tracker outbox. Many sessions share one tracker key, and the tracker's rate limit stopped all of them once. Now a session never calls the tracker. It adds one small file to a queue repository, a single job applies the queue at about 60 calls a minute, and the session reports the file's id, not \"closed\". An item counts as closed when its file has moved to the done folder and the mirror shows the state.",
         "A merge desk. One deterministic desk merges pull requests by tier once the review is clean. Trust-boundary changes, such as workflows and secret-store bindings, wait for my word."
@@ -79,7 +79,7 @@
       "paragraphs": [
         "One day the secrets store sat sealed for most of a working day. The watcher that unsealed it ran on a laptop that had gone to sleep. The tracker reconcile job, which had gained a batch of calling repos the day before, reported success in every one while reconciling nothing. Its token step was set to continue, and the next step treated a missing token as a clean exit. A warning annotation does not colour a check.",
         "Two other things stood out. The sibling reconcile job had hit the same error and failed loudly, because an earlier incident had already fixed it there. And the uptime monitor recorded every missed heartbeat for the sealed store, then told nobody, because none of its monitors had a notification channel attached.",
-        "The reconcile job now fails when it cannot get a token, and says why. The unseal watcher moved to an always-on machine and re-reads the seal status after it submits the key, so it exits non-zero if the store is still sealed. The recurring bug was a green check over work that never happened. In the status jobs I audited, each now fails non-zero and reports what it examined, not only what it found."
+        "The reconcile job now fails when it cannot get a token, and says why. The unseal watcher moved to an always-on machine and re-read the seal status after it submitted the key, so it exited non-zero if the store was still sealed. On 18 November Vault moved to AWS KMS auto-unseal and the watchers were retired. The recurring bug was a green check over work that never happened. In the status jobs I audited, each now fails non-zero and reports what it examined, not only what it found."
       ]
     },
     {
@@ -99,7 +99,7 @@
   "sources": [
     "petedio-vault Incidents/2026-09-09-vault-sealed-nine-hours.md (9 h 34 min, 1,724 DOWN heartbeats, 19 monitors, eleven repos)",
     "the rule the repo now carries, written after six items with the same shape",
-    "petedio-vault Systems/claude-loop.md (the 405 and 200 test of 12 September; retirement on 30 September)",
+    "petedio-vault Archive/claude-loop.md (the 405 and 200 test of 12 September; retirement on 30 September)",
     "GitHub search over the eight in-scope repositories, read 2026-11-13 19:20Z: 1,219 merged and 1,284 opened in total; weekly counts in US Eastern time",
     "petedio-pm docs/outbox.md and the project's merge and reviewer rules (2026-11-07)"
   ]

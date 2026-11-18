@@ -12,12 +12,12 @@
   "facts": [
     {
       "label": "Component classes",
-      "value": "135",
+      "value": "292",
       "detail": "toon-* classes in the compiled stylesheet"
     },
     {
       "label": "Unit tests",
-      "value": "47",
+      "value": "87",
       "detail": "across four files, plus a browser check at two widths"
     },
     {
@@ -27,7 +27,7 @@
     },
     {
       "label": "Releases",
-      "value": "2",
+      "value": "8",
       "detail": "tagged versions; the site pins an exact commit"
     }
   ],
@@ -43,7 +43,7 @@
     {
       "heading": "What I built",
       "paragraphs": [
-        "The kit is called toonish-ui and lives in [its own public repository](https://github.com/PeteDio-Labs/toonish-ui) under an MIT license. It began inside the portfolio repository and moved out once a second page needed the same parts. Every color, type size, space, radius, shadow and easing is in one file, `tokens/toonish.tokens.json`, in the W3C design tokens format. A build script turns that file into CSS variables, a Tailwind v3 preset, a Tailwind v4 theme and plain JSON. Nobody edits those four outputs by hand.",
+        "The kit is called toonish-ui and lives in [its own public repository](https://github.com/PeteDio-Labs/toonish-ui) under an MIT license. It began inside the portfolio repository and moved out once a second page needed the same parts. Every color, type size, space, radius, shadow and easing is in one file, `tokens/toonish.tokens.json`, in the W3C design tokens format. A build script turns that file into CSS variables, a Tailwind v4 theme, a legacy Tailwind v3 preset and plain JSON. Nobody edits those four outputs by hand.",
         "On top of the tokens sit the components, written as plain CSS so they work without Tailwind: buttons, cards, modals, a screenshot frame, data tiles, rows, stacked bars, a table for words, a card deck for phones, a pager, a portrait on a vector backdrop and the sound-effect lettering on the home page. A small script handles modals, toggle groups and the deck, with no framework. Helper functions in TypeScript return the markup for the parts that need it, and each one escapes every string it receives.",
         "The look is blue, red, yellow and violet on deep navy, with cool grey paper panels, ink outlines two pixels thick and hard four-pixel shadows. Text is IBM Plex Sans and Plex Mono, and Bangers is the comic face for the logo, the hero and the sound effects. Every fill carries ink text, which keeps contrast at 5.1:1 or better, and a test computes that ratio on every run.",
         "People should be able to use this site no matter who they are, so accessibility is a rule of the kit, not a feature of it. Components start from the right HTML element: a native `dialog` for the modal, real buttons and links, headings in order. ARIA roles and labels ship inside the components, so a site that uses the kit gets them without remembering to add them. The target is WCAG 2.2 AA. Some of this was already true: the modal is a native dialog, the deck is a labelled carousel with a live counter and inert background cards, decoration is hidden from screen readers, and motion stops under a reduced-motion setting. The rule makes it a standard to meet and to check."
@@ -116,7 +116,7 @@
       "paragraphs": [
         "The first designs were wrong in ways I could see and Claude could not. The agents produced competent, forgettable pages, and I rejected the palette twice and the lettering once in a single afternoon. The fix was not a better prompt. It was writing each rejection into the repository: a brand brief that says which choices are closed, and a standing rule that I do not reopen them.",
         "My desktop checks passed while my phone failed. A row of cards scrolled sideways, and my thumb got stuck in it on a real device. The kit now has a mobile-first rule in its README and its agent instructions: design at 390 pixels first, never add a sideways scroll container beyond the table wrapper, and keep decoration visible on a phone. The browser check fails when the page is wider than the screen at either width.",
-        "Some of it is still unproven. The Tailwind v4 theme builds from the tokens but I have not tested it against a real v4 project, and the changelog says so. The swipe deck passed in Chromium, and I have not confirmed it on every iOS version. The kit has no automated check that a component looks right, only that its computed styles and behavior are right, and it has two releases, not a track record."
+        "Some of it is still unproven. The kit itself builds and tests on Tailwind v4. The legacy v3 preset is untested. The swipe deck passed in Chromium, and I have not confirmed it on every iOS version. The kit has no automated check that a component looks right, only that its computed styles and behavior are right, and it has eight tagged releases in under a month, not a track record."
       ]
     },
     {
@@ -141,7 +141,7 @@
     "Working with AI agents"
   ],
   "sources": [
-    "toonish-ui: README.md, CHANGELOG.md, CLAUDE.md, docs/maintaining.md, tokens/toonish.tokens.json; build and test output at main 488418d (135 toon-* classes, 47 tests in 4 files, 4 font files)",
+    "toonish-ui: README.md, CHANGELOG.md, CLAUDE.md, docs/maintaining.md, tokens/toonish.tokens.json; build and test output at v0.7.0 (292 toon-* classes, 87 tests in 4 files, 4 font files)",
     "pdlabs-portfolio: README.md (branch rules), docs/brand-brief.md, .github/workflows/deploy.yml, sync-staging.yml, package.json (kit pin)",
     "Project notes on the palette and font decisions, 2026-11-03 and 2026-11-13; landing page design review, 2026-11-13"
   ]

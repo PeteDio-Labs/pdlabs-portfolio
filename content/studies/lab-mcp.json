@@ -4,7 +4,7 @@
   "title": "A read-only window into my lab for AI agents",
   "tag": "Agents",
   "accent": "blue",
-  "summary": "I gave my coding agents a typed, read-only view of my homelab over MCP, and an independent review agent caught me widening what they could read.",
+  "summary": "I gave my coding agents a typed, almost entirely read-only view of my homelab over MCP; the one write queues a code review, and an independent review agent caught me widening what they could read.",
   "stat": {
     "value": "Allowlisted",
     "label": "the work-item tool refuses any project outside its list, and a test proves it asks the tracker nothing first"
@@ -26,7 +26,7 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "An agent can name the work items a commit cites in one call, and see the state of the lab in one call. In live use the server reads one board, PET, so the multi-board path is tested but not yet exercised. I have no measurement of time saved, and I am not claiming one."
+        "An agent can name the work items a commit cites in one call, and see the state of the lab in one call. I have no measurement of time saved, and I am not claiming one."
       ]
     },
     {
