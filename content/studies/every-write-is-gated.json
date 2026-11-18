@@ -1,0 +1,127 @@
+{
+  "slug": "every-write-is-gated",
+  "date": "2026-11-18",
+  "sources": [
+    "the GitHub Actions workflow files in the infrastructure, media, pete-bot, portfolio, kit, workspace and tracker repos, read on 2026-11-18",
+    "the workflow reference pages added in each repo under docs/workflows",
+    "the AWS apply workflow's header and the pull request that added it"
+  ],
+  "title": "AI agents run my infrastructure, and every write is gated",
+  "tag": "Security",
+  "accent": "violet",
+  "summary": "Coding agents deploy to my homelab and to AWS through GitHub Actions. Reads run freely. Every write waits for my tap, runs a pre-checked plan, or cannot run at all. I documented all 29 workflows in the infrastructure repo to prove it.",
+  "stat": {
+    "value": "29",
+    "label": "workflows in the infrastructure repo, each documented by trigger, runner, reach and gate"
+  },
+  "facts": [
+    {
+      "label": "Workflows documented",
+      "value": "29",
+      "detail": "in the infrastructure repo alone"
+    },
+    {
+      "label": "Repos covered",
+      "value": "7",
+      "detail": "one reference page per workflow in each"
+    },
+    {
+      "label": "Approval environment",
+      "value": "1",
+      "detail": "I am its only reviewer"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "My agents open pull requests, run checks and ask for deploys. The risk is not that an agent writes bad code. It is that a pipeline that can change a live system also trusts whoever starts it. I wanted an agent to do real work without any path from its prompt to a write that I had not seen.",
+        "Two facts shaped the design. The repository is public, so a pull request can carry its own workflow file. And the runners that apply changes sit inside my network, so anything running there can reach the lab."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "Every workflow follows one split. Checks that read pull request code run on GitHub-hosted runners with no credentials and no network route to the lab. Anything that touches a live system runs on my own runner, and only from the main branch, started by a dispatch or a merge, never by a pull request.",
+        "Credentials are not stored in GitHub. A job proves who it is to Vault with a short-lived GitHub token, and each Vault role is bound to a repository, a branch, an event and the exact workflow file. A fork, a pull request, a push to another branch or a different workflow mints nothing. Deploys sign a 30-minute SSH certificate that opens one host.",
+        "Writes then pass through one of three gates. A tap gate: the job waits on an approval environment, and I am the only person who can approve it. A digest gate: a plan job prints a fingerprint of every change, and the apply job re-plans and runs only if its fingerprint matches, so my tap covers the plan I read and no other. A refusal gate: some actions have no write path, such as the plan-only portfolio workflow whose key can only read."
+      ],
+      "table": {
+        "caption": "How each kind of workflow is gated",
+        "columns": [
+          "Kind",
+          "Runs on",
+          "What stops a bad write"
+        ],
+        "rows": [
+          [
+            "Pull request checks",
+            "A hosted runner with no credentials",
+            "They hold nothing to misuse: no vault login, no lab route, no state"
+          ],
+          [
+            "Plan comment on a pull request",
+            "Hosted guard, then my runner",
+            "A text guard and a parsed-config guard allowlist what a pull request may change, then a read-only plan posts counts and addresses"
+          ],
+          [
+            "Apply on merge",
+            "My runner, main only",
+            "The plan fails if it would destroy or replace anything, and a deliberate removal waits for my tap"
+          ],
+          [
+            "Lab actions and host deploys",
+            "My runner, main only",
+            "A closed list of actions, a playbook allowlist and guard, and my tap for any apply"
+          ],
+          [
+            "AWS apply",
+            "My runner, main only",
+            "A scoped key released only to the approved job, and an apply that runs only when its plan digest matches"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "The AWS decision",
+      "paragraphs": [
+        "My AWS account blocks the usual keyless sign-in: its organisation policy denies creating an identity provider, so a job cannot assume a role. The standard fix was not available, so I did not store a powerful key in GitHub.",
+        "Each AWS environment gets two IAM users. The plan user can read and nothing else. The apply user can write only that environment's named resources. Both keys live in Vault, and Vault refuses the apply key until I approve the apply job. The tap releases the credential, not only the job. I wrote down the remaining risk: a leaked Vault token with the apply role could read that key. The token lasts 15 minutes, and the key's policy cannot reach the rest of the account."
+      ]
+    },
+    {
+      "heading": "Review and merge",
+      "paragraphs": [
+        "Gates on writes only help if the code behind them is itself reviewed. Every pull request gets a review before it merges: Codex first, and a Claude review where Codex stays silent. A script grades each pull request by what it can do once merged. Prose and code that runs nothing on merge go through a merge desk after CI and a clean review. Anything that runs on merge, mints credentials or moves a trust boundary is the top tier. An unrecognised path counts as the top tier, so the rules fail closed. A session never merges its own work in the infrastructure repo."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "The failure I kept meeting was a green check over work that never happened: a job that could not log in, reached nothing, or examined zero files, and still reported success. So every gate prints what it examined. A scan that reads zero commits is red. A lint that reads zero files is red. A deploy fails unless Ansible reports exactly the hosts I expect with no failures and none unreachable.",
+        "The same lesson shaped the documentation. Each reference page states first what the workflow can write, and which gate stands in front of it, so a reader does not need to read the workflow file to learn its reach."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "An agent can start a read, a plan or a check at any time, and gets the run log back. It cannot apply a change, mint a credential outside its role, or reach a host except through a certificate that expires. Every write that does happen is one I tapped, against a plan I could read.",
+        "I documented all 29 workflows in the infrastructure repo, and the workflows in six more repos, one reference page each: trigger, runner, what it touches, which Vault role it uses, its gates and how to run it."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Give the agent speed on reads and put a person on the write, but make the tap mean something. A tap that only unlocks a job is weaker than a tap that releases a credential for a plan the approver has read. Bind identity to the exact workflow, not just the repository, and make every check say what it examined."
+      ]
+    }
+  ],
+  "skills": [
+    "Least privilege",
+    "GitHub Actions",
+    "Secrets management",
+    "Terraform and Vault",
+    "Human-in-the-loop approval",
+    "AWS IAM"
+  ]
+}
