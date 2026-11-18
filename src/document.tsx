@@ -8,7 +8,7 @@ import { App } from './app.tsx';
 
 /** The build chip: the environment and short commit on a staging build, nothing on production. The staging host sets BUILD_ENV and BUILD_SHA; a malformed value fails the build. */
 // The site already has a footer landmark, so the chip is a labelled aside here: a second footer would be a second contentinfo.
-const chip = buildBadge({ env: process.env.BUILD_ENV, sha: process.env.BUILD_SHA }).replace('<footer ', '<aside aria-label="Build" ').replace('</footer>', '</aside>');
+const chip = buildBadge({ env: process.env.BUILD_ENV, sha: process.env.BUILD_SHA });
 
 export function document(page: Page): string {
   const t = fullTitle(page);

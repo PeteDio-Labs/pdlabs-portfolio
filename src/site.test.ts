@@ -666,5 +666,5 @@ test('the build chip shows on a staging build with its commit and never on produ
   const run = (env: Record<string, string>) => new TextDecoder().decode(Bun.spawnSync(['bun', '-e', "import { document } from './src/document.tsx'; import { pageFor } from './src/pages.ts'; console.log(document(pageFor('/')!))"], { env: { PATH: process.env.PATH ?? '', HOME: process.env.HOME ?? '', ...env }, cwd: import.meta.dir + '/..' }).stdout);
   expect(run({})).not.toContain('toon-build');
   expect(run({ BUILD_ENV: 'production', BUILD_SHA: 'c6329d4' })).not.toContain('toon-build');
-  expect(run({ BUILD_ENV: 'staging', BUILD_SHA: 'c6329d4aaaa' })).toContain('<aside aria-label="Build" class="toon-build" data-toon-build="staging">staging build <code>c6329d4</code></aside>');
+  expect(run({ BUILD_ENV: 'staging', BUILD_SHA: 'c6329d4aaaa' })).toContain('<aside class="toon-build" aria-label="Build" data-toon-build="staging">staging build <code>c6329d4</code></aside>');
 });
