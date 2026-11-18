@@ -1,0 +1,86 @@
+{
+  "slug": "role-based-threads",
+  "date": "2026-11-16",
+  "sources": [
+    "petedio-workspace .claude/skills/ui-roles and the seven per-role skills",
+    "the lab dashboard feature, the pilot of the role split"
+  ],
+  "title": "Running a feature as seven roles, each in its own thread",
+  "tag": "Process",
+  "accent": "red",
+  "summary": "I split a UI feature across parallel agent threads, one per role. Work passes by pull request and written spec, not by chat, and the reviewer is never the author.",
+  "stat": {
+    "value": "7",
+    "label": "roles, each owning named files or a repository"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "One agent thread doing design, components, screens, an API and a deploy gets slow and loses context. It also reviews its own work, which is the weakest review there is."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A skill defines seven roles: designer, kit, frontend, backend, DevOps, QA and accessibility, and reviewer. Each role owns files or a repository and has its own skill.",
+        "Work moves in a fixed order: spec, contract, components, integration, deploy, then review and QA. A role hands over by pull request and by the written spec. A thread messages a peer only when the coordinator says so. The reviewer is never the author of the pull request. Infrastructure pull requests merge through the same open-PR gate as everything else."
+      ],
+      "table": {
+        "caption": "The roles and what each owns",
+        "columns": [
+          "Role",
+          "What it owns"
+        ],
+        "rows": [
+          [
+            "Designer",
+            "The spec the other roles build from"
+          ],
+          [
+            "Kit",
+            "Components in the design kit"
+          ],
+          [
+            "Frontend",
+            "Screens built from kit components"
+          ],
+          [
+            "Backend",
+            "The API the spec defines"
+          ],
+          [
+            "DevOps",
+            "Staging, infrastructure and deploys"
+          ],
+          [
+            "QA and accessibility",
+            "Proof that the feature works and is accessible"
+          ],
+          [
+            "Reviewer",
+            "An independent review of each pull request"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "The lab dashboard was the pilot. Its spec, kit release, screens, API and staging deploy came from separate threads, each reading the one before it."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Agents work best like a small team: clear ownership, written handoffs and a reviewer with no stake in the code."
+      ]
+    }
+  ],
+  "skills": [
+    "Agent orchestration",
+    "Process design",
+    "Code review",
+    "Delegation"
+  ]
+}
