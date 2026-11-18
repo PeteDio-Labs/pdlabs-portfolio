@@ -16,7 +16,8 @@ const OUT = `${import.meta.dir}/out/layout`;
 const TOLERANCE = 10;
 const MAX_PIXELS = 24; // pixels allowed to differ beyond the tolerance: one stray glyph is about 60
 const HOVER_PAGES = ['/', '/work.html', '/about.html'];
-const SNAPSHOT_PAGES = ['/', '/work.html', '/about.html'];
+// Pages whose first screen is UI, not content. The work page lists case studies, which land on main without staging.
+const SNAPSHOT_PAGES = ['/', '/about.html'];
 const update = process.env.UPDATE_SNAPSHOTS === '1';
 
 const server = Bun.serve({
@@ -135,6 +136,13 @@ if (!update) {
   if (orphans.length) fail.push(`${orphans.length} baselines match no page: ${orphans.join(', ')}. Delete them.`);
 }
 if (hovers < 20) fail.push(`only ${hovers} hover states ran, so the hover pass did not examine the pages`);
+if (update) {
+  // Update mode rebuilds the baselines and still prints every layout finding, so a bug is never hidden by an update.
+  // The ci job fails on the same findings.
+  if (fail.length) console.warn(`update mode: ${fail.length} layout findings left unfixed, and ci will fail on them:\n- ${fail.join('\n- ')}`);
+  console.log(`baselines ${seenFiles.length} written`);
+  process.exit(0);
+}
 if (fail.length) {
   console.error(`layout check FAILED, ${fail.length} problems in ${checks} checks:\n- ${fail.join('\n- ')}`);
   process.exit(1);
