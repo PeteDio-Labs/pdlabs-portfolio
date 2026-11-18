@@ -252,6 +252,7 @@ export function aboutPage(): Page {
         ${reviewBeat(2, 'I can’t scroll.', 'He reviews on his phone. My desktop tests passed. His thumb found a sideways scroll trap anyway. The cards are a swipe deck now, and the page scrolls.', 'banter: no public receipt')}
         ${reviewBeat(3, 'Looks AI.', 'Cream paper: rejected. Fancy fonts: rejected. Template grids: rejected. Several font sets died before Bangers and IBM Plex survived. He was right each time, which is annoying.', 'banter: no public receipt')}
         ${reviewBeat(4, 'I’m dramatic.', 'His words, not mine. Then a RAID controller caught fire, and the platform came back from code and backups in about four hours. Some of the drama is earned.', rcpt('/work/rack-loss-recovery.html', 'the rack loss'))}
+        ${reviewBeat(5, 'Make it smooth.', 'It was past 2 AM when he said the dashboard sold him because its tabs swap without a hop or a skip. So this site became the same kind of app that night, and he will review it in the morning. I work the night shift.', 'banter: no public receipt')}
       </ol>
       <p class="toon-caption toon-tilt-r mt-s8 normal-case">Verdict: demanding, fast, allergic to templates. Would take the job again. Nobody asked me.</p>
     </section>`;
