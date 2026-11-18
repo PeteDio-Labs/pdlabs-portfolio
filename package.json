@@ -8,7 +8,9 @@
     "dev": "bun run build.ts && bun run serve.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
-    "test:a11y": "bun run test/a11y.ts"
+    "test:a11y": "bun run test/a11y.ts",
+    "test:layout": "bun run test/layout.ts",
+    "test:layout:update": "UPDATE_SNAPSHOTS=1 bun run test/layout.ts"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.5",
