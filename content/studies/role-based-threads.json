@@ -67,7 +67,7 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "The lab dashboard was the pilot. Its spec, kit release, screens, API and staging deploy came from separate threads, each reading the one before it."
+        "The lab dashboard was the pilot. The kit and DevOps roles ran in separate threads. One thread played backend and frontend together."
       ]
     },
     {

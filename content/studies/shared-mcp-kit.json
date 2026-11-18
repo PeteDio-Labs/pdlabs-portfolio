@@ -9,7 +9,7 @@
   "title": "One MCP kit, one set of rules for every tool I give an agent",
   "tag": "MCP",
   "accent": "violet",
-  "summary": "Every MCP server I run now shares one handler, one identity check and one tool contract. Read and write tiers have no destructive tier. A review caught three ways a secret could leak, and a contract suite now tests them.",
+  "summary": "The lab MCP server runs on one shared handler, one identity check and one tool contract, and the media server uses a vendored copy. Read and write tiers have no destructive tier. A review caught three ways a secret could leak, and a contract suite now tests them.",
   "stat": {
     "value": "14",
     "label": "lab tools renamed verb-first, with the old names kept as aliases"
@@ -25,7 +25,7 @@
       "heading": "What I built",
       "paragraphs": [
         "The kit in pete-bot holds one JSON-RPC handler and one verifier for Cloudflare Access, which accepts a person's email or an agent's service token. A tool is a contract: a typed input, a tier, and a run function that returns a source and data. A failed read throws a typed error, which the kit turns into an error result, never an empty one.",
-        "There are two tiers, read and write, and no destructive tier. A write over MCP only files a request. A change to a host goes through the gated workflow instead. I renamed the lab tools verb-first, such as get, list, find, check and request, and kept the old names as aliases so no client broke."
+        "There are two tiers, read and write, and no destructive tier. A write tool starts or changes something small, such as queuing a review. A change to a host does not go through MCP. I renamed the lab tools verb-first, such as get, list, find, check and request, and kept the old names as aliases so no client broke."
       ],
       "table": {
         "caption": "The tiers a tool can have",
@@ -42,8 +42,8 @@
           ],
           [
             "Write",
-            "File a request that something else reviews",
-            "Change a host directly"
+            "Start or change something small, such as queuing a review",
+            "Destroy anything"
           ]
         ]
       }
@@ -51,14 +51,14 @@
     {
       "heading": "What went wrong",
       "paragraphs": [
-        "A Codex review of the kit found three redaction holes. A quoted credential escaped the filter. A password field inside an oversized object escaped it. A capped answer was cut in the middle of its JSON, which broke the envelope.",
+        "Two Codex reviews, of the kit and of the media server's copy, found three redaction holes. A quoted credential escaped the filter. A password field inside an oversized object escaped it. A capped answer was cut in the middle of its JSON, which broke the envelope.",
         "The fixes redact before serialising, redact by key name, including values made only of digits, and keep a valid envelope when an answer is cut."
       ]
     },
     {
       "heading": "Result",
       "paragraphs": [
-        "The lab server and the media server serve from the same kit. A contract suite runs against every tool and checks the tier, the error path and the redaction, so a new tool inherits the checks."
+        "The lab server serves from the kit, and the media server carries a copy. A contract suite runs against every tool and checks the tier, the error path and the redaction, so a new tool inherits the checks."
       ]
     },
     {
