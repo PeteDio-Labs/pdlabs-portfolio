@@ -21,7 +21,7 @@
       "paragraphs": [
         "The watchdog is one Lambda function. The lab sends it a heartbeat every two minutes. A scheduled run of the same function posts a message to my Discord when the heartbeat stops, and probes the lab's public endpoints. It uses one on-demand table, one schedule rule and three parameters, and I wrote it in Terraform like the rest of the lab.",
         "The site is a private S3 bucket behind CloudFront with origin access control and a certificate. A custom response-headers policy sets a content security policy and HSTS. DNS stays at Cloudflare, so the account uses no Route 53. The module is written so it stays inside the always-free allowance.",
-        "I wrote the account rules down before the first resource existed. No AWS Organization, no Control Tower and no advanced features, because any of them ends credit earning. Free-plan-eligible services only, at the smallest sizes. A permissions boundary on the Terraform user stops it from creating a role more powerful than itself. A small monthly budget watches real money, a second budget counts credit burn, and anomaly detection emails me."
+        "I wrote the account rules down before the first resource existed. I did not join an AWS Organization, and I use no Control Tower and no advanced features, because any of them ends credit earning. Free-plan-eligible services only, at the smallest sizes. A permissions boundary on the Terraform user stops it from creating a role more powerful than itself. A small monthly budget watches real money, a second budget counts credit burn, and anomaly detection emails me."
       ]
     },
     {

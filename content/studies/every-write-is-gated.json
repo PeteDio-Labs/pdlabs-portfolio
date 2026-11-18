@@ -9,7 +9,7 @@
   "title": "AI agents run my infrastructure, and every write is gated",
   "tag": "Security",
   "accent": "violet",
-  "summary": "Coding agents deploy to my homelab and to AWS through GitHub Actions. Reads run freely. Every write waits for my tap, runs a pre-checked plan, or cannot run at all. I documented all 29 workflows in the infrastructure repo to prove it.",
+  "summary": "Coding agents deploy to my homelab and to AWS through GitHub Actions. Reads run freely. Every write waits for my tap, runs a pre-checked plan, or cannot run at all. I documented all 30 workflows in the infrastructure repo to prove it.",
   "stat": {
     "value": "29",
     "label": "workflows in the infrastructure repo, each documented by trigger, runner, reach and gate"
@@ -106,7 +106,7 @@
       "heading": "Result",
       "paragraphs": [
         "An agent can start a read, a plan or a check at any time, and gets the run log back. It cannot apply a change, mint a credential outside its role, or reach a host except through a certificate that expires. Every write that does happen is one I tapped, against a plan I could read.",
-        "I documented all 29 workflows in the infrastructure repo, and the workflows in six more repos, one reference page each: trigger, runner, what it touches, which Vault role it uses, its gates and how to run it."
+        "I documented all 30 workflows in the infrastructure repo, and the workflows in six more repos, one reference page each: trigger, runner, what it touches, which Vault role it uses, its gates and how to run it."
       ]
     },
     {

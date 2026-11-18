@@ -20,7 +20,7 @@
       "heading": "What I built",
       "paragraphs": [
         "A fallback in the merge desk with three rules. Tier 0, which is prose and docs, merges on green checks. Tier 1, code that runs nothing on merge, needs a clean review from a local Qwen model. Tier 2, which covers infrastructure and workflows, never falls back. Every other gate still applies: checks, open threads, hold labels and conflicts.",
-        "The fallback starts after Codex is silent for two hours, or 30 minutes after a failed queue call. Only a reply whose first line is exactly `VERDICT: CLEAN` counts. Any other reply, a failed call, or a diff that is too large holds the pull request. The verdict is stored against the exact commit, so a push voids it. Outside the desk, I follow a rule of my own: if Qwen fails on a pull request twice, a Claude subagent reviews it instead.",
+        "The fallback starts after Codex is silent for two hours, or 30 minutes after a failed queue call. Only a reply whose first line is exactly `VERDICT: CLEAN` counts. Any other reply, a failed call, or a diff that is too large holds the pull request. The verdict is stored against the exact commit, so a push voids it.",
         "Because I trust Qwen only until it shows otherwise, the desk keeps a ledger of every verdict, whether the change merged, and whether a later commit reverted it. The desk's dashboard has a section for counts by verdict, merges on Qwen and on checks alone, and the last ten rows. I did not render it in a browser."
       ]
     },

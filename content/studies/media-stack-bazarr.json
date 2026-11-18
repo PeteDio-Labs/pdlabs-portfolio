@@ -18,7 +18,7 @@
     {
       "heading": "What I built",
       "paragraphs": [
-        "A new container for Bazarr, declared in Terraform like every other guest, plus an Ansible role that installs it and keeps its version. The role also sets up the settings that matter: one English language profile as the default, three subtitle providers, and the connections to the two apps that manage the library.",
+        "A new container for Bazarr, declared in Terraform like every other guest, plus an Ansible role that installs it and keeps its version. The role also sets up the settings that matter: one English language profile as the default, two subtitle providers, and the connections to the two apps that manage the library.",
         "The role reads the library apps' API keys from their own config on every run and stores neither. The one login the service needs lives in the secrets store, and a script that I run places it, so no session ever handles the credential.",
         "Proxmox only lets the root account create bind mounts, so the shared media mount is a small script, the same split of work I use for other containers."
       ]

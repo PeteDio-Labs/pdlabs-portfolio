@@ -23,7 +23,7 @@
     {
       "label": "Kit release",
       "value": "0.5.0",
-      "detail": "answer-first components added"
+      "detail": "answer-first components added; the kit has since reached 0.7.0"
     },
     {
       "label": "Staging write access",
@@ -61,7 +61,7 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "Each tab opens with its answer, and counts, charts and records sit under a row that opens. A poll keeps open rows open and focus where it was. I also wrote the reasoning down as a design-philosophy skill in the kit, including a rule that each page answers one question first, so the next screen starts from the same rules."
+        "Each tab opens with its answer, and counts, charts and records sit under a row that opens. A poll keeps open rows open and focus where it was. I also wrote the reasoning down as a design-philosophy skill in the kit, including a rule that each page answers one question first, so the next screen starts from the same rules. A settings menu and a Secrets screen for managing agent keys came later, behind the same sign-in."
       ]
     },
     {

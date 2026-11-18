@@ -3,12 +3,12 @@
 ## Decision
 
 The case-study data is JSON files in this repository (`content/studies/`). The build reads
-them and writes plain HTML, so the deployed site has no data store, no API and no runtime
-fetch. The sort and filter on `/work.html` reorder cards that are already in the page.
+them and prerenders an HTML file for every route of the Preact app, so the deployed site has no data store and no API.
+The browser fetches a study's own page only when you open it. The sort and filter on `/work.html` reorder cards that are already in the page.
 
 | Option | Monthly cost | Verdict |
 |---|---|---|
-| JSON in the repo, baked into HTML at build time | $0 beyond hosting | Chosen. Git is the history, the PR is the review, and the page works without JavaScript |
+| JSON in the repo, baked into HTML at build time | $0 beyond hosting | Chosen. Git is the history, the PR is the review, and every route is real HTML before any script runs |
 | JSON served from S3 or CloudFront, fetched by the page | Pennies | Rejected. A failed fetch shows an empty list, and search engines read nothing |
 | DynamoDB or an API | Not free of upkeep | Rejected. Nothing here writes at runtime. Revisit only if visitors submit data |
 
@@ -51,4 +51,4 @@ cut over. The repository holds everything else: `content/studies/` is the data, 
 - **Caching.** The deploy syncs everything with `max-age=300`, then re-uploads `fonts/` with a one-year
   `immutable` header and `.png` and `.svg` files with a one-day header. HTML, CSS and JS keep the short header
   because their names carry no hash.
-- **Size budget.** `build.ts` fails when `dist/` passes 1.5 MB.
+- **Size budget.** `build.ts` fails when `dist/` passes 1.8 MB.

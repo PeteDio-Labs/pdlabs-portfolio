@@ -87,7 +87,7 @@
     {
       "heading": "Outcome",
       "paragraphs": [
-        "The fixed question set holds 57 cases, including questions that must route to no tool, and the keyword router matches all 57. The first version of the set scored 21 of 21 under both the keyword router and the model, which is what justified removing the model. The whole suite runs 192 tests offline and passes.",
+        "The fixed question set holds 57 cases, including questions that must route to no tool, and the keyword router matches all 57. The first version of the set scored 21 of 21 under both the keyword router and the model, which is what justified removing the model. The whole suite ran 192 tests offline on 13 November and passed; later work has grown it to 194.",
         "The same service logs the caller, the tool and the outcome without logging the question's text, so I can measure use. I have not measured it, so adoption is not yet measured and I claim none. The result I can stand behind is 57 of 57 routing, with 192 tests passing."
       ]
     },
@@ -105,7 +105,7 @@
     "Demo design"
   ],
   "sources": [
-    "petedio-media-control README.md and test/cases.ts (57 cases; bun test: 192 pass, run 2026-11-13)",
+    "petedio-media-control README.md and test/cases.ts (57 cases; bun test: 192 pass on 2026-11-13; 194 tests since)",
     "petedio-vault Systems/mtrace.md (21 of 21 first set, PET-376 and PET-525, 9 September incident)",
     "petedio-media-control README.md (41 of 65 seerr disagreement, write tier and caller scoping)",
     "demo-screenshots branch of pdlabs-portfolio, commit 6ff5e55: four screenshots and transcripts.md, captured from the live bot on 2026-11-13 and checked by eye for redaction"
