@@ -31,3 +31,5 @@ jobs:
         run: bunx playwright-core install --with-deps chromium
       - name: Accessibility check (axe at WCAG 2.2 AA on every built page)
         run: bun run test:a11y
+      - name: Row alignment check (service rows share their edges at 1280 and 390 px)
+        run: bun run test:rows
