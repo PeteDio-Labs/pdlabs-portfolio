@@ -24,9 +24,9 @@ const server = Bun.serve({
   async fetch(req) {
     const { pathname } = new URL(req.url);
     if (pathname.includes('..')) return new Response('bad', { status: 400 });
-    for (const p of [pathname, `${pathname}.html`]) {
+    for (const p of [pathname, `${pathname}.html`, `${pathname}/index.html`]) {
       const f = Bun.file(root + p);
-      if (!p.endsWith('/') && (await f.exists())) return new Response(f);
+      if (!p.endsWith('//') && !(pathname.endsWith('/') && p === pathname) && (await f.exists())) return new Response(f);
     }
     return new Response(Bun.file(`${root}/404.html`), { status: 404, headers: { 'content-type': 'text/html' } });
   },
@@ -34,6 +34,7 @@ const server = Bun.serve({
 
 const pages = ['/', '/about.html', '/work.html', '/privacy.html', '/terms.html', ...(await Array.fromAsync(new Bun.Glob('work/*.html').scan(root))).sort().map((f) => `/${f}`)];
 const fail: string[] = [];
+const seenFiles: string[] = [];
 let checks = 0, textBoxes = 0, svgs = 0, hovers = 0, shots = 0, runs = 0;
 const key = (f: Finding) => `${f.rule}|${f.what}|${f.detail}`;
 
@@ -46,6 +47,7 @@ try {
   const diffPage = await (await browser.newContext()).newPage();
   const compare = async (actual: Buffer, file: string, what: string) => {
     checks++;
+    seenFiles.push(file);
     const base = Bun.file(`${SNAPSHOTS}/${file}`);
     if (update) { await Bun.write(`${SNAPSHOTS}/${file}`, actual); return; }
     if (!(await base.exists())) { fail.push(`${what}: no baseline test/snapshots/${file}. Push a change to test/update-snapshots.request so the update-snapshots workflow builds it.`); return; }
@@ -68,7 +70,7 @@ try {
   // A known-bad page: the audit must flag each rule, so a green run proves it can see.
   const cp = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
   await cp.setContent(`<!doctype html><html lang="en"><body style="margin:0;font:20px sans-serif"><div style="width:120px"><svg viewBox="0 0 20 20" width="40" height="40"><path d="M2 10h22" stroke="black" stroke-width="3" fill="none"/></svg></div>
-<div style="position:relative;width:200px;margin-top:20px"><h2 style="margin:0">Heading text</h2><span style="position:absolute;left:30px;top:6px;background:#ff0">FIXED!</span></div>
+<div style="position:relative;width:200px;margin-top:20px"><h2 style="margin:0">Heading text<span style="position:absolute;left:30px;top:6px;background:#ff0">FIXED!</span></h2></div>
 <div style="width:100px;height:20px;overflow:hidden;margin-top:20px"><p style="margin:0 0 0 60px;width:200px">Cut off text here</p></div></body></html>`);
   checks++;
   const caught = (await cp.evaluate(audit)).findings.map((f) => f.rule).sort().join();
@@ -79,7 +81,9 @@ try {
     const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
     for (const path of pages) {
       const page = await ctx.newPage();
-      await page.goto(server.url.origin + path, { waitUntil: 'networkidle' });
+      const res = await page.goto(server.url.origin + path, { waitUntil: 'networkidle' });
+      // A 404 page has text and svgs too, so a page that did not load would pass the audit unless the status is read.
+      if (res?.status() !== 200) { fail.push(`${path} @${name}: served status ${res?.status()}, not 200`); await page.close(); continue; }
       await page.evaluate(() => document.fonts.ready);
       const known = new Set<string>();
       runs++; checks++;
@@ -93,7 +97,7 @@ try {
         const targets = await page.evaluate(() => {
           const out: string[] = []; const done = new Set<Element>();
           ['.toon-card', 'a[href]', '.toon-btn', 'tr', '.toon-row', '.toon-strip-cell', 'summary'].forEach((s, i) => document.querySelectorAll(s).forEach((e, j) => {
-            if (j >= 12 || done.has(e) || !e.getClientRects().length) return;
+            if (j >= 12 || done.has(e) || !e.getClientRects().length || e.closest('.toon-skip')) return;
             done.add(e); e.setAttribute('data-hover-probe', `${i}-${j}`); out.push(`[data-hover-probe="${i}-${j}"]`);
           }));
           return out;
@@ -101,8 +105,9 @@ try {
         for (const t of targets) {
           const el = page.locator(t);
           await el.scrollIntoViewIfNeeded({ timeout: 2000 }).catch(() => undefined);
-          await el.hover({ timeout: 2000 }).catch(() => undefined);
+          const hovered = await el.hover({ timeout: 2000 }).then(() => true, () => false);
           await page.waitForTimeout(60);
+          if (!hovered) { fail.push(`${path} @${name}: hover on ${t} did not land`); continue; }
           hovers++; checks++;
           await run(page, `${path} @${name} hover ${t}`, known);
         }
@@ -125,6 +130,11 @@ try {
   server.stop(true);
 }
 
+if (!update) {
+  const orphans = [...new Bun.Glob('*.png').scanSync(SNAPSHOTS)].filter((f) => !seenFiles.includes(f));
+  if (orphans.length) fail.push(`${orphans.length} baselines match no page: ${orphans.join(', ')}. Delete them.`);
+}
+if (hovers < 20) fail.push(`only ${hovers} hover states ran, so the hover pass did not examine the pages`);
 if (fail.length) {
   console.error(`layout check FAILED, ${fail.length} problems in ${checks} checks:\n- ${fail.join('\n- ')}`);
   process.exit(1);
