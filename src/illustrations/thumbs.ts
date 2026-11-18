@@ -14,10 +14,10 @@ const SCENES: Record<string, (s: string) => string> = {
   Adoption: (s) =>
     [0, 1, 2, 3, 4].map((i) => box(40 + i * 62, 130 - i * 20, 52, 24 + i * 20, [BLUE, VIO, YEL, RED, PAPER][i], i === 4 ? s : '')).join('') +
     line('M332 36V10', 5) + `<path d="M334 10h38l-10 12l10 12h-38z" fill="${RED}" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`,
-  // A padlock with a key beside it.
+  // A padlock with a key beside it: the tip and teeth point at the lock, the bow is on the far side.
   Security: (s) =>
     line('M160 70V56a32 32 0 0 1 64 0v14', 10) + box(140, 70, 104, 76, YEL, s) + circ(192, 100, 10, INK) + line('M192 104v22', 8) +
-    line('M270 110h70M320 110v22M340 110v16', 7) + circ(264, 110, 14, PAPER),
+    line('M276 110h70M296 110v22M276 110v16', 7) + circ(346, 110, 14, PAPER),
   // A server stack with a recovery arrow around it.
   Resilience: (s) =>
     [0, 1, 2].map((i) => box(150, 30 + i * 38, 100, 30, i === 1 ? PAPER : BLUE, i === 0 ? s : '') + circ(168, 45 + i * 38, 5, i === 1 ? RED : YEL)).join('') +
