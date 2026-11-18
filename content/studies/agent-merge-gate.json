@@ -21,7 +21,7 @@
       "heading": "Testing the control",
       "paragraphs": [
         "Before this gate, I built and retired an unattended agent that opened draft pull requests from labelled tickets. Its safety rested on one claim: the GitHub App it used could not merge its own pull request. I tested the claim instead of assuming it. As the real App, against two throwaway branches, the merge call returned 405 on the branch that required one review and 200 on an unprotected control, back to back. The control is what makes the 405 mean something: without it, a refusal looks the same as a broken credential.",
-        "I never enabled that agent's timer and retired it. Independent review, the merge gate above and one project thread per task replaced it. Reviews come from Codex first. When Codex stays silent for two hours, a local model reviews the low-risk tiers, and the highest tier waits for Codex or a Claude review. Two rules outlived it: every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo."
+        "I never enabled that agent's timer and retired it. Independent review, the merge gate above and one project thread per task replaced it. Reviews come from Codex first. When Codex stays silent for two hours, a local model reviews tier 1, prose merges on green checks, and the highest tier never falls back: it waits for Codex or, on a lab day, a Claude review thread. Two rules outlived it: every pull request is reviewed before it merges, and no session merges its own work in the infrastructure repo."
       ]
     },
     {
@@ -61,7 +61,7 @@
     {
       "heading": "Workflows added since",
       "paragraphs": [
-        "Reviewer chain. Every pull request gets a review before it merges. A hosted reviewer goes first. After two hours of silence from it, a local model running on my own GPU reviews the low-risk tiers instead. The highest tier waits for Codex or a Claude review. The chain has one rule: a review that could not run is not a clean review.",
+        "Reviewer chain. Every pull request gets a review before it merges. A hosted reviewer goes first. After two hours of silence from it, a local model running on my own GPU reviews tier 1 instead, and prose merges on green checks. The highest tier never falls back: it waits for Codex or, on a lab day, a Claude review thread. The chain has one rule: a review that could not run is not a clean review.",
         "Gated lab writes. An agent can ask my lab to apply a change, but a write waits on an approval environment where I am the only reviewer. Reads run without a tap. A merge that would destroy resources also waits on an approval, in place of an environment flag.",
         "A tracker outbox. Many sessions share one tracker key, and the tracker's rate limit stopped all of them once. Now a session never calls the tracker. It adds one small file to a queue repository, a single job applies the queue at about 60 calls a minute, and the session reports the file's id, not \"closed\". An item counts as closed when its file has moved to the done folder and the mirror shows the state.",
         "A merge desk. One deterministic desk merges pull requests by tier once the review is clean. Trust-boundary changes, such as workflows and secret-store bindings, wait for my word."
