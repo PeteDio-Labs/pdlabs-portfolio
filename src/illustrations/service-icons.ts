@@ -21,7 +21,7 @@ const p = (d: string, fill?: string) => `<path d="${d}"${fill ? ` fill="${fill}"
 const ps = (d: string) => `<path d="${d}"/>`; // path for a shadow, filled by the group
 
 const svg = (key: ServiceIconKey, body: string) =>
-  `<svg class="svc-ico svc-ico-${key}" viewBox="0 0 48 48" focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g stroke="${INK}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${body}</g></svg>`;
+  `<svg class="svc-ico svc-ico-${key}" viewBox="-2 -2 52 52" focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g stroke="${INK}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${body}</g></svg>`;
 
 // identity: an ID badge with a face, and a check seal that pops.
 const idCard = 'x="5" y="11" width="31" height="25" rx="3"';
@@ -100,7 +100,7 @@ const tools = svg('tools',
   shadow(r(plug)) +
   p('M33.5 27v-5M39.5 27v-5') +
   r(plug, RED) +
-  `<g class="svc-wrench"><g transform="translate(-9 -3) scale(0.95) rotate(-40 24 24)">` +
+  `<g class="svc-wrench"><g transform="translate(-3 0) scale(0.95) rotate(-40 24 24)">` +
   shadow(r(handle) + ps(wrench)) + r(handle, YEL) + p(wrench, YEL) + `</g></g>`);
 
 // work: a kanban board with a card that slides to the next column.
@@ -143,7 +143,7 @@ const cloud = svg('cloud',
   shadow(ps(cloudPath)) +
   p(cloudPath, BLUE) +
   `<path d="M17 20q3-3 7-2" fill="none" stroke="${WHITE}"/>` +
-  `<g class="svc-swap">${p('M12 34h22l-4-3.5')}${p('M36 41H14l4 3.5')}</g>`);
+  `<g class="svc-swap">${p('M12 36h22l-4-3.5')}${p('M36 43H14l4 3.5')}</g>`);
 
 export const SERVICE_ICONS: Record<ServiceIconKey, string> = {
   identity, secrets, delivery, iac, monitoring, agents, tools, work, data, ai, cloud,
