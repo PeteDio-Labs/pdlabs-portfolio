@@ -1,5 +1,6 @@
 import { esc, md } from './html.ts';
 import { HEX, PAIR, BADGE, burst, speedLines, letters, fitSize, figure, shot, stat, badge, chip, row, list, skipLink, bars, kicker, strip, steps, sfx, deck, pager, portrait } from 'toonish-ui/markup';
+import { SERVICE_ICONS } from './illustrations/service-icons.ts';
 import { thumb } from './illustrations/thumbs.ts';
 import { hybridDiagram, hybridDiagramTall } from './illustrations/hybrid.ts';
 import { legalPages, legalUpdated } from './legal.ts';
@@ -73,17 +74,17 @@ const MERGED_PRS = '1,200+';
 
 /** Services I run and maintain, for the landing page. Technology only, with public-safe names: no hostnames, addresses, accounts or internal URLs. */
 export const SERVICES = [
-  { lead: 'Identity', title: 'Authentik single sign-on', sub: 'one login in front of the lab’s web tools' },
-  { lead: 'Secrets', title: 'HashiCorp Vault', sub: 'short-lived credentials that CI and agents request at run time' },
-  { lead: 'Delivery', title: 'Self-hosted CI runners', sub: 'GitHub Actions jobs that plan, apply and deploy' },
-  { lead: 'IaC', title: 'Terraform and Ansible', sub: 'every host and service declared, reviewed and applied from git' },
-  { lead: 'Monitoring', title: 'Prometheus and Uptime Kuma', sub: 'metrics and uptime checks that feed the alerts' },
-  { lead: 'Agents', title: 'pete-bot and the lab dashboard', sub: 'alerts, the merge desk and a phone dashboard that says what needs me' },
-  { lead: 'Tools', title: 'Lab MCP servers and portal', sub: 'read-only tools that let Claude inspect the lab' },
-  { lead: 'Work', title: 'Plane', sub: 'self-hosted tracker, written to through a queue so agents never hit its rate limit' },
-  { lead: 'Data', title: 'MinIO and Postgres', sub: 'S3-compatible storage for state and backups, and the databases behind the services' },
-  { lead: 'AI', title: 'Local models on Ollama', sub: 'Qwen for triage and embeddings, on two GPUs' },
-  { lead: 'Cloud', title: 'AWS failover', sub: 'the dashboard and sign-in are being built to run in AWS when the lab is down' },
+  { lead: 'Identity', title: 'Authentik single sign-on', sub: 'one login in front of the lab’s web tools', icon: SERVICE_ICONS.identity, aside: 'no per-app passwords' },
+  { lead: 'Secrets', title: 'HashiCorp Vault', sub: 'short-lived credentials that CI and agents request at run time', icon: SERVICE_ICONS.secrets, aside: 'no stored CI secrets' },
+  { lead: 'Delivery', title: 'Self-hosted CI runners', sub: 'GitHub Actions jobs that plan, apply and deploy', icon: SERVICE_ICONS.delivery, aside: 'plan on PR, apply on merge' },
+  { lead: 'IaC', title: 'Terraform and Ansible', sub: 'every host and service declared, reviewed and applied from git', icon: SERVICE_ICONS.iac, aside: 'rack rebuilt in about 4 h' },
+  { lead: 'Monitoring', title: 'Prometheus and Uptime Kuma', sub: 'metrics and uptime checks that feed the alerts', icon: SERVICE_ICONS.monitoring, aside: 'alerts, not dashboards' },
+  { lead: 'Agents', title: 'pete-bot and the lab dashboard', sub: 'alerts, the merge desk and a phone dashboard that says what needs me', icon: SERVICE_ICONS.agents, aside: 'merge desk on duty' },
+  { lead: 'Tools', title: 'Lab MCP servers and portal', sub: 'read-only tools that let Claude inspect the lab', icon: SERVICE_ICONS.tools, aside: 'no write access' },
+  { lead: 'Work', title: 'Plane', sub: 'self-hosted tracker, written to through a queue so agents never hit its rate limit', icon: SERVICE_ICONS.work, aside: '60 calls a minute' },
+  { lead: 'Data', title: 'MinIO and Postgres', sub: 'S3-compatible storage for state and backups, and the databases behind the services', icon: SERVICE_ICONS.data, aside: 'versioned state' },
+  { lead: 'AI', title: 'Local models on Ollama', sub: 'Qwen for triage and embeddings, on two GPUs', icon: SERVICE_ICONS.ai, aside: '2 GPUs' },
+  { lead: 'Cloud', title: 'AWS failover', sub: 'the dashboard and sign-in are being built to run in AWS when the lab is down', icon: SERVICE_ICONS.cloud, aside: 'in progress', dot: 'yellow' as const },
 ];
 
 /** The closing question, rendered twice because the tail points up on a phone and left beside the headshot from `md`. */
@@ -173,6 +174,7 @@ export function landingPage(): Page {
 
     <section id="services" class="mt-16 scroll-mt-8 md:mt-24" aria-labelledby="services-h">
       ${kicker('02', 'The upkeep')}
+      <div class="relative">${sfx('FIXED!', 'yellow', { size: 'lg', corner: true })}</div>
       ${lettered('services-h', 'Services I maintain', 'blue', 'mb-s6 mt-s4 max-w-md')}
       <p class="mb-s6 mt-0 max-w-[52ch] text-title3">The platform under the case studies. I run each one, and each one is declared in code.</p>
       ${list(SERVICES.map((r) => row(r)), { label: 'Services I maintain', cls: 'toon-list-stack' }).replace('<div class="toon-list', '<div data-home="services" class="toon-list')}
