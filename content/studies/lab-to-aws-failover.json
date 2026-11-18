@@ -1,0 +1,85 @@
+{
+  "slug": "lab-to-aws-failover",
+  "date": "2026-11-18",
+  "sources": [
+    "petedio-iac pull requests 749, 751, 752, 753, 754 and 756 and their descriptions",
+    "the aws-apply workflow runs of 2026-11-18, including the failed and the successful apply",
+    "pete-bot src/failover/registry.ts and services.ts",
+    "pete-bot pull requests 138 and 139"
+  ],
+  "title": "Teaching a homelab to fail over to AWS",
+  "tag": "Failover",
+  "accent": "blue",
+  "summary": "I built the AWS side of a lab-to-cloud failover and applied it through a gated CI job, not from my laptop. The dashboard says what it cannot yet read, and the services that must stay at home are marked so.",
+  "stat": {
+    "value": "34",
+    "label": "resources examined by the plan the final CI apply ran, with one change and no deletes"
+  },
+  "facts": [
+    {
+      "label": "Resources in the final plan",
+      "value": "34",
+      "detail": "one change, zero deletes"
+    },
+    {
+      "label": "Apply attempts",
+      "value": "2",
+      "detail": "the first failed on a permission the CI user lacked"
+    },
+    {
+      "label": "Services pinned at home",
+      "value": "3",
+      "detail": "in the registry that decides what can move"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "My services run on one rack at home. A rack loss took the lab down once, and I rebuilt it from code. I wanted the next outage to move the important pieces to AWS instead of waiting for a rebuild.",
+        "Not everything can move. A media server with a large library and a VPN-bound download client have no business in the cloud. So the first job was a list that says which services can move, which cannot, and how each one's data would travel."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "A failover registry in the dashboard's code is the only place that says which services can move. Each entry has a data class: stateless, replicated or snapshot. A service that stays on-prem is marked pinned and never gets an enabled switch. The media server, the download client and the media automation stack are pinned.",
+        "On the AWS side, one Terraform root holds the static site, an API with a function and a table, sign-in, and a delegated DNS zone. The health check and failover record are written and wait on a second apply. A CloudFront origin group lets the API fall back to the lab on a server error or a timeout, because a DNS secondary cannot terminate TLS for a target that sits behind a proxy. That fallback is written, and stays off until its service token exists and the lab verifies the viewer's sign-in token itself.",
+        "DNS for the failover subdomain is delegated from Cloudflare to the AWS zone with four name-server records, so AWS answers the failover records and Cloudflare keeps everything else."
+      ]
+    },
+    {
+      "heading": "Applying it without a laptop",
+      "paragraphs": [
+        "Applying this root used to mean a session on my machine with an admin profile. I moved it to a CI job that plans on the main branch and applies only after I approve it. My AWS account's organisation policy denies creating an identity provider, so the job cannot assume a role the usual way. Each root now has a read-only plan user and a resource-scoped apply user. Their keys live in Vault, and Vault releases the apply key only to the job I approved. The apply job re-plans and runs only when its plan fingerprint matches the one I read."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "The first approved apply failed. It tried to turn on access logging for the API stage, a permission the scoped apply user does not have. I could have widened the user. I removed the logging from the code instead, merged that, and ran the plan and apply again.",
+        "The second run's plan examined 34 resources, with one change and no deletes, and the apply succeeded. The scoped user did its job: the gap showed up as a failed run I could read, not as a quietly broader credential."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "The AWS site, API, table and sign-in exist and were applied through the same approval gate as the lab. The certificate, health check and failover records are written and not applied, so failover is not live. The dashboard reads the lab side of two services from a live health check. The other four show unknown, and every AWS side shows unknown because the cloud watchdog does not exist. A service with no health URL shows as unknown, never as healthy, and a redirect to a login page counts as no reading. Nothing switches automatically, and the dashboard's staging copy is read-only."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Decide what cannot move before you build anything that moves. Show unknown as unknown. And when a scoped credential blocks a change, treat the failure as information: fix the code, not the permission."
+      ]
+    }
+  ],
+  "skills": [
+    "AWS",
+    "Terraform",
+    "Failover design",
+    "Least privilege",
+    "DNS",
+    "GitHub Actions"
+  ]
+}

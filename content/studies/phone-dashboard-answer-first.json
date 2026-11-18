@@ -1,0 +1,81 @@
+{
+  "slug": "phone-dashboard-answer-first",
+  "date": "2026-11-18",
+  "sources": [
+    "pete-bot pull requests 136 through 140 and their descriptions",
+    "toonish-ui pull requests 27 through 30, the 0.5.0 release notes and the design-philosophy skill",
+    "petedio-iac pull requests 751 and 752"
+  ],
+  "title": "A phone dashboard that answers one question first",
+  "tag": "UI",
+  "accent": "yellow",
+  "summary": "I rebuilt my lab dashboard so each tab leads with what I can act on, and moved the pieces it needed into the UI kit. It is a remote I read on a phone, not a wall of counts.",
+  "stat": {
+    "value": "5",
+    "label": "tabs, each opening on the answer: Now, Act, Services, Health and Work"
+  },
+  "facts": [
+    {
+      "label": "Tabs",
+      "value": "5",
+      "detail": "Now, Act, Services, Health, Work"
+    },
+    {
+      "label": "Kit release",
+      "value": "0.5.0",
+      "detail": "answer-first components added"
+    },
+    {
+      "label": "Staging write access",
+      "value": "None",
+      "detail": "the staging copy is read-only"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "My first dashboard showed four count tiles and several lists. It was accurate and I still could not tell, in one glance on a phone, whether anything needed me. A dashboard that makes me hunt is a report, not a remote."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "Now answers in one sentence: all clear, in green, or what needs me, in order. Act replaced the alerts and vulnerabilities tabs with one ranked list of items that each have a step: a service down on the side that serves, a down alert with no action card, exploited vulnerabilities, a late backup, then critical and high ones with a fix. Services keeps one switch card per service. Health shows backups and patches as signals, with trend charts that open on request. Work leads with items that wait on me.",
+        "Components that the dashboard drew by hand moved into the toonish-ui kit: a verdict, a readout that says what was read, a toggle with the right switch role, a masthead, and a two-button switch card. Version 0.4.0 added the uptime strip, line chart, status tile and switch row first. Green became the ok state colour, not a fifth accent. Each component writes its own roles and labels and carries a text equivalent, so unknown never reads as ok."
+      ]
+    },
+    {
+      "heading": "Staging that cannot change anything",
+      "paragraphs": [
+        "I review on a phone, so the dashboard needs a staging copy. The staging host runs no branch code and holds no credential. It downloads a build published as a release asset, checks its SHA-256, and serves the files. It stays up for a set time after each publish.",
+        "The dashboard can read the lab's feed with my own sign-in cookie, from one allowed origin, so no token is stored anywhere. The staging copy has no switch endpoint to call, so it cannot move a service."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "A code review of the rebuild found a case where Now could say all clear over a source it had not read. I fixed that: an unread source cannot produce an all clear. The same rule runs through the services list, where a missing lab reading shows as unknown. A demo mode uses a fixture, and a banner says the data is a demonstration."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "Each tab opens with its answer, and counts, charts and records sit under a row that opens. A poll keeps open rows open and focus where it was. I also wrote the reasoning down as a design-philosophy skill in the kit, including a rule that each page answers one question first, so the next screen starts from the same rules."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Ask what question a screen answers before choosing its widgets. If the first thing on screen is not the answer, the screen is a report. And never let a view say all clear over data it did not read."
+      ]
+    }
+  ],
+  "skills": [
+    "UI design",
+    "Accessibility",
+    "Design systems",
+    "Frontend",
+    "Mobile first"
+  ]
+}
