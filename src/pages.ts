@@ -176,7 +176,7 @@ export function landingPage(): Page {
       <div class="flex items-center justify-between gap-s4">${kicker('02', 'The upkeep')}${sfx('FIXED!', 'yellow', { size: 'sm', cls: 'md:text-[2.5rem]' })}</div>
       ${lettered('services-h', 'Services I maintain', 'blue', 'mb-s6 mt-s4 max-w-md')}
       <p class="mb-s6 mt-0 max-w-[52ch] text-title3">The platform under the case studies. I run each one, and each one is declared in code.</p>
-      ${list(SERVICES.map((r) => row(r)), { label: 'Services I maintain', cls: 'toon-list-stack' }).replace('<div class="toon-list', '<div data-home="services" class="toon-list')}
+      ${list(SERVICES.map((r) => row(r)), { label: 'Services I maintain' }).replace('<div class="toon-list', '<div data-home="services" class="toon-list')}
     </section>`;
   return { path: '/', title: 'Home', current: 'Home', kind: 'html', description: `${site.name}. ${site.role} ${site.intro}`, body, jsonLd: personJsonLd() };
 }
