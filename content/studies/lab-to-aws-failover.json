@@ -37,14 +37,14 @@
       "heading": "Problem",
       "paragraphs": [
         "My services run on one rack at home. A rack loss took the lab down once, and I rebuilt it from code. I wanted the next outage to move the important pieces to AWS instead of waiting for a rebuild.",
-        "Not everything can move. A media server with terabytes of data and a VPN-bound download client have no business in the cloud. So the first job was a list that says which services can move, which cannot, and how each one's data would travel."
+        "Not everything can move. A media server with a large library and a VPN-bound download client have no business in the cloud. So the first job was a list that says which services can move, which cannot, and how each one's data would travel."
       ]
     },
     {
       "heading": "What I built",
       "paragraphs": [
         "A failover registry in the dashboard's code is the only place that says which services can move. Each entry has a data class: stateless, replicated or snapshot. A service that stays on-prem is marked pinned and never gets an enabled switch. The media server, the download client and the media automation stack are pinned.",
-        "On the AWS side, one Terraform root holds the static site, an API with a function and a table, sign-in, and a delegated DNS zone with a health-checked failover record. A CloudFront origin group lets the API fall back to the lab on a server error or a timeout, because a DNS secondary cannot terminate TLS for a target that sits behind a proxy. That fallback is written, and stays off until its service token exists.",
+        "On the AWS side, one Terraform root holds the static site, an API with a function and a table, sign-in, and a delegated DNS zone. The health check and failover record are written and wait on a second apply. A CloudFront origin group lets the API fall back to the lab on a server error or a timeout, because a DNS secondary cannot terminate TLS for a target that sits behind a proxy. That fallback is written, and stays off until its service token exists and the lab verifies the viewer's sign-in token itself.",
         "DNS for the failover subdomain is delegated from Cloudflare to the AWS zone with four name-server records, so AWS answers the failover records and Cloudflare keeps everything else."
       ]
     },
@@ -64,7 +64,7 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "The AWS side exists and was applied through the same approval gate as the lab. The dashboard reads each service's lab side from a live health check and shows the AWS side as unknown, because the cloud watchdog does not exist yet. A service with no health URL shows as unknown, never as healthy, and a redirect to a login page counts as no reading. Nothing switches automatically yet, and the dashboard's staging copy is read-only."
+        "The AWS site, API, table and sign-in exist and were applied through the same approval gate as the lab. The certificate, health check and failover records are written and not applied, so failover is not live. The dashboard reads the lab side of two services from a live health check. The other four show unknown, and every AWS side shows unknown because the cloud watchdog does not exist. A service with no health URL shows as unknown, never as healthy, and a redirect to a login page counts as no reading. Nothing switches automatically, and the dashboard's staging copy is read-only."
       ]
     },
     {

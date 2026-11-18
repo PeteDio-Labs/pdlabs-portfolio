@@ -49,7 +49,7 @@
       "heading": "Staging that cannot change anything",
       "paragraphs": [
         "I review on a phone, so the dashboard needs a staging copy. The staging host runs no branch code and holds no credential. It downloads a build published as a release asset, checks its SHA-256, and serves the files. It stays up for a set time after each publish.",
-        "For live data, the dashboard reads the lab's feed with my own sign-in cookie, from one allowed origin, so no token is stored anywhere. The staging copy has no switch endpoint to call, so it cannot move a service."
+        "The dashboard can read the lab's feed with my own sign-in cookie, from one allowed origin, so no token is stored anywhere. The staging copy has no switch endpoint to call, so it cannot move a service."
       ]
     },
     {
