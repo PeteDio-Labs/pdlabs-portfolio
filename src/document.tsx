@@ -1,14 +1,9 @@
 // The build's page writer: the head, then the app shell rendered to HTML inside #root. The browser hydrates that tree.
 import { renderToString } from 'preact-render-to-string';
-import { buildBadge } from 'toonish-ui/markup';
 import { esc } from './html.ts';
 import { site } from './content.ts';
 import { analytics, fullTitle, type Page } from './pages.ts';
 import { App } from './app.tsx';
-
-/** The build chip: the environment and short commit on a staging build, nothing on production. The staging host sets BUILD_ENV and BUILD_SHA; a malformed value fails the build. */
-// The site already has a footer landmark, so the chip is a labelled aside here: a second footer would be a second contentinfo.
-const chip = buildBadge({ env: process.env.BUILD_ENV, sha: process.env.BUILD_SHA }).replace('<footer ', '<aside aria-label="Build" ').replace('</footer>', '</aside>');
 
 export function document(page: Page): string {
   const t = fullTitle(page);
@@ -48,7 +43,6 @@ ${page.noindex ? '<meta name="robots" content="noindex">\n' : ''}${page.jsonLd ?
 </head>
 <body class="toon-dots">
 <div id="root">${renderToString(<App page={page} />)}</div>
-${chip}
 <script src="/app.js" defer></script>
 ${analytics ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${esc(analytics)}", "spa": true}'></script>\n` : ''}</body>
 </html>

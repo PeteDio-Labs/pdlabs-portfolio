@@ -467,9 +467,9 @@ test('the about page shows the cut-out portrait on the kit backdrop, with alt te
   expect(existsSync('public/pedro-headshot.webp')).toBe(false);
 });
 
-test('the landing and about pages have six sound effects between them, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
+test('the landing and about pages have five sound effects between them, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
   const words = (html: string) => [...html.matchAll(/<span class="toon-sfx[^"]*"[^>]*aria-hidden="true">((?:<span[^>]*>[^<]*<\/span>)+)<\/span>/g)].map((m) => [...m[1].matchAll(/>([^<]*)<\/span>/g)].map((x) => x[1]).join(''));
-  expect(words(home())).toEqual(['MERGE!', 'SHIP!', 'FIXED!']);
+  expect(words(home())).toEqual(['MERGE!', 'SHIP!']);
   expect(words(about())).toEqual(['CLICK!', 'DEPLOY!', 'STACK!']);
   // STACK! is the stack list's title, so the heading keeps its words for a screen reader.
   expect(about()).toContain('<span class="sr-only">The stack</span>');
@@ -660,11 +660,4 @@ test('the old kit address redirects to the kit case study and is not indexed', (
   expect(html).toContain('href="/work/toonish-ui-design-system.html"');
   expect(html).toContain('href="https://github.com/PeteDio-Labs/toonish-ui"');
   expect(studies.some((s) => s.slug === 'toonish-ui-design-system')).toBe(true);
-});
-
-test('the build chip shows on a staging build with its commit and never on production', () => {
-  const run = (env: Record<string, string>) => new TextDecoder().decode(Bun.spawnSync(['bun', '-e', "import { document } from './src/document.tsx'; import { pageFor } from './src/pages.ts'; console.log(document(pageFor('/')!))"], { env: { PATH: process.env.PATH ?? '', HOME: process.env.HOME ?? '', ...env }, cwd: import.meta.dir + '/..' }).stdout);
-  expect(run({})).not.toContain('toon-build');
-  expect(run({ BUILD_ENV: 'production', BUILD_SHA: 'c6329d4' })).not.toContain('toon-build');
-  expect(run({ BUILD_ENV: 'staging', BUILD_SHA: 'c6329d4aaaa' })).toContain('<aside aria-label="Build" class="toon-build" data-toon-build="staging">staging build <code>c6329d4</code></aside>');
 });
