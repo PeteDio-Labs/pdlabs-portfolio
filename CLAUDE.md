@@ -10,5 +10,5 @@ The portfolio at pdlab.dev, built with Bun and the `toonish-ui` kit. `README.md`
 - **One `h1`, headings never skip a level,** and a comic word used as a heading keeps its text in an `sr-only` span.
 - **Check by hand what a tool cannot:** tab through the change, and listen to it in VoiceOver, before you open the pull request.
 - **Mobile first.** Check at 390 px before 1280 px. See `README.md`.
-- **UI changes go through `staging`.** Pedro reviews on a phone and says "send it" to promote.
+- **UI changes go through `staging`, by pull request.** Branch off `main`, open the pull request into `staging`, and let `ci` pass, including `bun run test:layout`. Pedro reviews on a phone and says "send it" to promote. Case studies skip `staging` and go to `main`.
 - Write prose in Google developer documentation style: second person, active voice, no time-anchored words.

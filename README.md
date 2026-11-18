@@ -77,8 +77,11 @@ Design, build and check every page at 390 px before any wider width. Most visito
 ## Branches
 
 - **Case studies and content go to `main` by pull request.** They skip `staging`.
-- **UI changes go to `staging` first.** Push to `staging`, check the result on the staging site, then
-  open a pull request from `staging` into `main`.
+- **UI changes go to `staging` first, by pull request.** Branch off `main`, open a pull request into
+  `staging`, and let `ci` pass. `ci` includes `bun run test:layout`, so a clipped icon, cut text or an
+  overlap blocks the merge. Check the result on the staging site, then open a pull request from `staging`
+  into `main`. `staging` is protected: its pull requests need the `build` check, which runs the axe
+  and layout checks.
 - **`.github/workflows/sync-staging.yml` merges `main` into `staging` on every push to `main`.**
   It uses a merge commit and never force-pushes, so `staging` keeps the content that landed on
   `main`. The merge keeps `staging`'s own `.github` directory, because the workflow token cannot
