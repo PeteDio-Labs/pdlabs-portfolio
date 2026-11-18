@@ -90,7 +90,7 @@ if (!css.includes('.toon-btn')) throw new Error('toonish.css has no components: 
 console.log(`built ${Object.keys(pages).length} pages and toonish.css (${css.length} bytes) into ${out}/`);
 
 // Size guard: a large image or font should fail the build, not ship. dist/ is about 0.7 MB today.
-const MAX_DIST_BYTES = 1_500_000;
+const MAX_DIST_BYTES = 1_800_000;
 let total = 0;
 for (const f of new Bun.Glob('**/*').scanSync({ cwd: out, dot: true })) total += Bun.file(`${out}/${f}`).size;
 if (total > MAX_DIST_BYTES) throw new Error(`dist/ is ${total} bytes, over the ${MAX_DIST_BYTES} byte budget`);

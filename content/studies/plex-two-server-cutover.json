@@ -1,0 +1,60 @@
+{
+  "slug": "plex-two-server-cutover",
+  "date": "2026-11-15",
+  "sources": [
+    "petedio-media-iac pull requests 80, 83, 89, 90 and 91",
+    "petedio-iac pull requests 721, 732, 742 and 743",
+    "the public reachability probe runs of 2026-11-15"
+  ],
+  "title": "Splitting one Plex server into two without losing remote users",
+  "tag": "Media",
+  "accent": "yellow",
+  "summary": "Remote users kept the old Plex server identity, which I moved into a locked-down container. The home server restarted as a new identity. A probe from outside my network proved the old one still answers.",
+  "stat": {
+    "value": "4",
+    "label": "minutes between the public probe's first failure and its first pass"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "Plex ties a server's identity to its remote users. I wanted a fresh identity for the home server, but the friends and family who stream from me would lose access if the identity changed. I also did not want a server that faces the internet to share a network with my other machines."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "I kept the old identity and moved it into a hardened container. The home server restarted with a new identity for the people in my house.",
+        "The container sits on an isolated bridge. Its firewall forwards one port in, masks only its own outbound traffic, drops traffic to private address ranges and allows no other exit. The library mounts read-only. Plex's own setting limits remote streams, and a host-level cap sits just above it as a backstop. Relay is off, and Quick Sync is declared for hardware transcoding.",
+        "Both servers are declared in Terraform and Ansible. The old identity gets a weekly backup that keeps two copies, with its own monitoring window."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "The container's pull request went through several review rounds, and I fixed every blocker before it merged. The old identity also cannot republish itself: Plex refuses every republish with a 403, so the cutover had to work without that.",
+        "A public probe workflow that runs from outside my network hashes the server's machine identifier and compares it. It failed on its first run and passed four minutes later."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "Remote users stream from the old identity, and the home server runs as a new one. The probe reads the identifier from the public side, so the result does not depend on a check made from inside the network."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "When an identity is the asset, move the identity and rebuild around it. Then test from the outside, because an internal check cannot tell you whether the public path works."
+      ]
+    }
+  ],
+  "skills": [
+    "Network isolation",
+    "Terraform",
+    "Ansible",
+    "Plex",
+    "Backups",
+    "Hardware transcoding"
+  ]
+}

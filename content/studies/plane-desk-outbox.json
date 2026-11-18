@@ -1,0 +1,53 @@
+{
+  "slug": "plane-desk-outbox",
+  "date": "2026-11-16",
+  "sources": [
+    "petedio-pm docs/outbox.md and scripts/plane_desk.py",
+    "the 2026-11-07 Plane rate-limit incident",
+    "petedio-pm queue directories read on 2026-11-18"
+  ],
+  "title": "Taking my agents off the tracker API with a queue in git",
+  "tag": "Process",
+  "accent": "blue",
+  "summary": "Plane rate-limited every agent session at once because they shared one key. Now agents write a file to a queue, and one job applies the writes at a pace the API accepts.",
+  "stat": {
+    "value": "330",
+    "label": "intents applied from the queue, read on 2026-11-18, with none failed or pending"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "Plane allows 120 calls a minute per key, and every agent session shared one key. On 7 November a burst of sessions used the allowance and every one of them was limited."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "Threads no longer call Plane. To change an item, a thread commits one JSON file to a queue directory. Each file is one intent, so two threads never conflict. The operations are a closed list: close, state, comment, update, create and cycle.",
+        "A drain job runs on a runner in my network every ten minutes and on any push that touches the queue, and never on a pull request. It applies the oldest intent first, at most 60 calls a minute and 60 intents a run. The key comes from Vault at run time. State moves forward only. A hidden marker on each comment makes a replay safe.",
+        "To read, a thread opens a mirror file in the same repository. The mirror records when it was taken and keeps the last good detail file when a read fails."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "On 18 November the queue held 330 applied intents: 106 comments, 62 closes, 59 updates, 59 creates, 41 state changes and 3 cycle changes. It held none failed and none pending. A failed intent lands in a failed directory and makes the run exit non-zero, so a bad write cannot pass as a green run."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "A shared credential needs one place that spends it. Put the writes in git, where they are reviewable, and let one slow worker talk to the API."
+      ]
+    }
+  ],
+  "skills": [
+    "Rate limiting",
+    "GitHub Actions",
+    "Vault",
+    "Python",
+    "Idempotency",
+    "Process design"
+  ]
+}
