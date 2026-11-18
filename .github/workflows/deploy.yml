@@ -7,7 +7,14 @@ name: deploy
 on:
   push:
     branches: [main]
-  workflow_dispatch: {}
+  # Rollback: run this workflow from main with a ref. Blank deploys main's tip. `previous` deploys
+  # the commit before main's tip. A SHA or tag deploys that commit. See docs/rollback.md.
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Commit to deploy: blank = main tip, previous = the commit before it, or a SHA/tag on main'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -41,6 +48,29 @@ jobs:
 
       # Each action is pinned to a full commit SHA. Dependabot proposes the bumps.
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      # Rebuild from git, so a rollback stores no artifact. The commit must sit on main, which keeps
+      # the production key away from code that never passed review.
+      - name: Pick the commit to deploy
+        env:
+          REF_INPUT: ${{ inputs.ref }}
+        run: |
+          set -eu
+          case "$REF_INPUT" in
+            "") target=$(git rev-parse origin/main) ;;
+            previous) target=$(git rev-parse origin/main~1) ;;
+            *) printf '%s' "$REF_INPUT" | grep -Eq '^[A-Za-z0-9._/-]+$' || { echo "::error::ref has characters a SHA or tag never has"; exit 1; }
+               target=$(git rev-parse --verify "$REF_INPUT^{commit}") ;;
+          esac
+          git merge-base --is-ancestor "$target" origin/main || { echo "::error::$target is not on main, refusing to deploy it"; exit 1; }
+          git checkout --detach "$target"
+          {
+            echo "### Deploying $(git log -1 --format='%h %s' "$target")"
+            echo "main's tip is $(git rev-parse --short origin/main). Input ref: \`${REF_INPUT:-blank}\`."
+            [ "$target" = "$(git rev-parse origin/main)" ] || echo "**This is a rollback.** Main still holds the later commits. Open a revert PR so the next merge does not redeploy them (docs/rollback.md)."
+          } >> "$GITHUB_STEP_SUMMARY"
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.4
