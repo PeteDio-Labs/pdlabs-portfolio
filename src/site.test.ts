@@ -467,9 +467,9 @@ test('the about page shows the cut-out portrait on the kit backdrop, with alt te
   expect(existsSync('public/pedro-headshot.webp')).toBe(false);
 });
 
-test('the landing and about pages have five sound effects between them, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
+test('the landing and about pages have six sound effects between them, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
   const words = (html: string) => [...html.matchAll(/<span class="toon-sfx[^"]*"[^>]*aria-hidden="true">((?:<span[^>]*>[^<]*<\/span>)+)<\/span>/g)].map((m) => [...m[1].matchAll(/>([^<]*)<\/span>/g)].map((x) => x[1]).join(''));
-  expect(words(home())).toEqual(['MERGE!', 'SHIP!']);
+  expect(words(home())).toEqual(['MERGE!', 'SHIP!', 'FIXED!']);
   expect(words(about())).toEqual(['CLICK!', 'DEPLOY!', 'STACK!']);
   // STACK! is the stack list's title, so the heading keeps its words for a screen reader.
   expect(about()).toContain('<span class="sr-only">The stack</span>');
