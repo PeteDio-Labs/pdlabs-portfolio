@@ -28,7 +28,7 @@
     {
       "label": "Approval environment",
       "value": "1",
-      "detail": "I am its only reviewer"
+      "detail": "in the infrastructure repo; I am its only reviewer"
     }
   ],
   "sections": [
@@ -42,9 +42,9 @@
     {
       "heading": "What I built",
       "paragraphs": [
-        "Every workflow follows one split. Checks that read pull request code run on GitHub-hosted runners with no credentials and no network route to the lab. Anything that touches a live system runs on my own runner, and only from the main branch, started by a dispatch or a merge, never by a pull request.",
-        "Credentials are not stored in GitHub. A job proves who it is to Vault with a short-lived GitHub token, and each Vault role is bound to a repository, a branch, an event and the exact workflow file. A fork, a pull request, a push to another branch or a different workflow mints nothing. Deploys sign a 30-minute SSH certificate that opens one host.",
-        "Writes then pass through one of three gates. A tap gate: the job waits on an approval environment, and I am the only person who can approve it. A digest gate: a plan job prints a fingerprint of every change, and the apply job re-plans and runs only if its fingerprint matches, so my tap covers the plan I read and no other. A refusal gate: some actions have no write path, such as the plan-only portfolio workflow whose key can only read."
+        "Every workflow follows one split. Checks that read pull request code run on GitHub-hosted runners with no credentials and no network route to the lab. The one exception is the plan comment, described below. Anything that applies a change runs only from the main branch, started by a dispatch or a merge, never by a pull request.",
+        "Credentials are not stored in GitHub. A job proves who it is to Vault with a short-lived GitHub token, and each Vault role is bound to a repository, a branch, an event and the exact workflow file. A fork, a pull request, a push to another branch or a different workflow mints nothing. Each host deploy signs a 30-minute SSH certificate for the host that workflow deploys.",
+        "Writes then pass through one of three gates. A tap gate: the job waits on an approval environment, and I am the only person who can approve it in the infrastructure repo. A digest gate: a plan job prints a fingerprint of every change, and the apply job re-plans and runs only if its fingerprint matches, so my tap covers the plan I read and no other. A refusal gate: some actions have no write path, such as the plan-only portfolio workflow whose key can only read."
       ],
       "table": {
         "caption": "How each kind of workflow is gated",
@@ -61,13 +61,13 @@
           ],
           [
             "Plan comment on a pull request",
-            "Hosted guard, then my runner",
-            "A text guard and a parsed-config guard allowlist what a pull request may change, then a read-only plan posts counts and addresses"
+            "Hosted guards, then my runner",
+            "Two guards allowlist what a pull request may change, then a plan with read-only credentials posts counts and addresses"
           ],
           [
             "Apply on merge",
             "My runner, main only",
-            "The plan fails if it would destroy or replace anything, and a deliberate removal waits for my tap"
+            "A plan that would destroy or replace anything stops the apply until I tap approve"
           ],
           [
             "Lab actions and host deploys",
@@ -92,7 +92,7 @@
     {
       "heading": "Review and merge",
       "paragraphs": [
-        "Gates on writes only help if the code behind them is itself reviewed. Every pull request gets a review before it merges: Codex first, and a Claude review where Codex stays silent. A script grades each pull request by what it can do once merged. Prose and code that runs nothing on merge go through a merge desk after CI and a clean review. Anything that runs on merge, mints credentials or moves a trust boundary is the top tier. An unrecognised path counts as the top tier, so the rules fail closed. A session never merges its own work in the infrastructure repo."
+        "Gates on writes only help if the code behind them is itself reviewed. Codex reviews first. When Codex is silent, the fallback depends on the tier: prose merges on green checks, other code that runs nothing on merge gets a local model review, and the top tier waits for Codex or a Claude review. A script grades each pull request by what it can do once merged. A merge desk merges the two lower tiers once their checks and review requirements are met. Anything that runs on merge, mints credentials or moves a trust boundary is the top tier. An unrecognised path counts as the top tier, so the rules fail closed. A session never merges its own work in the infrastructure repo."
       ]
     },
     {
