@@ -3,7 +3,8 @@
 //     and under hover on the pages in HOVER_PAGES
 //   - a first screen of SNAPSHOT_PAGES whose pixels differ from its baseline in test/snapshots/
 // A missing baseline fails too. To accept a deliberate change, run `bun run test:layout:update`, read the changed
-// images and commit them. On a failure the actual and diff images go to test/out/layout/ and CI uploads them for one day.
+// images. Pixels depend on the browser build and fonts, so the baselines come from the CI runner: push a change to
+// test/update-snapshots.request and the update-snapshots workflow commits them. On a failure the actual and diff images go to test/out/layout/ and CI uploads them for one day.
 // Run it after `bun run build`. Set CHROMIUM_PATH to use a browser Playwright did not install.
 import { mkdir, rm } from 'node:fs/promises';
 import { chromium, type Page } from 'playwright-core';
@@ -47,7 +48,7 @@ try {
     checks++;
     const base = Bun.file(`${SNAPSHOTS}/${file}`);
     if (update) { await Bun.write(`${SNAPSHOTS}/${file}`, actual); return; }
-    if (!(await base.exists())) { fail.push(`${what}: no baseline test/snapshots/${file}. Run bun run test:layout:update and commit it.`); return; }
+    if (!(await base.exists())) { fail.push(`${what}: no baseline test/snapshots/${file}. Push a change to test/update-snapshots.request so the update-snapshots workflow builds it.`); return; }
     const png = (b: Uint8Array | Buffer) => `data:image/png;base64,${Buffer.from(b).toString('base64')}`;
     const r = await diffPage.evaluate(diffPngs, { a: png(Buffer.from(await base.arrayBuffer())), b: png(actual), tolerance: TOLERANCE });
     const px = Math.round(r.ratio * r.w * r.h);
