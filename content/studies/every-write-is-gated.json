@@ -11,13 +11,13 @@
   "accent": "violet",
   "summary": "Coding agents deploy to my homelab and to AWS through GitHub Actions. Reads run freely. Every write waits for my tap, runs a pre-checked plan, or cannot run at all. I documented all 30 workflows in the infrastructure repo to prove it.",
   "stat": {
-    "value": "29",
+    "value": "30",
     "label": "workflows in the infrastructure repo, each documented by trigger, runner, reach and gate"
   },
   "facts": [
     {
       "label": "Workflows documented",
-      "value": "29",
+      "value": "30",
       "detail": "in the infrastructure repo alone"
     },
     {
