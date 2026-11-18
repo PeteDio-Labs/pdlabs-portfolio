@@ -19,9 +19,9 @@ const server = Bun.serve({
   },
 });
 
-const pages = ['/', '/work.html', '/privacy.html', '/terms.html', '/no-such-page', ...(await Array.fromAsync(new Bun.Glob('work/*.html').scan(root))).sort().map((f) => `/${f}`)];
+const pages = ['/', '/about.html', '/work.html', '/privacy.html', '/terms.html', '/no-such-page', ...(await Array.fromAsync(new Bun.Glob('work/*.html').scan(root))).sort().map((f) => `/${f}`)];
 const fail: string[] = [];
-let rules = 0, runs = 0, links = 0, measured = 0, modalRuns = 0;
+let rules = 0, runs = 0, links = 0, measured = 0, modalRuns = 0, spaRuns = 0, spaSteps = 0;
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
 try {
   for (const [w, h] of [[390, 844], [1280, 800]] as const) {
@@ -60,6 +60,40 @@ try {
       }
       await p.close();
     }
+    await ctx.close();
+  }
+  // Client-side navigation: click through the nav and into a case study without a page load, and read each page the app swaps in.
+  // The header must be the same node throughout, the title must follow the page, focus must land on the content, and the new
+  // page must pass axe too, because it is the same markup reached a different way.
+  for (const [w, h] of [[390, 844], [1280, 800]] as const) {
+    const ctx = await browser.newContext({ viewport: { width: w, height: h }, reducedMotion: 'reduce' });
+    const p = await ctx.newPage();
+    p.on('pageerror', (e) => fail.push(`spa @${w}: page error: ${e.message}`));
+    let loads = 0;
+    p.on('load', () => loads++);
+    await p.goto(server.url.origin + '/', { waitUntil: 'load' });
+    await p.addScriptTag({ url: '/__axe.js' });
+    await p.waitForFunction(() => document.getElementById('root')!.children.length > 0);
+    await p.evaluate(() => { (document.querySelector('header') as HTMLElement).dataset.kept = 'yes'; });
+    const steps: [string, string, string][] = [['nav a:text-is("About")', '/about.html', 'About'], ['nav[aria-label=Main] a:text-is("Work")', '/work.html', 'Case studies'], ['#study-list a >> nth=0', '', ''], ['nav[aria-label=Main] a:text-is("Home")', '/', 'systems built with AI']];
+    for (const [sel, path, title] of steps) {
+      await p.click(sel.startsWith('nav a') ? `nav[aria-label=Main] a:text-is("${sel.match(/"(.*)"/)![1]}")` : sel);
+      if (path) await p.waitForFunction((x) => location.pathname === x, path); else await p.waitForFunction(() => location.pathname.startsWith('/work/'));
+      await p.waitForFunction(() => document.getElementById('route-status')!.textContent!.includes('page loaded'));
+      const st = await p.evaluate(() => ({ path: location.pathname, title: document.title, kept: document.querySelector('header')!.dataset.kept, focus: document.activeElement?.id, h1: document.querySelectorAll('h1').length, main: document.querySelectorAll('main').length }));
+      spaSteps++;
+      if (st.kept !== 'yes') fail.push(`spa @${w} ${st.path}: the header was replaced, not kept`);
+      if (title && !st.title.includes(title)) fail.push(`spa @${w} ${st.path}: the title is "${st.title}", expected it to name "${title}"`);
+      if (st.focus !== 'main') fail.push(`spa @${w} ${st.path}: focus is on "${st.focus}", not the content`);
+      if (st.h1 !== 1 || st.main !== 1) fail.push(`spa @${w} ${st.path}: ${st.h1} h1, ${st.main} main`);
+      const r = await p.evaluate(() => (window as any).axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] }));
+      spaRuns++; rules += r.passes.length;
+      for (const v of r.violations) fail.push(`spa @${w} ${st.path}: ${v.id} (${v.nodes.length}): ${v.help}; first ${v.nodes[0].target.join(' ')}`.slice(0, 400));
+    }
+    // Back returns to the page before, with no load.
+    await p.goBack();
+    await p.waitForFunction(() => location.pathname.startsWith('/work/') || location.pathname === '/about.html' || location.pathname === '/work.html');
+    if (loads !== 1) fail.push(`spa @${w}: ${loads} page loads, expected 1: a click on the nav must not reload`);
     await ctx.close();
   }
   // Reflow: WCAG 1.4.10 at 320 px, no sideways scroll on any page.
@@ -105,6 +139,6 @@ try {
   await browser.close();
   server.stop(true);
 }
-console.log(`a11y: read ${pages.length} pages in ${runs} axe runs (390 and 1280 px) plus ${modalRuns} with the Privacy modal open, resolved ${links} internal links, and measured ${measured} elements for reflow at 320 px; ${rules} rule passes, ${fail.length} failures`);
-if (runs !== pages.length * 2 || pages.length < 10 || modalRuns !== 2 || links < pages.length || measured < pages.length * 10) { console.error(`a11y check read too little: ${runs} runs over ${pages.length} pages, ${links} links, ${measured} elements measured`); process.exit(1); }
+console.log(`a11y: read ${pages.length} pages in ${runs} axe runs (390 and 1280 px) plus ${modalRuns} with the Privacy modal open, resolved ${links} internal links, routed ${spaSteps} client-side navigations and ran axe on ${spaRuns} of them, and measured ${measured} elements for reflow at 320 px; ${rules} rule passes, ${fail.length} failures`);
+if (runs !== pages.length * 2 || pages.length < 10 || modalRuns !== 2 || spaRuns !== 8 || links < pages.length || measured < pages.length * 10) { console.error(`a11y check read too little: ${runs} runs over ${pages.length} pages, ${links} links, ${measured} elements measured`); process.exit(1); }
 if (fail.length) { console.error('a11y check FAILED:\n- ' + fail.join('\n- ')); process.exit(1); }

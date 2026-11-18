@@ -1,14 +1,25 @@
 import { test, expect } from 'bun:test';
 import { esc } from './html.ts';
-import { LOST, LOST_LOOKS, bySlug, home, isResultHeading, kitMoved, legal, notFound, personJsonLd, sectionIds, study, workIndex } from './pages.ts';
+import { LOST, LOST_LOOKS, SERVICES, aboutPage, bySlug, isResultHeading, kitMoved, landingPage, legalPage, notFoundPage, pageFor, personJsonLd, sectionIds, studyPage, workPage, type Page } from './pages.ts';
+import { document as render } from './document.tsx';
 import { llmsTxt, robotsTxt, sitemapFiles, sitemapXml } from './seo.ts';
-import { siteScript, motionScript } from './script.ts';
+import { motionScript } from './script.ts';
 
-// The kit's behaviour script ships in the toonish-ui package; build.ts copies it to dist/toonish.js.
-const toonishScript = await Bun.file('node_modules/toonish-ui/dist/toonish.js').text();
 import { site, studies, featured, latest, fit } from './content.ts';
 
-const all = () => [home(), workIndex(), notFound(), legal('privacy'), legal('terms'), ...studies.map(study)];
+// The client bundle, as the build writes it. It carries the router, the app and the kit's behaviour.
+const built = await Bun.build({ entrypoints: ['src/client.tsx'], target: 'browser', format: 'iife', define: { 'process.env.CF_ANALYTICS_TOKEN': '""' }, plugins: [{ name: 'content', setup(b) { b.onResolve({ filter: /(^|\/)content\.ts$/ }, () => ({ path: 'c', namespace: 'c' })); b.onLoad({ filter: /.*/, namespace: 'c' }, () => ({ loader: 'js', contents: `export * from ${JSON.stringify(import.meta.dir + '/content-core.ts')}; export const studies = [], fit = {}, featured = {}, latest = undefined, tags = [];` })); } }] });
+const appScript = built.success ? await built.outputs[0]!.text() : '';
+
+// Each page as the build writes it: the head, then the app shell rendered to HTML.
+const home = () => render(landingPage());
+const about = () => render(aboutPage());
+const workIndex = () => render(workPage());
+const notFound = () => render(notFoundPage());
+const legal = (slug: 'privacy' | 'terms') => render(legalPage(slug));
+const study = (s: (typeof studies)[number]) => render(studyPage(s));
+
+const all = () => [home(), about(), workIndex(), notFound(), legal('privacy'), legal('terms'), ...studies.map(study)];
 
 test('every page has one h1, a title, and a description', () => {
   for (const html of all()) {
@@ -36,18 +47,15 @@ test('every case study links to the previous one, the next one and back', () => 
   });
 });
 
-test('the home nav marks Home, watches the top and About, and sends Work to the case studies', () => {
-  const html = home();
-  expect(html).toContain('<a href="/" data-spy="main" aria-current="page">Home</a>');
-  expect(html).toContain('<a href="/work.html">Work</a>');
-  expect(html).toContain('<a href="#about" data-spy="about">About</a>');
-  expect(html).toContain('<main id="main">');
-  expect(html).toContain('id="about"');
-  // Home comes first on every page, and only the home page marks it.
-  for (const page of [workIndex(), study(studies[0]), notFound()]) {
-    expect(page).toMatch(/<nav class="toon-nav [^"]*" aria-label="Main"><a href="\/">Home<\/a><a href="\/work\.html"/);
-    expect(page).toContain('<a href="/#about">About</a>');
-  }
+test('the nav is the same on every page and marks the current one, and each tab is a page of its own', () => {
+  const nav = (html: string) => html.match(/<nav class="toon-nav [^"]*" aria-label="Main">(.*?)<\/nav>/s)![1];
+  expect(nav(home())).toBe('<a href="/" aria-current="page">Home</a><a href="/work.html">Work</a><a href="/about.html">About</a>');
+  expect(nav(about())).toBe('<a href="/">Home</a><a href="/work.html">Work</a><a href="/about.html" aria-current="page">About</a>');
+  for (const page of [workIndex(), study(studies[0])]) expect(nav(page)).toBe('<a href="/">Home</a><a href="/work.html" aria-current="page">Work</a><a href="/about.html">About</a>');
+  expect(nav(notFound())).toBe('<a href="/">Home</a><a href="/work.html">Work</a><a href="/about.html">About</a>');
+  for (const html of [home(), about()]) expect(html).toContain('<main id="main" tabindex="-1"');
+  // The sections that moved to About leave no id behind on the landing page.
+  for (const id of ['about', 'how', 'review']) expect(home()).not.toContain(`id="${id}"`);
 });
 
 test('home leads with the featured study, then the three newest others, and links to /work', () => {
@@ -88,17 +96,34 @@ test('the proof strip reads its figures from the studies and links each to its s
   expect(html.indexOf('toon-strip')).toBeLessThan(html.indexOf('id="work"'));
 });
 
-test('home sections are numbered, in order, and the nav anchors land on them', () => {
+test('the landing page offers the work, then the services Pedro maintains', () => {
   const html = home();
   const nums = [...html.matchAll(/<span class="toon-kicker-num">(\d+)<\/span><span class="toon-kicker-label">([^<]*)</g)].map((m) => [m[1], m[2]]);
-  expect(nums).toEqual([['01', 'The work'], ['02', 'The method'], ['03', 'The review'], ['04', 'About']]);
-  for (const id of ['work', 'how', 'about']) expect(html).toContain(`<section id="${id}"`);
-  expect(html.indexOf('id="work"')).toBeLessThan(html.indexOf('id="how"'));
-  expect(html.indexOf('id="how"')).toBeLessThan(html.indexOf('id="about"'));
-  // The three steps carry the spec's words, and the arrows are decoration.
+  expect(nums).toEqual([['01', 'The work'], ['02', 'The upkeep']]);
+  expect(html.indexOf('<section id="work"')).toBeLessThan(html.indexOf('<section id="services"'));
+  expect(html).toContain('href="/about.html">About me, and how I work</a>');
+});
+
+test('the services list is technology only, with public-safe names', () => {
+  const html = home();
+  const list = html.slice(html.indexOf('data-home="services"'), html.indexOf('</section>', html.indexOf('data-home="services"')));
+  expect(list.match(/class="toon-row" role="listitem"/g)).toHaveLength(SERVICES.length);
+  const text = SERVICES.map((r) => `${r.lead} ${r.title} ${r.sub}`).join('\n');
+  // Media services stay off the list (Pedro, 2026-11-18), and so does anything that names a host, an address or an account.
+  expect(text).not.toMatch(/plex|sonarr|radarr|prowlarr|bazarr|qbit|torrent|arr stack/i);
+  expect(text).not.toMatch(/192\.168|\.pdlab\.dev|\.internal|https?:\/\/|CT \d|\b\d{12}\b/);
+  for (const name of ['Authentik', 'Vault', 'Plane', 'pete-bot', 'Prometheus', 'AWS failover']) expect(text).toContain(name);
+});
+
+test('the about page leads with who Pedro is, then the method and the review', () => {
+  const html = about();
+  const nums = [...html.matchAll(/<span class="toon-kicker-num">(\d+)<\/span><span class="toon-kicker-label">([^<]*)</g)].map((m) => [m[1], m[2]]);
+  expect(nums).toEqual([['01', 'About'], ['02', 'The method'], ['03', 'The review']]);
+  for (const id of ['how', 'review']) expect(html).toContain(`<section id="${id}"`);
+  expect(html.indexOf('id="about-h"')).toBeLessThan(html.indexOf('id="how"'));
+  expect(html.indexOf('id="how"')).toBeLessThan(html.indexOf('id="review"'));
   for (const t of ['One task, one session, one branch.', 'Nothing merges unreviewed.', 'Declared, not hand-run.']) expect(html).toContain(t);
   expect(html.match(/class="toon-step-arrow" aria-hidden="true"/g)).toHaveLength(2);
-  // The closing panel holds the headshot, the bubble (one tail per layout) and the contact links.
   const panel = html.slice(html.indexOf('class="toon-panel"'));
   expect(panel).toContain('pedro-cutout.webp');
   expect(panel).toContain('toon-bubble-up');
@@ -127,13 +152,11 @@ test('studies are newest first, with unique slugs and real dates', () => {
 
 test('/work lists every study without JavaScript, and its controls start hidden', () => {
   const html = workIndex();
-  for (const s of studies) expect(html).toContain(`href="/work/${s.slug}.html"`);
+  for (const x of studies) expect(html).toContain(`href="/work/${x.slug}.html"`);
   expect(html.match(/<article[^>]* data-study/g)?.length).toBe(studies.length);
   expect(html).toMatch(/id="study-controls"[^>]*hidden/);
   expect(html).toContain('id="study-sort"');
-  expect(html).toContain('<script src="/work.js" defer></script>');
-  expect(html).not.toMatch(/id="study-list"[\s\S]*<script>[\s\S]*study-list/);
-  expect(html).toContain('data-tag=""');
+  expect(html).toMatch(/data-tag(="")?[ >]/);
 });
 
 test('every page ships the main nav with Work pointing at /work', () => {
@@ -144,21 +167,36 @@ test('every page ships the main nav with Work pointing at /work', () => {
 test('the privacy page says no cookies, so no page or script sets one or uses web storage beyond the motion setting', () => {
   // The privacy page names these APIs, so it is left out of the scan. The one allowed use is the motion
   // switch's saved choice, which the privacy page states.
-  const text = [home(), notFound(), ...studies.map(study), siteScript, toonishScript].join('\n');
+  // The bundle holds the privacy text, which names these APIs to say the site does not use them, so that sentence is left out of the scan.
+  const text = [home(), notFound(), ...studies.map(study), appScript.replace(/"The site sets no cookies[^"]*"/, '')].join('\n');
   expect(text).not.toMatch(/document\.cookie|sessionStorage|indexedDB|Set-Cookie/i);
   expect([...(text + motionScript).matchAll(/localStorage\.\w+\('([^']+)'/g)].every((m) => m[1] === 'pd-motion')).toBe(true);
   expect(legal('privacy')).toContain('pd-motion');
   expect(legal('privacy')).toContain('sets no cookies');
 });
 
-test('every page loads the kit script before the site script', () => {
+test('every page loads the one app script, deferred, and the motion script in the head', () => {
   const pages = all();
   expect(pages.length).toBeGreaterThan(20);
+  expect(appScript.length).toBeGreaterThan(10_000);
   for (const html of pages) {
-    const kit = html.indexOf('<script src="/toonish.js" defer></script>');
-    expect(kit).toBeGreaterThan(-1);
-    expect(kit).toBeLessThan(html.indexOf('<script src="/site.js" defer></script>'));
+    expect(html).toContain('<script src="/app.js" defer></script>');
+    expect(html).toContain('<script src="/motion.js"></script>');
+    expect(html).not.toContain('/site.js');
+    expect(html).not.toContain('/toonish.js');
+    expect(html).toContain('<div id="root">');
   }
+});
+
+test('every route is a real file the router also knows, with or without .html', () => {
+  for (const path of ['/', '/about.html', '/work.html', '/privacy.html', '/terms.html', ...studies.map((x) => `/work/${x.slug}.html`)]) expect(pageFor(path)?.path).toBe(path);
+  // CloudFront rewrites the extensionless address, and the router takes it too.
+  expect(pageFor('/about')?.path).toBe('/about.html');
+  expect(pageFor('/work/')?.path).toBe('/work.html');
+  expect(pageFor('/no-such-page')).toBeUndefined();
+  expect(pageFor('/ui.html')).toBeUndefined();
+  // A study's page is fetched by the browser, so the bundle does not carry its text.
+  expect(pageFor(`/work/${studies[0].slug}.html`)?.remote).toBe(true);
 });
 
 test('no page carries an inline script, so the CSP needs no hash', () => {
@@ -216,16 +254,17 @@ test('sitemap source covers the work index, and llms.txt points at the list and 
   expect(llmsTxt()).toContain('https://pdlab.dev/studies.json');
 });
 
-test('footer links open Privacy and Terms in a modal and stay real links without JavaScript', () => {
+test('footer links open Privacy and Terms in a modal and stay real links without JavaScript', async () => {
   for (const html of all()) {
     expect(html).toContain('href="/privacy.html" data-toon-modal');
     expect(html).toContain('href="/terms.html" data-toon-modal');
     expect(html).toContain('class="toon-link whitespace-nowrap" href="https://github.com/PeteDio-Labs/toonish-ui"');
     expect(html).not.toContain('href="/ui.html"');
   }
-  expect(toonishScript).toContain('showModal');
-  expect(toonishScript).not.toMatch(/innerHTML|eval\(|document\.write/);
-  expect(siteScript).not.toMatch(/innerHTML|eval\(|document\.write/);
+  expect(appScript).toContain('showModal');
+  // The kit's own script never writes markup from a string. The app does, only from the build's own page strings and the site's own files.
+  expect(await Bun.file('node_modules/toonish-ui/dist/toonish.js').text()).not.toMatch(/innerHTML|eval\(|document\.write/);
+  expect(appScript).not.toMatch(/\beval\(|document\.write/);
 });
 
 test('no page loads a font or stylesheet from Google, because the fonts are self-hosted', () => {
@@ -415,9 +454,9 @@ test('a malformed table or facts list fails the build with the file name', async
   expect(numCell.err).toContain('non-empty text cells');
 });
 
-test('the home page shows the cut-out portrait on the kit backdrop, with alt text, and the build ships the file', () => {
+test('the about page shows the cut-out portrait on the kit backdrop, with alt text, and the build ships the file', () => {
   const { existsSync, statSync } = require('node:fs');
-  const html = home();
+  const html = about();
   const m = html.match(/<div class="toon-portrait"[^>]*>.*?<img src="\/pedro-cutout\.webp"[^>]*>/s);
   expect(m).not.toBeNull();
   expect(m![0]).toContain('<svg class="toon-portrait-bg"');
@@ -428,28 +467,29 @@ test('the home page shows the cut-out portrait on the kit backdrop, with alt tex
   expect(existsSync('public/pedro-headshot.webp')).toBe(false);
 });
 
-test('the home page has five sound effects, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
-  const html = home();
-  const words = [...html.matchAll(/<span class="toon-sfx[^"]*"[^>]*aria-hidden="true">((?:<span[^>]*>[^<]*<\/span>)+)<\/span>/g)].map((m) => [...m[1].matchAll(/>([^<]*)<\/span>/g)].map((x) => x[1]).join(''));
-  expect(words).toEqual(['MERGE!', 'SHIP!', 'CLICK!', 'DEPLOY!', 'STACK!']);
+test('the landing and about pages have five sound effects between them, all hidden from readers, all shown on a phone, and none in the closing panel', () => {
+  const words = (html: string) => [...html.matchAll(/<span class="toon-sfx[^"]*"[^>]*aria-hidden="true">((?:<span[^>]*>[^<]*<\/span>)+)<\/span>/g)].map((m) => [...m[1].matchAll(/>([^<]*)<\/span>/g)].map((x) => x[1]).join(''));
+  expect(words(home())).toEqual(['MERGE!', 'SHIP!']);
+  expect(words(about())).toEqual(['CLICK!', 'DEPLOY!', 'STACK!']);
   // STACK! is the stack list's title, so the heading keeps its words for a screen reader.
-  expect(html).toContain('<span class="sr-only">The stack</span>');
-  expect(html.match(/class="toon-sfx/g)).toHaveLength(5);
-  expect(html.slice(html.indexOf('class="toon-panel"'))).not.toContain('toon-sfx');
-  // Pedro, 2026-11-13: a phone showed only the hero's word. No word hides below md.
-  expect(html).not.toMatch(/class="toon-sfx[^"]*\bhidden\b/);
+  expect(about()).toContain('<span class="sr-only">The stack</span>');
+  for (const html of [home(), about()]) {
+    if (html === about()) expect(html.slice(html.indexOf('<section id="about"'), html.indexOf('<section id="how"'))).not.toContain('toon-sfx');
+    // Pedro, 2026-11-13: a phone showed only the hero's word. No word hides below md.
+    expect(html).not.toMatch(/class="toon-sfx[^"]*\bhidden\b/);
+  }
 });
 
 test('the hybrid diagram sits in a window like the hero terminal: a title bar with three dots, hidden from readers', () => {
-  const html = home();
+  const html = about();
   const win = html.slice(html.indexOf('data-home="window"'), html.indexOf('Hybrid by design'));
   expect(win).toContain('bg-toon-violet');
   expect(win).toContain('aria-hidden="true"');
   expect(win.match(/rounded-full/g)).toHaveLength(3);
 });
 
-test('the stack on the home page is a kit list of six labelled rows, not a bullet list', () => {
-  const html = home();
+test('the stack on the about page is a kit list of six labelled rows, not a bullet list', () => {
+  const html = about();
   const stack = html.slice(html.indexOf('data-home="stack"'), html.indexOf('</section>', html.indexOf('data-home="stack"')));
   expect(stack.match(/class="toon-row" role="listitem"/g)).toHaveLength(6);
   expect([...stack.matchAll(/toon-row-lead">([^<]*)</g)].map((m) => m[1])).toEqual(['Compute', 'Cloud', 'IaC', 'Secrets', 'Runtime', 'AI']);
@@ -599,11 +639,11 @@ test('the 404 card holds every line in one of four looks, shows only the first w
   expect(new Set(LOST.map((l) => l.line)).size).toBe(LOST.length);
   expect(page).toContain('<h1 class="sr-only">Page not found</h1>');
   expect(page).toMatch(/<a class="toon-pager-link toon-pager-prev" href="\/">.*Go to the home page/);
-  // The button does nothing without the script, so it ships hidden and site.js reveals it.
+  // The button does nothing without the script, so it ships hidden and the app reveals it.
   expect(page).toMatch(/<button class="toon-pager-link toon-pager-next[^>]*data-lost-next hidden>/);
   expect(page).toContain('aria-live="polite"');
-  expect(siteScript).toContain('[data-lost-line]');
-  expect(siteScript).toContain('[data-lost-next]');
+  expect(appScript).toContain('[data-lost-line]');
+  expect(appScript).toContain('[data-lost-next]');
 });
 
 test('the nav is Home, Work and About on every page, and no page links to the removed kit page', () => {

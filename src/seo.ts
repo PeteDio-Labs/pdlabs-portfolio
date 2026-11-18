@@ -29,6 +29,7 @@ Pedro is looking for a role building systems with AI: infrastructure, agent work
 
 ${studies.map((s) => `- [${s.title}](${origin}/work/${s.slug}.html): ${s.summary.replace(/[`*]/g, '')}`).join('\n')}
 
+- [About Pedro, how he works and the stack](${origin}/about.html)
 - [All case studies, sortable](${origin}/work.html)
 - [studies.json](${origin}/studies.json): the same list as data (slug, date, tag, title, summary, headline figure, url)
 - [api/studies.json](${origin}/api/studies.json): the same list with a link to each study's JSON at /api/studies/<slug>.json (CORS enabled)
