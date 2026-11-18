@@ -35,8 +35,8 @@ export function WorkIndex({ search }: { search: string }) {
     const q = new URLSearchParams(search);
     const s = q.get('sort') as Sort | null;
     const t = q.get('tag') ?? '';
-    if (s && s in SORTS) setSort(s);
-    if (tags.includes(t)) setTag(t);
+    setSort(s && s in SORTS ? s : 'newest');
+    setTag(tags.includes(t) ? t : '');
     setReady(true);
   }, [search]);
   useEffect(() => {

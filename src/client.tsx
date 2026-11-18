@@ -2,7 +2,7 @@
 // content under a header and footer that stay where they are. Every route is also a real file, so a deep link, a refresh
 // and a crawler all get the page without this script.
 import { hydrate } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { initToonish } from 'toonish-ui';
 import { App, notFoundPage, pageFor } from './app.tsx';
 import { fullTitle, type Page } from './pages.ts';
@@ -80,7 +80,10 @@ function load(page: Page): Promise<boolean> {
     p = fetch(page.path, { headers: { Accept: 'text/html' } })
       .then(async (r) => {
         if (!r.ok) return false;
-        const html = new DOMParser().parseFromString(await r.text(), 'text/html').querySelector('#main > div')?.innerHTML;
+        const doc = new DOMParser().parseFromString(await r.text(), 'text/html');
+        // A host that answers a missing page with 200 and the 404 page must not be stored as the study.
+        if (doc.querySelector('link[rel="canonical"]')?.getAttribute('href') !== `https://${site.domain}${page.path}`) return false;
+        const html = doc.querySelector('#main > div')?.innerHTML;
         if (!html) return false;
         remote.set(page.path, html);
         return true;
@@ -91,6 +94,9 @@ function load(page: Page): Promise<boolean> {
   }
   return p;
 }
+
+/** The path the app is showing, so a popstate can tell a hash change on this page from a move to another. */
+let shown = location.pathname;
 
 type Loc = { path: string; search: string };
 const here = (): Loc => ({ path: location.pathname, search: location.search });
@@ -113,17 +119,22 @@ function Root() {
     setMotion(next === 'on');
   }, []);
 
+  const nav = useRef(0);
   const go = useCallback(async (u: URL, push: boolean) => {
+    const mine = ++nav.current;
     // The page stays as it is until the next one is ready, so nothing blanks between them.
     const next = resolve(u.pathname);
     if (next.remote && !(await load(next))) {
-      location.assign(u.href);
+      if (push) location.assign(u.href);
+      else location.reload(); // the address already changed, so reload it rather than add an entry
       return;
     }
+    if (mine !== nav.current) return; // a later navigation started while this one loaded
     if (push) {
       try { history.replaceState({ y: scrollY }, ''); } catch {}
       history.pushState({ y: 0 }, '', u.pathname + u.search + u.hash);
     }
+    shown = u.pathname;
     setLoc({ path: u.pathname, search: u.search });
     setFirst(false);
     (window as any).__hash = u.hash;
@@ -140,9 +151,13 @@ function Root() {
       // A link to a place on this same page is the browser's to follow.
       if (u.pathname === location.pathname && u.search === location.search && u.hash) return;
       e.preventDefault();
+      // The page you are on: scroll to its top and stop, with no new history entry.
+      if (u.pathname === location.pathname && u.search === location.search) { scrollTo(0, 0); return; }
       go(u, true);
     };
     const pop = () => {
+      const same = location.pathname === shown;
+      if (same) { setLoc((l) => ({ ...l, search: location.search })); return; } // a hash or query change on the same page: the browser scrolls
       (window as any).__restore = history.state?.y ?? 0;
       go(new URL(location.href), false);
     };
