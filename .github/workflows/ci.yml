@@ -31,3 +31,13 @@ jobs:
         run: bunx playwright-core install --with-deps chromium
       - name: Accessibility check (axe at WCAG 2.2 AA on every built page)
         run: bun run test:a11y
+      - name: Layout and snapshot check (clipped icons, cut text, overlaps, first screens)
+        run: bun run test:layout
+      - name: Keep the layout diffs
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: layout-diffs
+          path: test/out/layout/
+          if-no-files-found: ignore
+          retention-days: 1
