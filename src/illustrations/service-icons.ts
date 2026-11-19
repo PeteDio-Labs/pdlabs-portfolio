@@ -2,12 +2,14 @@
 // ink outlines, flat fills, and a hard ink shadow 2 px right and 2 px down.
 // Every animated part carries an `svc-*` class; src/service-icons.css holds the motion.
 
+import { HEX } from 'toonish-ui/markup';
+
 export type ServiceIconKey =
   | 'identity' | 'secrets' | 'delivery' | 'iac' | 'monitoring' | 'agents'
   | 'tools' | 'work' | 'data' | 'ai' | 'cloud';
 
 const INK = '#0a0a1f';
-const YEL = '#f2c94c';
+const YEL = HEX.yellow;
 const BLUE = '#5f8dff';
 const RED = '#f2706a';
 const VIO = '#a995f0';
