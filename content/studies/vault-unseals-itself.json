@@ -34,7 +34,7 @@
     {
       "heading": "Result",
       "paragraphs": [
-        "Vault opens itself after a restart with no unseal key on any machine. I signed in through the identity provider in a browser, with a role that reads no secret value. A live read of the backup job showed Vault no longer in its stop list. The first backup window without a Vault restart is the next check."
+        "Vault opens itself after a restart with no unseal key on any machine. I signed in through the identity provider in a browser, with a role that reads no secret value. The first nightly backup after the change stopped the other containers and left Vault running: it showed more than a day of uptime while the others had about half an hour."
       ]
     },
     {
