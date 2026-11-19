@@ -11,7 +11,7 @@ export type ServiceIconKey =
 const INK = '#0a0a1f';
 const YEL = HEX.yellow;
 const BLUE = '#5f8dff';
-const RED = '#f2706a';
+const RED = HEX.red;
 const VIO = '#a995f0';
 const WHITE = '#ffffff';
 
