@@ -136,14 +136,14 @@ export function landingPage(): Page {
             <svg viewBox="0 0 320 236" role="img" aria-label="A terminal: terraform plan reports no changes, and the merge lands after CI and review">
               <rect width="320" height="236" fill="#0c1240"/>
               <rect width="320" height="34" fill="#a995f0"/>
-              <circle cx="22" cy="17" r="7" fill="#f2706a"/><circle cx="44" cy="17" r="7" fill="${HEX.yellow}"/><circle cx="66" cy="17" r="7" fill="#5f8dff"/>
+              <circle cx="22" cy="17" r="7" fill="${HEX.red}"/><circle cx="44" cy="17" r="7" fill="${HEX.yellow}"/><circle cx="66" cy="17" r="7" fill="#5f8dff"/>
               <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15">
                 <text x="18" y="70" fill="#5f8dff">$ terraform plan</text>
                 <text x="18" y="96" fill="#eceff3">No changes. Your infrastructure</text>
                 <text x="18" y="116" fill="#eceff3">matches the configuration.</text>
                 <text x="18" y="152" fill="${HEX.yellow}">$ gh pr merge --squash</text>
                 <text x="18" y="178" fill="#eceff3">Merged after CI and review.</text>
-                <text x="18" y="212" fill="#f2706a" class="toon-blink">$ _</text>
+                <text x="18" y="212" fill="${HEX.red}" class="toon-blink">$ _</text>
               </g>
             </svg>
           </figure>
