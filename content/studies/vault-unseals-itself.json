@@ -1,0 +1,56 @@
+{
+  "slug": "vault-unseals-itself",
+  "date": "2026-11-19",
+  "title": "Letting Vault unseal itself, and signing in without the root token",
+  "tag": "Security",
+  "accent": "red",
+  "summary": "Two racing unseal watchers gave way to a cloud key service, then a read-only login through my identity provider.",
+  "stat": {
+    "value": "0",
+    "label": "keys on any machine that can unseal Vault"
+  },
+  "sections": [
+    {
+      "heading": "Problem",
+      "paragraphs": [
+        "Vault sealed itself every night. The nightly backup stops its container, and a stopped Vault comes back sealed. Two watchers, one on a Raspberry Pi and one on my laptop, raced every five minutes to enter the unseal key. That worked until a night when neither did: Vault stayed sealed for about nine hours while eleven repositories reported success."
+      ]
+    },
+    {
+      "heading": "What I built",
+      "paragraphs": [
+        "I compared the auto-unseal options and chose a managed key in AWS KMS. Vault now opens itself on start by asking the key service to unwrap its master key, so no unseal key sits on any host. The old unseal share became a recovery key: it can make a new root token and cannot unseal. I took Vault out of the nightly stop-backup, retired both watchers and pinned the key policy to the lab's public address.",
+        "The trade is dependence on the outside. A restart now needs the internet and AWS. With either missing, Vault stays sealed and no key I hold can open it. A new public address blocks the unseal until I update the policy, and disabling the key is the emergency brake.",
+        "With that settled, I added a login through my identity provider, Authentik, over OIDC. The role is read-only: it lists agent names, versions and owners and reads no secret value. The root token stays as the break-glass login. A public address for the login page is on hold until the tunnel can verify Vault's certificate. An automated review flagged that skipping verification was the shortcut, and I chose to wait."
+      ]
+    },
+    {
+      "heading": "What went wrong",
+      "paragraphs": [
+        "The seed script failed twice before it worked. Cloudflare blocked the default Python user agent on its first call to the identity provider, so I named the agent. Then my Mac's bash 3.2 read quotes inside a heredoc in a command substitution differently and stopped with an unexpected end of file. I moved the code into a function and added a CI check on a macOS runner that must reject the broken construct, so the check proves it can fail.",
+        "The identity provider also refused the old bootstrap token. I mint a fresh API token through the provider's own shell, with a 24-hour life, because the seed needs it once. My first choice of storage was a path that an automation role could read. The reviewer caught that, and the token now sits where only the root token reads."
+      ]
+    },
+    {
+      "heading": "Result",
+      "paragraphs": [
+        "Vault opens itself after a restart with no unseal key on any machine. I signed in through the identity provider in a browser, with a role that reads no secret value. The first nightly backup after the change stopped the other containers and left Vault running: it showed more than a day of uptime while the others had about half an hour."
+      ]
+    },
+    {
+      "heading": "Lesson",
+      "paragraphs": [
+        "Remove the secret instead of guarding it better. And test a script on the shell that will run it, not the one it was written in."
+      ]
+    }
+  ],
+  "skills": [
+    "Secrets management",
+    "OIDC single sign-on",
+    "Failure analysis"
+  ],
+  "sources": [
+    "the Vault seal configuration",
+    "the pull request reviews"
+  ]
+}
