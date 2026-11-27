@@ -33,5 +33,3 @@ jobs:
         run: bun run test:a11y
       - name: Row alignment check (service rows share their edges at 1280 and 390 px)
         run: bun run test:rows
-      - name: Scroll film check (progress, pinning and reduced motion on the home hero)
-        run: bun run test:scroll

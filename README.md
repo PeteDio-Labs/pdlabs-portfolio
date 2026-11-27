@@ -14,7 +14,6 @@ You need Bun 1.4.4 or later, because `bun.lock` uses lockfile version 2. CI pins
 | `bun run build` | Renders every page and compiles the CSS into `dist/` |
 | `bun run dev` | Builds, then serves `dist/` on `http://localhost:8080` |
 | `bun test` | Tests the pages |
-| `bun run test:scroll` | Drives the home page's scroll film at desktop, phone and reduced motion |
 | `bun run typecheck` | Runs `tsc --noEmit` |
 
 ## Layout
@@ -92,7 +91,3 @@ Design, build and check every page at 390 px before any wider width. Most visito
 
 Deploy is not set up yet. The plan is S3 and CloudFront, built from `petedio-iac` and
 deployed by a GitHub Actions job over OIDC.
-
-## Scroll film
-
-The home hero is a scroll-driven film in the manner of the scrollcraft skill, written by hand with no dependency. `src/scroll.ts` sets `--sc-p` (0 to 1) on each `[data-sc]` element, and the rules in `src/site.css` read it: the title shrinks, the terminal rises and prints its lines, and the proof strip fades up. From 768 px wide and 760 px tall the hero pins for 220% of the screen height; below that it only reacts to scroll. The engine adds `.sc-on` to `<html>` only while motion is on, so reduced motion and the motion switch get the plain page. `bun run test:scroll` checks progress, pinning and reduced motion.

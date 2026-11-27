@@ -7,7 +7,6 @@ import { initToonish } from 'toonish-ui';
 import { App, notFoundPage, pageFor } from './app.tsx';
 import { fullTitle, type Page } from './pages.ts';
 import { site } from './content.ts';
-import { initScroll } from './scroll.ts';
 
 const resolve = (pathname: string): Page => pageFor(pathname) ?? notFoundPage();
 
@@ -204,5 +203,4 @@ if (!root) throw new Error('the page has no #root');
 const initial = resolve(location.pathname);
 hydrate(<Root />, root);
 initToonish(document);
-initScroll();
 if (initial.kind === 'lost') startLost(root);
