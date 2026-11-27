@@ -114,9 +114,10 @@ export function landingPage(): Page {
   );
   const recent = studies.filter((s) => s !== featured).slice(0, 3);
   const body = `
+    <div class="sc-film" data-sc="film"><div class="sc-stage">
     <section class="pt-s4 sm:pt-s6" aria-label="Introduction">
       <h1 class="sr-only">${esc(site.name)}. ${esc(site.role)}</h1>
-      <div class="relative z-0 grid gap-s2 text-[20vw] leading-[.9] sm:text-[min(13vw,10rem)]" aria-hidden="true">
+      <div class="sc-title relative z-0 grid gap-s2 text-[20vw] leading-[.9] sm:text-[min(13vw,10rem)]" aria-hidden="true">
         <div class="flex flex-col gap-s2 sm:flex-row sm:gap-x-[.28em]"><div>${letters('I build', 'blue', { live: true })}</div><div>${letters('systems', 'yellow', { live: true })}</div></div>
         <div class="relative w-fit">${burst('red', 'toon-burst-hero')}${letters('with AI!', 'yellow', { live: true, cls: 'relative' })}</div>
       </div>
@@ -129,7 +130,7 @@ export function landingPage(): Page {
             <a class="toon-link inline-flex min-h-[44px] items-center" href="${site.org}">Browse the repos</a>
           </div>
         </div>
-        <div class="relative z-10 md:-mt-24 lg:-mt-36">
+        <div class="sc-term relative z-10 md:-mt-24 lg:-mt-36">
           ${sfx('MERGE!', 'red', { size: 'sm', cls: 'absolute -bottom-s6 right-s4 z-10 md:text-[3.25rem]' })}
           <figure class="toon-frame toon-tilt-r m-0 bg-toon-ground">
             <span class="toon-caption absolute right-s3 top-s3">The lab</span>
@@ -138,11 +139,11 @@ export function landingPage(): Page {
               <rect width="320" height="34" fill="#a995f0"/>
               <circle cx="22" cy="17" r="7" fill="${HEX.red}"/><circle cx="44" cy="17" r="7" fill="${HEX.yellow}"/><circle cx="66" cy="17" r="7" fill="#5f8dff"/>
               <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15">
-                <text x="18" y="70" fill="#5f8dff">$ terraform plan</text>
-                <text x="18" y="96" fill="#eceff3">No changes. Your infrastructure</text>
-                <text x="18" y="116" fill="#eceff3">matches the configuration.</text>
-                <text x="18" y="152" fill="${HEX.yellow}">$ gh pr merge --squash</text>
-                <text x="18" y="178" fill="#eceff3">Merged after CI and review.</text>
+                <text x="18" y="70" fill="#5f8dff" class="sc-line" style="--i:0">$ terraform plan</text>
+                <text x="18" y="96" fill="#eceff3" class="sc-line" style="--i:1">No changes. Your infrastructure</text>
+                <text x="18" y="116" fill="#eceff3" class="sc-line" style="--i:2">matches the configuration.</text>
+                <text x="18" y="152" fill="${HEX.yellow}" class="sc-line" style="--i:3">$ gh pr merge --squash</text>
+                <text x="18" y="178" fill="#eceff3" class="sc-line" style="--i:4">Merged after CI and review.</text>
                 <text x="18" y="212" fill="${HEX.red}" class="toon-blink">$ _</text>
               </g>
             </svg>
@@ -150,8 +151,9 @@ export function landingPage(): Page {
         </div>
       </div>
     </section>
+    </div></div>
 
-    <div class="mt-s8">${proof}</div>
+    <div class="sc-rise mt-s8" data-sc="view">${proof}</div>
 
     <section id="work" class="relative mt-16 scroll-mt-8 md:mt-24" aria-labelledby="work-h">
       ${sfx('SHIP!', 'blue', { size: 'lg', ghost: true, cls: 'absolute -top-[3.5rem] right-s2 text-[3.25rem] md:-top-[5.75rem] md:right-s6 md:text-[5rem]' })}
