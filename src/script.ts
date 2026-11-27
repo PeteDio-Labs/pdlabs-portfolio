@@ -6,6 +6,9 @@ export const motionScript = String.raw`(() => {
   let saved = null;
   try { saved = localStorage.getItem('pd-motion'); } catch (e) {}
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.documentElement.dataset.motion = saved === 'on' || saved === 'off' ? saved : reduced ? 'off' : 'on';
+  const m = saved === 'on' || saved === 'off' ? saved : reduced ? 'off' : 'on';
+  document.documentElement.dataset.motion = m;
+  // The kit's scroll film needs this class before first paint, so the pinned hero has its height at once and a deep link does not jump.
+  document.documentElement.classList.toggle('toon-scroll-on', m === 'on');
 })();
 `;
