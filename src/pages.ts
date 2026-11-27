@@ -159,6 +159,7 @@ export function landingPage(): Page {
       ${sfx('SHIP!', 'blue', { size: 'lg', ghost: true, cls: 'absolute -top-[3.5rem] right-s2 text-[3.25rem] md:-top-[5.75rem] md:right-s6 md:text-[5rem]' })}
       ${kicker('01', 'The work', { link: { href: '/work.html', text: `All ${studies.length} case studies`, cls: 'hidden min-h-[44px] items-center sm:inline-flex' } })}
       ${lettered('work-h', 'Case studies', 'yellow', 'mb-s6 mt-s4 max-w-md')}
+      <div class="toon-scroll-rise" data-toon-scroll="seen">
       <article class="toon-card toon-pop relative grid items-center gap-s6 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-s8 md:p-s8" data-home="lead" style="--toon-shadow:${HEX[featured.accent]}">
         <span class="toon-corner" style="background:${HEX[featured.accent]}">Featured</span>
         <div class="min-w-0">${thumb(featured.tag, featured.accent)}</div>
@@ -170,7 +171,8 @@ export function landingPage(): Page {
           <a class="toon-link inline-flex min-h-[44px] items-center" href="/work/${featured.slug}.html">Read the case study<span class="sr-only">: ${esc(featured.title)}</span></a>
         </div>
       </article>
-      <div class="mt-s6 md:mt-s8">${deck(recent.map(compactCard), { label: 'More recent case studies', cols: 3 })}</div>
+      </div>
+      <div class="toon-scroll-rise mt-s6 md:mt-s8" data-toon-scroll="seen">${deck(recent.map(compactCard), { label: 'More recent case studies', cols: 3 })}</div>
       <p class="mt-s6 flex flex-col gap-s4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-s6"><a class="toon-btn toon-btn-yellow w-full text-center sm:w-auto" href="/work.html">All ${studies.length} case studies<span class="sr-only">, sortable by date and topic</span></a><a class="toon-link inline-flex min-h-[44px] items-center" href="/about.html">About me, and how I work</a></p>
     </section>
 
@@ -178,7 +180,7 @@ export function landingPage(): Page {
       <div class="flex items-center justify-between gap-s4">${kicker('02', 'The upkeep')}${sfx('FIXED!', 'yellow', { size: 'sm', cls: 'md:text-[2.5rem]' })}</div>
       ${lettered('services-h', 'Services I maintain', 'blue', 'mb-s6 mt-s4 max-w-md')}
       <p class="mb-s6 mt-0 max-w-[52ch] text-title3">The platform under the case studies. I run each one, and each one is declared in code.</p>
-      ${list(SERVICES.map((r) => row(r)), { label: 'Services I maintain', cls: 'toon-list-stack' }).replace('<div class="toon-list', '<div data-home="services" class="toon-list')}
+      <div class="toon-scroll-rise" data-toon-scroll="seen">${list(SERVICES.map((r) => row(r)), { label: 'Services I maintain', cls: 'toon-list-stack' }).replace('<div class="toon-list', '<div data-home="services" class="toon-list')}</div>
     </section>`;
   return { path: '/', title: 'Home', current: 'Home', kind: 'html', description: `${site.name}. ${site.role} ${site.intro}`, body, jsonLd: personJsonLd() };
 }
