@@ -14,7 +14,7 @@
         "playwright-core": "1.65.1",
         "preact-render-to-string": "6.8.3",
         "tailwindcss": "4.3.5",
-        "toonish-ui": "github:PeteDio-Labs/toonish-ui#e2a18181e7a085c4c516385613118fe013a66c25",
+        "toonish-ui": "github:PeteDio-Labs/toonish-ui#98689c95776f320817fa4f4f893ff6dc6965c00c",
         "typescript": "7.0.2",
       },
     },
@@ -192,7 +192,7 @@
 
     "tapable": ["tapable@2.3.4", "", {}, "sha512-NHFiWnAbMJxNNpBwiO7jJVGDuqMxT9/oV8v57RR+fgBQShkJil5inGD8/xWy0hjLyHQyX1tu27QANhlz3KBqCg=="],
 
-    "toonish-ui": ["toonish-ui@github:PeteDio-Labs/toonish-ui#e2a1818", {}, "PeteDio-Labs-Toonish-ui-e2a1818", "sha512-o3ySq2s1wLZ4BdXk0a93Z2KC7h3FMwKSfCYrxf2sLzuYnhLEGDc008q69O14STULONYzPSMfoTKaz5Sg0rik4w=="],
+    "toonish-ui": ["toonish-ui@github:PeteDio-Labs/toonish-ui#98689c9", {}, "PeteDio-Labs-Toonish-ui-98689c9", "sha512-HrUvDX11N2wS/mZ1rbGxs8XFvebl8DibOgnATyN10DLOmHrQ68y6VlNrSluVkDerAoZuqVytghvNq7IjdDCyaw=="],
 
     "typescript": ["typescript@7.0.2", "", { "optionalDependencies": { "@typescript/typescript-aix-ppc64": "7.0.2", "@typescript/typescript-darwin-arm64": "7.0.2", "@typescript/typescript-darwin-x64": "7.0.2", "@typescript/typescript-freebsd-arm64": "7.0.2", "@typescript/typescript-freebsd-x64": "7.0.2", "@typescript/typescript-linux-arm": "7.0.2", "@typescript/typescript-linux-arm64": "7.0.2", "@typescript/typescript-linux-loong64": "7.0.2", "@typescript/typescript-linux-mips64el": "7.0.2", "@typescript/typescript-linux-ppc64": "7.0.2", "@typescript/typescript-linux-riscv64": "7.0.2", "@typescript/typescript-linux-s390x": "7.0.2", "@typescript/typescript-linux-x64": "7.0.2", "@typescript/typescript-netbsd-arm64": "7.0.2", "@typescript/typescript-netbsd-x64": "7.0.2", "@typescript/typescript-openbsd-arm64": "7.0.2", "@typescript/typescript-openbsd-x64": "7.0.2", "@typescript/typescript-sunos-x64": "7.0.2", "@typescript/typescript-win32-arm64": "7.0.2", "@typescript/typescript-win32-x64": "7.0.2" }, "bin": { "tsc": "bin/tsc" } }, "sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA=="],
 

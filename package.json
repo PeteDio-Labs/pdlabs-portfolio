@@ -18,7 +18,7 @@
     "playwright-core": "1.65.1",
     "preact-render-to-string": "6.8.3",
     "tailwindcss": "4.3.5",
-    "toonish-ui": "github:PeteDio-Labs/toonish-ui#e2a18181e7a085c4c516385613118fe013a66c25",
+    "toonish-ui": "github:PeteDio-Labs/toonish-ui#98689c95776f320817fa4f4f893ff6dc6965c00c",
     "typescript": "7.0.2"
   },
   "dependencies": {
