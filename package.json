@@ -9,8 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "test:a11y": "bun run test/a11y.ts",
-    "test:rows": "bun run test/rows.ts",
-    "test:scroll": "bun run test/scroll.ts"
+    "test:rows": "bun run test/rows.ts"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.5",
