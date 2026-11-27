@@ -15,7 +15,9 @@ export function initScroll(root: HTMLElement = document.documentElement) {
     const vh = innerHeight;
     for (const el of document.querySelectorAll<HTMLElement>('[data-sc]')) {
       const r = el.getBoundingClientRect();
-      const p = el.dataset.sc === 'film' ? (r.height > vh ? clamp(-r.top / (r.height - vh)) : 0) : clamp((vh - r.top) / (vh + r.height));
+      // A film that is not pinned (a phone, or a screen too short for the hero) shows its last frame, so nothing waits on a scroll.
+      const pinned = el.dataset.sc === 'film' && r.height > vh && getComputedStyle(el.firstElementChild!).position === 'sticky';
+      const p = el.dataset.sc === 'film' ? (pinned ? clamp(-r.top / (r.height - vh)) : 1) : clamp((vh - r.top) / (vh + r.height));
       el.style.setProperty('--sc-p', p.toFixed(3));
     }
   };
@@ -24,8 +26,8 @@ export function initScroll(root: HTMLElement = document.documentElement) {
   addEventListener('resize', ask);
   addEventListener('popstate', ask);
   new MutationObserver(ask).observe(root, { attributes: true, attributeFilter: ['data-motion'] });
-  // The film sits inside route content, which the app swaps. A cheap observer on <main> catches that swap.
-  const main = document.querySelector('main');
+  // The film sits inside route content, which the app swaps. A cheap observer on #root, which stays, catches that swap.
+  const main = document.getElementById('root');
   if (main) new MutationObserver(ask).observe(main, { childList: true, subtree: true });
   ask();
 }

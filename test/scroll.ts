@@ -35,7 +35,7 @@ const state = (p: import('playwright-core').Page) => p.evaluate(() => {
   };
 });
 try {
-  for (const [name, w, h, reduced, pinned] of [['desktop', 1280, 900, false, true], ['phone', 390, 844, false, false], ['desktop, reduced motion', 1280, 900, true, false]] as const) {
+  for (const [name, w, h, reduced, pinned] of [['desktop', 1280, 900, false, true], ['desktop 1280x760', 1280, 760, false, true], ['short desktop 1024x600', 1024, 600, false, false], ['phone', 390, 844, false, false], ['desktop, reduced motion', 1280, 900, true, false]] as const) {
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, reducedMotion: reduced ? 'reduce' : 'no-preference' });
     const p = await ctx.newPage();
     await p.goto(server.url.origin + '/', { waitUntil: 'load' });
@@ -45,12 +45,15 @@ try {
       if (top.on || top.pos === 'sticky' || top.lineOpacity !== 1) fail.push(`${name}: reduced motion still animates (${JSON.stringify(top)})`);
     } else {
       if (!top.on) fail.push(`${name}: .sc-on is missing with motion on`);
-      if (!(top.p === 0)) fail.push(`${name}: film progress at the top is ${top.p}, not 0`);
+      if (pinned && top.p !== 0) fail.push(`${name}: film progress at the top is ${top.p}, not 0`);
+      if (!pinned && (top.p !== 1 || top.lineOpacity !== 1)) fail.push(`${name}: an unpinned film must show its last frame, got progress ${top.p} and line opacity ${top.lineOpacity}`);
       if (pinned && top.lineOpacity !== 0) fail.push(`${name}: the last terminal line shows at progress 0 (opacity ${top.lineOpacity})`);
       const film = await p.evaluate(() => { const f = document.querySelector<HTMLElement>('[data-sc=film]')!; return { h: f.offsetHeight, y: f.getBoundingClientRect().top + scrollY }; });
       if (pinned) {
         await p.evaluate((y) => scrollTo(0, y + 100), film.y); await p.waitForTimeout(150);
         const early = await state(p); reads++;
+        const fit = await p.evaluate(() => document.querySelector('.sc-stage')!.getBoundingClientRect().height <= innerHeight + 1);
+        if (!fit) fail.push(`${name}: the pinned hero is taller than the screen`);
         if (early.pos !== 'sticky' || early.stageTop !== 0) fail.push(`${name}: the stage is not pinned at the top (${early.pos}, top ${early.stageTop})`);
         await p.evaluate((y) => scrollTo(0, y), film.y + film.h - h - 4); await p.waitForTimeout(150);
         const late = await state(p); reads++;
