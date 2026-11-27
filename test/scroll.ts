@@ -46,7 +46,16 @@ try {
     } else {
       if (!top.on) fail.push(`${name}: .sc-on is missing with motion on`);
       if (pinned && top.p !== 0) fail.push(`${name}: film progress at the top is ${top.p}, not 0`);
-      if (!pinned && (top.p !== 1 || top.lineOpacity !== 1)) fail.push(`${name}: an unpinned film must show its last frame, got progress ${top.p} and line opacity ${top.lineOpacity}`);
+      if (!pinned && top.p !== 1) fail.push(`${name}: an unpinned film must report progress 1, got ${top.p}`);
+      if (!pinned) {
+        // Unpinned, the terminal reveals as it scrolls into view: its last line must be fully shown once the terminal is centred.
+        await p.evaluate(() => { const r = document.querySelector('.sc-term')!.getBoundingClientRect(); scrollTo(0, scrollY + r.top + r.height / 2 - innerHeight / 2); });
+        await p.waitForTimeout(150);
+        const seen = await state(p); reads++;
+        if (seen.lineOpacity !== 1) fail.push(`${name}: the last terminal line is not fully shown with the terminal centred (opacity ${seen.lineOpacity})`);
+        await p.evaluate(() => scrollTo(0, 0));
+        await p.waitForTimeout(100);
+      }
       if (pinned && top.lineOpacity !== 0) fail.push(`${name}: the last terminal line shows at progress 0 (opacity ${top.lineOpacity})`);
       const film = await p.evaluate(() => { const f = document.querySelector<HTMLElement>('[data-sc=film]')!; return { h: f.offsetHeight, y: f.getBoundingClientRect().top + scrollY }; });
       if (pinned) {

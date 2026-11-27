@@ -1,5 +1,6 @@
 // Scroll film engine: writes --sc-p (0 to 1) on every [data-sc] element while a frame is scrolling. No dependencies.
 //   data-sc="film": progress across a tall pinned element, 0 when its top meets the screen's top, 1 when its bottom meets the screen's bottom.
+//   data-sc="seen": writes only --sc-v, so it can sit inside a film and keep the film's --sc-p.
 //   data-sc="view": progress of an element crossing the screen, 0 as it enters at the bottom, 1 as it leaves at the top.
 // It adds .sc-on to <html> only while data-motion is "on", which the head script and the motion switch set, so reduced motion
 // and the switch both get the plain page. Elements are read again on every frame, so a client-side route change needs no hook.
@@ -18,7 +19,9 @@ export function initScroll(root: HTMLElement = document.documentElement) {
       // A film that is not pinned (a phone, or a screen too short for the hero) shows its last frame, so nothing waits on a scroll.
       const pinned = el.dataset.sc === 'film' && r.height > vh && getComputedStyle(el.firstElementChild!).position === 'sticky';
       const p = el.dataset.sc === 'film' ? (pinned ? clamp(-r.top / (r.height - vh)) : 1) : clamp((vh - r.top) / (vh + r.height));
-      el.style.setProperty('--sc-p', p.toFixed(3));
+      if (el.dataset.sc !== 'seen') el.style.setProperty('--sc-p', p.toFixed(3));
+      // --sc-v is the element's own progress across the screen, for effects that run where the film is not pinned.
+      el.style.setProperty('--sc-v', clamp((vh - r.top) / (vh + r.height)).toFixed(3));
     }
   };
   const ask = () => { if (!queued) { queued = true; requestAnimationFrame(frame); } };

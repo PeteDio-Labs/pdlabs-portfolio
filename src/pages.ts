@@ -130,7 +130,7 @@ export function landingPage(): Page {
             <a class="toon-link inline-flex min-h-[44px] items-center" href="${site.org}">Browse the repos</a>
           </div>
         </div>
-        <div class="sc-term relative z-10 md:-mt-24 lg:-mt-36">
+        <div class="sc-term relative z-10 md:-mt-24 lg:-mt-36" data-sc="seen">
           ${sfx('MERGE!', 'red', { size: 'sm', cls: 'absolute -bottom-s6 right-s4 z-10 md:text-[3.25rem]' })}
           <figure class="toon-frame toon-tilt-r m-0 bg-toon-ground">
             <span class="toon-caption absolute right-s3 top-s3">The lab</span>

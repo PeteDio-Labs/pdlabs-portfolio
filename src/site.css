@@ -17,12 +17,14 @@
 /* Scroll film (the scrollcraft approach, by hand): src/scroll.ts writes --sc-p, 0 to 1, on each [data-sc] element and adds
    .sc-on to <html> only while motion is on. Without .sc-on none of these rules apply, so the page is the same static page.
    film: 0 to 1 across the length of the pinned hero. view: 0 as the element enters the screen, 1 as it leaves. */
-.sc-on .sc-term { --t: clamp(0, calc((var(--sc-p, 0) - .1) / .4), 1); transform: translateY(calc((1 - var(--t)) * 48px)) rotate(calc((1 - var(--t)) * 3deg)); }
-.sc-on .sc-line { opacity: clamp(0, calc((var(--sc-p, 0) - .25 - var(--i) * .1) * 12), 1); }
+/* Unpinned (a phone, a narrow window, a short screen): the terminal reveals as it scrolls into view, by its own --sc-v. */
+.sc-on .sc-term { --k: var(--sc-v, 1); --ts: .1; --tw: .3; --ls: .2; --lst: .06; --t: clamp(0, calc((var(--k) - var(--ts)) / var(--tw)), 1); transform: translateY(calc((1 - var(--t)) * 48px)) rotate(calc((1 - var(--t)) * 3deg)); }
+.sc-on .sc-line { opacity: clamp(0, calc((var(--k) - var(--ls) - var(--i) * var(--lst)) * 12), 1); }
 .sc-on .sc-rise { --t: clamp(0, calc((var(--sc-p, 0) - .05) / .25), 1); transform: translateY(calc((1 - var(--t)) * 36px)); }
 /* Pinned only where the whole hero fits the screen: a tall film on a phone would cut the hero off. */
 @media (min-width: 768px) and (min-height: 760px) {
   .sc-on .sc-film { height: 220svh; }
   .sc-on .sc-stage { position: sticky; top: 0; }
+  .sc-on .sc-term { --k: var(--sc-p, 0); --ts: .1; --tw: .4; --ls: .25; --lst: .1; }
   .sc-on .sc-title { transform-origin: left top; transform: scale(calc(1 - var(--sc-p, 0) * .1)); }
 }
