@@ -13,3 +13,16 @@
    animation off for a visitor who asked for less motion, and for the motion switch, so this needs no query of its own. */
 @keyframes route-in { from { opacity: 0; transform: translateY(8px); } }
 .route-in { animation: route-in .18s ease-out; }
+
+/* Scroll film (the scrollcraft approach, by hand): src/scroll.ts writes --sc-p, 0 to 1, on each [data-sc] element and adds
+   .sc-on to <html> only while motion is on. Without .sc-on none of these rules apply, so the page is the same static page.
+   film: 0 to 1 across the length of the pinned hero. view: 0 as the element enters the screen, 1 as it leaves. */
+.sc-on .sc-title { transform-origin: left top; transform: scale(calc(1 - var(--sc-p, 0) * .1)); }
+.sc-on .sc-term { --t: clamp(0, calc((var(--sc-p, 0) - .1) / .4), 1); transform: translateY(calc((1 - var(--t)) * 48px)) rotate(calc((1 - var(--t)) * 3deg)); }
+.sc-on .sc-line { opacity: clamp(0, calc((var(--sc-p, 0) - .25 - var(--i) * .1) * 12), 1); }
+.sc-on .sc-rise { --t: clamp(0, calc((var(--sc-p, 0) - .05) / .25), 1); opacity: calc(.35 + var(--t) * .65); transform: translateY(calc((1 - var(--t)) * 36px)); }
+/* Pinned only where the whole hero fits the screen: a tall film on a phone would cut the hero off. */
+@media (min-width: 768px) and (min-height: 760px) {
+  .sc-on .sc-film { height: 220svh; }
+  .sc-on .sc-stage { position: sticky; top: 0; }
+}
