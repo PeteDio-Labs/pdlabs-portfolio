@@ -120,7 +120,7 @@ export function App({ page, search = '', announce = '', onMount = () => {}, remo
           </nav>
           <button type="button" class="toon-motion" aria-pressed={motion} onClick={onMotion}><span aria-hidden="true">✦</span><span class="toon-motion-label">Motion</span></button>
         </header>
-        <main id="main" tabIndex={-1} class="outline-none">
+        <main id="main" tabIndex={-1} class="outline-none" data-toon-scroll-auto="">
           <View key={page.path} page={page} search={search} onMount={onMount} remote={remote} />
         </main>
         <footer class="toon-footer">
